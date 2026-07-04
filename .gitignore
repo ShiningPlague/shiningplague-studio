@@ -1,0 +1,20 @@
+# ─────────────────────────────────────────────────────────────
+# NEVER commit personal skills or persona content to this public repo.
+# persona/ and any ~/.claude personal skills are user-level and must
+# stay out. This is a shareable framework template — keep it clean of
+# anything private, machine-specific, or identity-bound.
+# ─────────────────────────────────────────────────────────────
+/persona/
+*.local
+.env*
+
+# OS cruft
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*~

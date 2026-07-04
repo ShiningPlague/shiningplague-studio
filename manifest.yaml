@@ -1,0 +1,46 @@
+name: shiningplague-studio
+version: 0.1.0
+description: >-
+  A complete multi-agent game-development studio for Claude Code — workflow
+  skills, specialist agents, gated pipelines, and hooks that turn Claude Code
+  into a coordinated dev team. Engine-agnostic core with Godot / Unity / Unreal
+  specialist packs.
+
+lineage:
+  donchitos_url: https://github.com/Donchitos/Claude-Code-Game-Studios
+  donchitos_copyright: MIT © Kirill Ivanov (Donchitos)
+  obra_superpowers: https://github.com/obra/superpowers
+  born_from: "Sons of Gilgamesh / Godot 4.6"
+
+counts:
+  skills: 65
+  agents_active: 35
+  agents_engine_packs: 14
+  hooks: 13
+  rules: 11
+  templates: 37
+
+install_targets:
+  skills: "user-level (~/.claude/skills/)"
+  agents: "project (.claude/agents/)"
+  hooks: "project (.claude/hooks/)"
+  rules: "project (.claude/rules/)"
+  claude_md: "project root (CLAUDE.md, from CLAUDE.md.template)"
+
+prerequisites:
+  - name: superpowers
+    source: obra/superpowers
+    via: Claude Code plugin marketplace
+    reason: discipline skills + skill-authoring methodology
+  - name: anthropic-skills
+    source: Anthropic
+    via: Claude Code plugin marketplace
+    reason: includes the godot skill + general-purpose skills the workflows dispatch to
+
+engines_supported:
+  - godot
+  - unity
+  - unreal
+  - generic
+
+license: MIT

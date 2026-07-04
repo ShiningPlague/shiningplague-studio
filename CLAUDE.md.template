@@ -1,0 +1,131 @@
+# {{PROJECT_NAME}} — Claude Code Instructions
+
+> {{GAME_PITCH}}. Engine: {{ENGINE}}.
+
+<!-- GUIDANCE: Fill every {{PLACEHOLDER}} below, then delete the GUIDANCE comments.
+     This file is read cold by every new chat — it is the ONE doc a fresh session
+     sees before doing anything. Keep it tight and current. -->
+
+---
+
+## Reading map (read this first every new chat)
+
+You do not need to read every doc before acting. Match the question to ONE row, open that doc, then stop.
+
+| The question is about… | Open this |
+|---|---|
+| **Current state — what's built, what's next, status** | `{{REGISTRY_PATH}}` — the authoritative built-state source. Open first. |
+| "Something's wrong with my test / nothing happens when I X" | `{{REGISTRY_PATH}}` → live test notes / known-working state, before grepping code. |
+| **Design** — mechanics, pillars, systems intent | `{{GDD_PATH}}` |
+| **Data / pipeline reference** — formulas, tables, tuning | `{{IMPL_STATUS_PATH}}` (points at the data files; numbers live in the data, not here) |
+| **Architecture decisions** — locked technical/design choices | `docs/adr/` — one ADR per decision, permanent. |
+| **In-progress feature design** — "where's the spec for X?" | `docs/specs/` — check BEFORE restarting a brainstorm. |
+| **Which skill do I invoke?** | `docs/skills-index.md` — skill catalogue + triggers. |
+| **Which agent do I dispatch?** | `docs/agents-index.md` — Intent → Agent table + roster. |
+| **Workstream states** — per-domain progress + open questions | `production/workstreams/<name>.md` |
+| **Last session / next steps / carry-forward** | `production/session-state/active.md` |
+| **What changed recently** | `docs/devlog.md` + `git log --oneline` |
+| **Project phase** | `production/stage.txt` |
+| **Engine gotchas / coding standards** | `{{ENGINE_NOTES_PATH}}` |
+
+<!-- GUIDANCE: Add project-specific rows as your doc stack grows. Keep the map
+     pointing at ONE authoritative doc per question — never two that can disagree. -->
+
+---
+
+## Skills Protocol (MUST FOLLOW)
+
+**Standing rules:**
+- **Silent skipping = failure mode.** If you catch yourself improvising what looks like a skill's job (your own consistency check, your own verification routine), STOP and fire the skill instead.
+- **User phrasing matching a skill name IS the trigger.** *"run a consistency check"* / *"brainstorm this"* / *"verify it"* / *"design review"* / *"code review"* — those are skill names, not generic verbs.
+
+### The 8 🔒 MUST-USE skills (auto-fire on trigger match, no permission ask)
+
+| Skill | Trigger |
+|---|---|
+| `using-superpowers` | Always, at chat start. |
+| `brainstorming` | Before ANY creative work — new feature, mechanic, UI, or behaviour change. |
+| `test-driven-development` | Before writing implementation code. |
+| `systematic-debugging` | IMMEDIATELY on any bug / hang / crash / wrong-output report, OR before asking someone to run a manual test. Phase 1 evidence-gathering FIRST — no fix attempts before that. |
+| `verification-before-completion` | Before ANY "done / fixed / passing" claim, before commits, before PRs. Run actual verification commands; cite the output. |
+| `{{ENGINE}} skill` | When editing engine files (scripts, scenes, resources, shaders), creating an autoload/scene, or authoring a spec that will produce such files. <!-- e.g. anthropic-skills:godot, anthropic-skills:unity-development --> |
+| `session-close` | On ANY session-end signal ("wrap up", "we're done", "close session"), OR after 5+ commits without a sync. MUST fire before the session ends. |
+| `writing-skills` | Before editing or creating any `SKILL.md` file. Self-check before any Write/Edit on a SKILL.md path: did `writing-skills` fire this turn? If not, fire it FIRST. |
+
+**Failure-mode enforcement:** claiming done without `verification-before-completion`, proposing a fix without `systematic-debugging` Phase 1, or touching an engine file without the `{{ENGINE}}` skill primed are all protocol violations. Push back on them.
+
+---
+
+## MANDATORY DISPATCH rule
+
+**Before any non-trivial scoped work, check `docs/agents-index.md` Intent → Agent table. If the work maps to a specialist's domain, propose dispatching that specialist FIRST.** Doing it inline when an agent should own it is the same failure mode as silent skill skipping.
+
+**Self-check before non-trivial work:**
+1. Match the request against the Intent → Agent table.
+2. If a specialist owns it: announce *"This is `<agent>` territory — propose dispatching."* and wait.
+3. Inline is OK only if (a) trivial (small doc tweak, <~50 LOC), OR (b) the designer explicitly says "do it yourself."
+
+Rationalizations that do NOT excuse skipping dispatch: token cost, "faster inline", "not THAT scoped", "I'll dispatch next time." Dispatch.
+
+---
+
+## Pipeline (when to use which path)
+
+Two legitimate paths. The small path is a SUBSET of the large path — it skips the GDD/architecture/epic ceremony. **Default: brainstorm first, THEN choose the path** based on how big the scope turns out to be.
+
+### Small path (single-system work, 1–2 weeks)
+
+```
+brainstorming → architecture-decision (ADR) → writing-plans → executing-plans
+```
+(+ TDD + verification + ship). Optimal when the work fits one ADR with a few batched decisions.
+
+### Large path (multi-vertical, multi-week)
+
+```
+brainstorming → design-system (GDD) → map-systems (decompose)
+  → create-architecture → create-control-manifest
+  → create-epics → create-stories → dev-story
+  → qa-plan → test-driven-development → gate-check
+  → finishing-a-development-branch
+```
+Director gates apply between phases. Needed for large, cross-cutting feature areas.
+
+---
+
+## Project conventions
+
+### Spec / Plan / ADR paths
+
+| Skill | Writes to | Naming | Lifecycle |
+|---|---|---|---|
+| `brainstorming` | `docs/specs/` | `YYYY-MM-DD-<topic>-design.md` | 🚧 IN PROGRESS → ✅ FINAL → 🗄️ ARCHIVED to `docs/z-old/specs/` |
+| `writing-plans` | `docs/plans/` | `YYYY-MM-DD-<topic>-plan.md` | 🚧 ACTIVE → ✅ SHIPPED → 🗄️ ARCHIVED to `docs/z-old/plans/` |
+| `architecture-decision` | `docs/adr/` | `NNN-<slug>.md` | Permanent. Use `docs/adr/TEMPLATE.md`. Batch 2–3 decisions per ADR. |
+
+Every spec carries a `## Expected outcomes at ship` section near the top — what the designer can do/edit/test once it ships.
+
+### State tracking
+
+`{{REGISTRY_PATH}}` is the single source of truth for "is it built?". Update it whenever a chat adds or changes a system, tool, or data category. Trust the registry over any prose doc if they disagree.
+
+### Numbers live in data, not docs
+
+Tunable values (formulas, stat tables, rarity bands, curves) live in editable data files — never hardcoded in a doc or in code. A doc points at the data file and names the tool/editor that edits it. Changing a number = editing data, not editing prose.
+
+---
+
+## Architecture principles
+
+<!-- GUIDANCE: Replace this starter list with your project's actual principles.
+     These four are a sane default for a data-driven game; add engine- and
+     genre-specific ones (signals, modularity, render boundaries, AI bridges…). -->
+
+1. **Data-driven** — content lives in editable data files under `{{DATA_DIR}}`, never embedded in scripts.
+2. **Decomposed** — each system is one unit with a clear boundary; systems communicate through events/signals, not direct reach-in calls.
+3. **Modular** — no system assumes another exists. Check for a dependency and degrade gracefully when it's absent.
+4. **Human-editable** — every data type has a schema; adding content = adding a data file, not editing code.
+
+---
+
+*This template was scaffolded from ShiningPlague Game Studio. Fill the placeholders and delete the GUIDANCE comments.*

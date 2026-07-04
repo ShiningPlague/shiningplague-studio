@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "name": "narrative-designer",
+  "owner": "coreymaypray",
+  "repo": "sloth-skill-tree",
+  "path": "plugins/maycrest-automate/skills/narrative-designer",
+  "branch": "main",
+  "sha": "feb03cc5a0b42d345349de80df64c0afc018f624",
+  "source": "manual"
+}
