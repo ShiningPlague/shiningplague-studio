@@ -18,3 +18,6 @@ desktop.ini
 .idea/
 *.swp
 *~
+
+# Generated flow-ledger bootstrap draft (review + rename to flow-ledger.yaml — never commit the draft)
+production/flow-ledger.draft.yaml

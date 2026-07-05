@@ -18,7 +18,8 @@ counts:
   agents_engine_packs: 14
   hooks: 13
   rules: 11
-  templates: 37
+  templates: 38
+  tools: 1   # workflow_state_check.py — mechanical flow-state detection
 
 install_targets:
   skills: "user-level (~/.claude/skills/)"

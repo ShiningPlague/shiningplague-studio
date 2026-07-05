@@ -96,10 +96,39 @@ if [ -f "$STATE_FILE" ]; then
 fi
 
 # --- DYNAMIC SESSION CONTEXT (flags, bugs, templates, menu enforcement) ---
+# generate_session_context.sh is an OPTIONAL project-specific context script.
+# Absent by default in a fresh install — the guard skips it cleanly. Add your own
+# if you want richer per-project context (flags, bugs, phase-artifact status).
 CONTEXT_SCRIPT="$(dirname "$0")/../../tools/generate_session_context.sh"
 if [ -f "$CONTEXT_SCRIPT" ]; then
     bash "$CONTEXT_SCRIPT"
 fi
+
+# --- CANONICAL-RECOMMENDED NEXT ACTION (mechanical, zero-LLM) ---
+# Derived from production/flow-ledger.yaml cross-checked against artifact evidence
+# on disk by tools/workflow_state_check.py. Ships with the framework — no project
+# customization required. If no ledger exists yet, the tool prints BOOTSTRAP MODE
+# and writes a draft you review + rename (see templates/flow-ledger.TEMPLATE.yaml).
+# Edit the LEDGER to change posture / rule-pending / recommended-next — not the hook.
+echo ""
+echo "=== CANONICAL-RECOMMENDED NEXT ACTION (from flow-ledger) ==="
+WSC="$(dirname "$0")/../../tools/workflow_state_check.py"
+PYBIN="$(command -v python || command -v python3)"
+if [ -n "$PYBIN" ] && [ -f "$WSC" ]; then
+    # --brief: posture + rule-pending + recommended-next + conflict count.
+    # Indent for readability under the header.
+    "$PYBIN" "$WSC" --brief 2>/dev/null | sed 's/^/    /'
+    WSC_RC=${PIPESTATUS[0]}
+    if [ "${WSC_RC:-0}" -ne 0 ]; then
+        echo "    ⚠️ workflow_state_check reported CONFLICTS (exit $WSC_RC) — run: python tools/workflow_state_check.py"
+    fi
+else
+    # Fallback if python/the tool is unavailable — never leave the session blind.
+    echo "    (workflow_state_check.py unavailable — falling back to static note)"
+    echo "    LEDGER: production/flow-ledger.yaml · CATALOG: .claude/docs/workflow-catalog.yaml"
+    echo "    Run for full state: python tools/workflow_state_check.py"
+fi
+echo "=== END CANONICAL-RECOMMENDED NEXT ACTION ==="
 
 # --- MANDATORY SESSION PROTOCOL REMINDER (added 2026-05-11, extended 2026-05-11b) ---
 echo ""

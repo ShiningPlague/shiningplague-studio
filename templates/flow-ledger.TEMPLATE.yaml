@@ -1,0 +1,89 @@
+# Flow Ledger — the durable, human-editable record of the canonical flow's TRUE state.
+#
+# COPY THIS to production/flow-ledger.yaml and edit it to describe YOUR project.
+# (Or just run tools/workflow_state_check.py once on a fresh repo — BOOTSTRAP MODE
+#  infers a draft ledger from artifact existence, which you then review + rename.)
+#
+# WHAT THIS IS
+#   The canonical pipeline (.claude/docs/workflow-catalog.yaml) says WHAT the ideal
+#   phase progression is. This ledger records what has ACTUALLY happened on THIS repo —
+#   including deliberate leapfrogs, skips, and non-canonical extra steps.
+#
+#   tools/workflow_state_check.py reads BOTH files, cross-checks the ledger's claims
+#   against evidence on disk, and derives the recommended next step. The SCRIPT is
+#   generic (portable to any repo); everything project-specific lives HERE + in the catalog.
+#
+# HOW TO EDIT (this is a human-authored doc — keep it honest)
+#   - Every step id matches a step id in workflow-catalog.yaml, OR is a `custom: true`
+#     step this project added (prototype, north-star, etc.).
+#   - status:  done | in-progress | skipped | leapfrogged | not-started | n-a
+#   - evidence: list of paths (globs OK) that PROVE a 'done' status. The check verifies
+#     they exist + are non-empty. done with no surviving evidence -> CONFLICT.
+#   - reason:  REQUIRED for skipped / leapfrogged. "why did we jump this?" A skip/leapfrog
+#     with no reason is flagged ILLEGITIMATE-SKIP.
+#   - date:    when this status was last set (ISO). Optional but recommended.
+#   - depends_on: (optional) step ids that must be done/leapfrogged before this one is
+#     eligible to be the recommended-next. Defaults to catalog phase order if omitted.
+#
+# THE RULE PENDING LIST blocks the recommended-next output: while any rule_pending item
+# is open, the check prints it BEFORE the recommended next step (a designer decision gates
+# downstream work). Clear an item by moving it to rule_resolved with a date + note.
+
+posture: unknown   # set to your project posture (e.g. concept / production / slice-proven-backfilling)
+
+# Designer-decision blockers. Printed BEFORE the recommended next step. These gate
+# downstream work until the designer rules. Clear -> move to rule_resolved.
+#
+# EXAMPLE (delete when you have no real blockers):
+#   rule_pending:
+#     - id: art-style-lock
+#       title: "ART STYLE LOCK — designer must pick 2D-painterly vs pixel before asset work"
+#       blocks: [art-bible, asset-spec]
+#       reason: "Two candidate style boards exist; the choice changes how every asset is authored, so it gates the art-bible and all downstream asset specs."
+#       date: "YYYY-MM-DD"
+rule_pending: []
+
+# Resolved blockers, kept for the record so the reasoning survives.
+#
+# EXAMPLE (delete when empty):
+#   rule_resolved:
+#     - id: platform-lock
+#       resolution: "DESKTOP-FIRST (designer sign-off) — ship desktop, defer mobile port until post-launch."
+#       follow_up: "Revisit input-remap scope once desktop ships."
+#       date: "YYYY-MM-DD"
+rule_resolved: []
+
+steps:
+
+  # --- EXAMPLE 1: a DONE step with evidence -------------------------------------
+  # 'done' REQUIRES at least one evidence path that exists + is non-empty on disk.
+  # If the evidence is missing/empty the check flags CONFLICT (ledger lies).
+  - id: game-concept
+    status: done
+    evidence: [design/gdd/game-concept.md, design/gdd/game-pillars.md]
+    reason: "Concept document + pillars authored and signed off."
+    date: "YYYY-MM-DD"
+
+  # --- EXAMPLE 2: a LEAPFROGGED step with a reason ------------------------------
+  # 'leapfrogged' / 'skipped' REQUIRE a reason or the check flags ILLEGITIMATE.
+  # Leapfrogged means "deliberately jumped, do NOT treat as the next gate".
+  - id: design-system
+    status: leapfrogged
+    evidence: []
+    reason: "Per-system GDDs deliberately backfilled as ADRs downstream of the architecture spine, not run as a forward gate. Re-run per-system once a domain GDD is actually authored."
+    date: "YYYY-MM-DD"
+
+  # --- EXAMPLE 3: a CUSTOM (non-canonical) step this project added --------------
+  # custom: true steps are ANCHORS, not gates — they never become the recommended
+  # next step, but they document work that sits outside the canonical catalog.
+  - id: vision-doc
+    custom: true
+    status: done
+    evidence: [design/VISION.md]
+    reason: "One-page vision contract — the yardstick every feature is measured against. Non-canonical: sits above the catalog as this project's compressed concept anchor."
+    date: "YYYY-MM-DD"
+
+  # --- Add one entry per canonical step you have touched. Steps you have not
+  #     reached yet can be omitted (they default to not-started) or listed
+  #     explicitly as status: not-started for clarity. Canonical step ids come
+  #     from .claude/docs/workflow-catalog.yaml.

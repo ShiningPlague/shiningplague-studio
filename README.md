@@ -69,6 +69,7 @@ shiningplague-studio/
 ├── rules/                # Path-scoped coding standards
 ├── templates/            # GDD / ADR / spec / plan / sprint doc scaffolds
 ├── docs/                 # Framework documentation
+├── tools/                # Project runtime tools (workflow_state_check.py)
 ├── scripts/              # install.sh / install.ps1
 ├── CLAUDE.md.template     # Project instruction file to copy + fill
 ├── manifest.yaml          # Inventory + lineage + install targets
@@ -82,6 +83,7 @@ shiningplague-studio/
 - **Agents are specialists that skills dispatch.** A skill hands scoped work to the right agent — the game designer writes the GDD, the gameplay programmer implements, the QA lead builds the test plan — and synthesizes their reports back.
 - **Eight MUST-USE discipline skills** auto-fire on trigger and keep the work honest: `using-superpowers` (chat start), `brainstorming` (before any creative work), `test-driven-development` (before implementation code), `systematic-debugging` (on any bug), `verification-before-completion` (before any "done" claim), `anthropic-skills:godot` (when touching engine files), `writing-skills` (when editing a skill), and `session-close` (at session end).
 - **Two pipeline paths.** The **small path** (brainstorm → ADR → plan → execute) handles single-system work in a week or two. The **large path** adds the full ceremony — GDD → system decomposition → architecture → control manifest → epics → stories → implementation → QA → gate — for multi-vertical work. Brainstorm first, then choose the path the scope actually needs.
+- **Mechanical workflow-state detection.** A small, zero-LLM checker (`tools/workflow_state_check.py`) reads a human-authored **flow ledger** (`production/flow-ledger.yaml`) of what's done / skipped-with-reason, cross-checks every claim against the files that actually exist, and derives the honest next step — surfaced at every session start. Fresh repo? Run it once for a **bootstrap** draft to review. See [docs/flow-ledger.md](docs/flow-ledger.md).
 
 ## Honest status
 
