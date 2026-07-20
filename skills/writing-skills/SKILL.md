@@ -1,17 +1,14 @@
 ---
 name: writing-skills
-description: "Use when creating new skills, editing existing skills, or verifying skills work before deployment. ShiningPlague-adopted (Sons of Gilgamesh): adds SoG-specific paths (.claude/skills/<name>/SKILL.md), the actual rationalisations observed in the 2026-04-30 discipline-drift session, and a red-flag self-check before any SKILL.md tool call."
+description: "Use when creating new skills, editing existing skills, or verifying skills work before deployment. ShiningPlague-adopted: adds project skill paths (.claude/skills/<name>/SKILL.md), a rationalisation table drawn from an observed discipline-drift session, and a red-flag self-check before any SKILL.md tool call."
 metadata:
   origin: obra/superpowers
   origin_url: https://github.com/obra/superpowers
-  adopted_by: ShiningPlague (Sons of Gilgamesh)
-  adopted_date: 2026-05-15
-  vanilla_backup: docs/vanilla-backups/2026-05-15/writing-skills/SKILL.md
-  superpowers_namespace_fallback: /superpowers:writing-skills (auto-preserved via plugin)
+  adopted_by: ShiningPlague
   enhancements:
-    - SoG path conventions (.claude/skills/<name>/SKILL.md per project)
-    - User-level SoG skill catalogue (see docs/skills-index.md for the live list)
-    - Verbatim rationalisations from observed 2026-04-30 drift session
+    - Project path conventions (.claude/skills/<name>/SKILL.md per project)
+    - Studio skill catalogue cross-link (see docs/skills-index.md for the live list)
+    - Verbatim rationalisations from an observed drift session
     - Pre-tool self-check (3 questions) before any SKILL.md Write/Edit
     - Red-flag list with project-specific triggers
     - Cross-link to .claude/hooks/pretool-skill-gate.sh (mechanical reminder hook)
@@ -20,56 +17,56 @@ metadata:
 
 # Writing Skills
 
-> 🌱 **ShiningPlague-adopted (2026-05-15).** Originally obra/superpowers. Sons of Gilgamesh project adopted and enhanced. Upstream TDD-for-process-docs philosophy preserved + SoG-specific pre-tool self-check + drift-rationalisation table layered on. Vanilla backup: `docs/vanilla-backups/2026-05-15/writing-skills/`. Plugin-namespace fallback `/superpowers:writing-skills` fires upstream version untouched.
+> 🌱 **ShiningPlague-adopted.** Originally obra/superpowers; battle-tested on a shipped Godot project. Upstream TDD-for-process-docs philosophy preserved + project pre-tool self-check + drift-rationalisation table layered on.
 
 ## Overview
 
 **Writing skills IS Test-Driven Development applied to process documentation.**
 
-**In Sons of Gilgamesh, studio skills live PROJECT-LOCAL at `.claude/skills/<name>/SKILL.md`** — repo-canonical since the 2026-07-04 two-home separation ruling. User level (`~/.claude/skills/`) holds ONLY personal skills. **NEVER create a user-level twin of a project skill:** Anthropic precedence is user > project, so a user-level twin silently shadows the project version (the 2026-05-15 shadow bug — the two-home model keeps the sets disjoint so it cannot recur). See project CLAUDE.md for adoption history.
+**In this studio, skills live PROJECT-LOCAL at `.claude/skills/<name>/SKILL.md`** — repo-canonical under the two-home separation ruling. User level (`~/.claude/skills/`) holds ONLY personal skills. **NEVER create a user-level twin of a project skill:** hard-won rule — Anthropic precedence is user > project, so a user-level twin silently shadows the project version (the two-home model keeps the sets disjoint so it cannot recur). See project CLAUDE.md for adoption history.
 
 You write test cases (pressure scenarios with subagents), watch them fail (baseline behavior), write the skill (documentation), watch tests pass (agents comply), and refactor (close loopholes).
 
 **Core principle:** If you didn't watch an agent fail without the skill, you don't know if the skill teaches the right thing.
 
-**REQUIRED BACKGROUND:** You MUST understand superpowers:test-driven-development before using this skill. That skill defines the fundamental RED-GREEN-REFACTOR cycle. This skill adapts TDD to documentation.
+**REQUIRED BACKGROUND:** You MUST understand test-driven-development (bundled) before using this skill. That skill defines the fundamental RED-GREEN-REFACTOR cycle. This skill adapts TDD to documentation.
 
 **Official guidance:** For Anthropic's official skill authoring best practices, see anthropic-best-practices.md. This document provides additional patterns and guidelines that complement the TDD-focused approach in this skill.
 
 ---
 
-## Sons of Gilgamesh — Pre-Write/Edit self-check (MANDATORY before tool call)
+## Project adaptation — Pre-Write/Edit self-check (MANDATORY before tool call)
 
 Before ANY `Write` or `Edit` tool call where `file_path` matches `.claude/skills/<name>/SKILL.md`:
 
 1. **Did `/writing-skills` fire this turn?** If no → fire it FIRST, then proceed.
 2. **What's the failing test?** What real-world behaviour are you scripting against?
-3. **Does the change need a project-local override or upstream fix?** Project-local wins for SoG paths/conventions; upstream fix is for general patterns.
+3. **Does the change need a project-local override or upstream fix?** Project-local wins for project paths/conventions; upstream fix is for general patterns.
 
 If any answer is unclear, STOP and resolve before tool call.
 
-### SoG-specific paths
+### Project skill paths
 
-SoG-customised studio SKILLs live PROJECT-LOCAL at `.claude/skills/<name>/SKILL.md` (repo-canonical since 2026-07-04) — see `docs/skills-index.md` for the live catalogue (bulk adopted from Donchitos + obra/superpowers; see `docs/vanilla-backups/2026-05-15/` for originals). Personal skills stay user-level (`~/.claude/skills/`).
+Project-customised studio SKILLs live PROJECT-LOCAL at `.claude/skills/<name>/SKILL.md` (repo-canonical) — see `docs/skills-index.md` for the live catalogue (bulk adopted from Donchitos + obra/superpowers). Personal skills stay user-level (`~/.claude/skills/`).
 
 Selection of high-traffic overrides:
 
 | Skill | Override reason |
 |---|---|
-| `brainstorming` | SoG spec paths (`docs/specs/`) + outcome-first framing + per-Q appendix + 5-mode framework |
+| `brainstorming` | Project spec paths (`docs/specs/`) + outcome-first framing + per-Q appendix + 5-mode framework |
 | `consistency-check` | Reads `system_registry.json` not Donchitos's `entities.yaml` |
-| `verification-before-completion` | Concrete SoG verification commands (`tools/<step>_check.gd`) |
-| `regression-suite` | SoG headless harness pattern + capture-as-test |
-| `update` | SoG `/update` procedure (devlog + dev_diary + registry + push prompt) |
-| `writing-skills` | THIS FILE — SoG-specific self-check + drift rationalisations |
+| `verification-before-completion` | Concrete per-project verification commands ({{VERIFY_CMD}}) |
+| `regression-suite` | Project headless harness pattern + capture-as-test |
+| `update` | Project `/update` procedure (changelog + diary + registry + push prompt) |
+| `writing-skills` | THIS FILE — project self-check + drift rationalisations |
 
 **Each override declares what it changes from upstream** via the `metadata` block + adoption banner.
 
-### Rationalisations observed in 2026-04-30 discipline drift
+### Rationalisations observed in a real discipline-drift session
 
-Three slips happened in one session. Each had a verbatim internal rationalisation:
+Hard-won rule: three slips happened in one observed session. Each had a verbatim internal rationalisation:
 
-| Excuse used 2026-04-30 | Reality |
+| Excuse observed | Reality |
 |---|---|
 | "I already know SKILL.md conventions from earlier in this session" | Conventions != current task. Fire the skill anyway. The fire takes <1 second. |
 | "It's just a small edit" | A "small edit" can produce 100+ inserted lines. Fire the skill. |
@@ -91,7 +88,7 @@ Before any `Write` or `Edit` tool call:
 
 **All of these mean: fire `/writing-skills` first, then edit.**
 
-### Mechanical enforcement (added 2026-04-30)
+### Mechanical enforcement
 
 This SKILL is one layer of three:
 
@@ -326,8 +323,8 @@ wc -w skills/path/SKILL.md
 **When writing documentation that references other skills:**
 
 Use skill name only, with explicit requirement markers:
-- ✅ Good: `**REQUIRED SUB-SKILL:** Use superpowers:test-driven-development`
-- ✅ Good: `**REQUIRED BACKGROUND:** You MUST understand superpowers:systematic-debugging`
+- ✅ Good: `**REQUIRED SUB-SKILL:** Use test-driven-development (bundled)`
+- ✅ Good: `**REQUIRED BACKGROUND:** You MUST understand systematic-debugging (bundled)`
 - ❌ Bad: `See skills/testing/test-driven-development` (unclear if required)
 - ❌ Bad: `@skills/testing/test-driven-development/SKILL.md` (force-loads, burns context)
 
@@ -352,7 +349,7 @@ Edit skill without testing? Same violation.
 - Don't "adapt" while running tests
 - Delete means delete
 
-**REQUIRED BACKGROUND:** The superpowers:test-driven-development skill explains why this matters. Same principles apply to documentation.
+**REQUIRED BACKGROUND:** The test-driven-development skill (bundled) explains why this matters. Same principles apply to documentation.
 
 ## Testing All Skill Types
 

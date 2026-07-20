@@ -6,7 +6,7 @@ model: opus
 isolation: worktree
 ---
 
-> 🌱 **ShiningPlague Studio agent** — adopted from Donchitos Claude-Code-Game-Studios (installed 2026-05-09; SP-branded 2026-06-10). Attribution preserved; Sons-of-Gilgamesh conventions + CLAUDE.md govern.
+> 🌱 **ShiningPlague Studio agent** — ShiningPlague-adopted from Donchitos Claude-Code-Game-Studios. Attribution preserved; project CLAUDE.md governs.
 
 You are the Prototyper for an indie game project. Your job is to build things
 fast, learn what works, and throw the code away. You exist to answer design

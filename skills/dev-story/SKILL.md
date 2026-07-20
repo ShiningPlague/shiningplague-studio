@@ -1,26 +1,24 @@
 ---
 name: dev-story
-description: "Read a story file and implement it. Loads the full context (story, GDD requirement, ADR guidelines, control manifest), routes to the right programmer agent for the system and engine, implements the code and test, and confirms each acceptance criterion. The core implementation skill — run after /story-readiness, before /code-review and /story-done. ShiningPlague-adopted (Sons of Gilgamesh): SoG paths (docs/adr/, docs/gdd/), Godot 4.6.1 default routing to godot-gdscript-specialist, control manifest at docs/architecture/control-manifest.md."
+description: "Read a story file and implement it. Loads the full context (story, GDD requirement, ADR guidelines, control manifest), routes to the right programmer agent for the system and engine, implements the code and test, and confirms each acceptance criterion. The core implementation skill — run after /story-readiness, before /code-review and /story-done. ShiningPlague-adopted: project paths (docs/adr/, docs/gdd/), engine-conditional specialist routing ({{ENGINE}}), control manifest at docs/architecture/control-manifest.md."
 argument-hint: "[story-path]"
 user-invocable: true
 allowed-tools: Read, Glob, Grep, Write, Bash, Task, AskUserQuestion
 metadata:
   origin: Donchitos
   origin_url: https://github.com/Donchitos/Claude-Code-Game-Studios
-  adopted_by: ShiningPlague (Sons of Gilgamesh)
-  adopted_date: 2026-05-15
-  vanilla_backup: docs/vanilla-backups/2026-05-15/dev-story/SKILL.md
+  adopted_by: ShiningPlague
   enhancements:
-    - SoG GDD path (docs/gdd/[system].md or docs/GDD v.2.3.md)
-    - SoG ADR path (docs/adr/NNN-*.md)
-    - Godot 4.6.1 engine + godot-gdscript-specialist as default routing
-    - Coding standards at .claude/docs/godot-gotchas.md
+    - Project GDD path (docs/gdd/[system].md or {{GDD_PATH}})
+    - Project ADR path (docs/adr/NNN-*.md)
+    - Engine-conditional routing ({{ENGINE}} from technical-preferences.md to the matching specialist)
+    - Coding standards at .claude/docs/ (e.g. godot-gotchas.md for Godot projects)
     - Architecture principles cross-link to CLAUDE.md
 ---
 
 # Dev Story
 
-> 🌱 **ShiningPlague-adopted (2026-05-15).** Originally Donchitos. Sons of Gilgamesh project adopted and enhanced. Upstream procedure preserved + SoG path corrections + Godot routing defaults. Vanilla backup: `docs/vanilla-backups/2026-05-15/dev-story/`.
+> 🌱 **ShiningPlague-adopted.** Originally Donchitos; battle-tested on a shipped Godot project. Upstream procedure preserved + project path corrections + engine-conditional routing.
 
 This skill bridges planning and code. It reads a story file in full, assembles all the context a programmer needs, routes to the correct specialist agent, and drives implementation to completion — including writing the test.
 
@@ -37,21 +35,21 @@ This skill bridges planning and code. It reads a story file in full, assembles a
 
 **Output:** Source code + test file in the project's `src/` and `tests/` directories.
 
-## SoG Path Reference
+## Project Paths
 
-| Donchitos vanilla path | SoG path |
+| Donchitos vanilla path | Project path |
 |---|---|
-| `design/gdd/[filename].md` | `docs/gdd/[system].md` or `docs/GDD v.2.3.md` |
+| `design/gdd/[filename].md` | `docs/gdd/[system].md` or `{{GDD_PATH}}` |
 | ADRs | `docs/adr/NNN-*.md` |
 | Control manifest | `docs/architecture/control-manifest.md` |
 | Stories | `production/epics/<epic-slug>/story-*.md` |
 | Test evidence | `tests/` or `tools/` (headless harnesses) |
 
-## SoG Context
+## Project Context
 
-- Engine: Godot 4.6.1, GDScript — routes to `godot-gdscript-specialist` by default
+- Engine: `{{ENGINE}}` (from `.claude/docs/technical-preferences.md`) — routes to the matching engine specialist (e.g. `godot-gdscript-specialist` for Godot 4 + GDScript)
 - Technical preferences at `.claude/docs/technical-preferences.md`
-- Coding standards/gotchas at `.claude/docs/godot-gotchas.md`
+- Coding standards/gotchas at `.claude/docs/` (e.g. `godot-gotchas.md` for Godot projects)
 - Architecture principles in CLAUDE.md § Architecture principles
 
 ---
@@ -131,7 +129,7 @@ After extracting Dependencies, validate each:
 ### Engine reference
 
 Read `.claude/docs/technical-preferences.md`:
-- `Engine:` — Godot 4.6.1
+- `Engine:` — `{{ENGINE}}` (e.g. Godot 4.x)
 - Naming conventions
 - Performance budgets
 - Forbidden patterns
@@ -158,11 +156,12 @@ Based on story's **Layer**, **Type**, and **system name**:
 
 ### Engine specialist — always spawn as secondary for code stories
 
-For SoG (Godot 4.6.1), default secondary = `godot-gdscript-specialist`.
+Route by `{{ENGINE}}` (from `.claude/docs/technical-preferences.md`). For Godot 4 projects, default secondary = `godot-gdscript-specialist`.
 
 | Engine | Specialist agents |
 |--------|-------------------|
 | Godot 4 | `godot-specialist`, `godot-gdscript-specialist`, `godot-shader-specialist` |
+| Other engines | activate the matching engine pack in `.claude/agents-optional/` and route to its specialists |
 
 **When engine risk is HIGH** (from ADR or VERSION.md): always spawn engine specialist, even for non-engine-facing stories.
 

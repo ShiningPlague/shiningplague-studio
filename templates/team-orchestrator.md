@@ -99,7 +99,7 @@ Skill(skill="executing-plans")  # for plan-based work
 Skill(skill="dev-story")        # for story-based work
 ```
 Dispatches the workstream's specialist programmer (from team roster) using
-implementation-agent-protocol. For SoG: routes to `gameplay-programmer` +
+implementation-agent-protocol. Example: routes to `gameplay-programmer` +
 `godot-gdscript-specialist`.
 
 Each task follows: read spec → ask architecture → propose → implement → test.
@@ -209,9 +209,9 @@ Skill(skill="session-close")
 
 ---
 
-## Cross-references — Template + Agent per Activity (added 2026-05-12)
+## Cross-references — Template + Agent per Activity
 
-This file defines the **skill chain** for each activity. For the **template + agent** that backs each skill in each phase, see **[docs/agents-index.md § Phase → Template → Skill → Agent Map](../../../docs/agents-index.md#phase--template--skill--agent-map-added-2026-05-12)**.
+This file defines the **skill chain** for each activity. For the **template + agent** that backs each skill in each phase, see **[docs/agents-index.md § Phase → Template → Skill → Agent Map](../../../docs/agents-index.md)**.
 
 Example lookup: in DESIGN Activity Step 1 (`/brainstorming`), agents-index.md tells you:
 - Concept-phase target → template `game-concept.md`, primary agent `creative-director`

@@ -787,7 +787,6 @@ at session close for all 3 Tier 1 directors. They return a Reflection Record, no
 a verdict. The strictest-verdict rule does not apply — all reflections are collected
 and synthesized by the studio lead.
 
-**Added 2026-05-11 per workstream formalization design spec.**
 
 ---
 

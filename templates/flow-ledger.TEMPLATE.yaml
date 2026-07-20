@@ -15,7 +15,7 @@
 #
 # HOW TO EDIT (this is a human-authored doc — keep it honest)
 #   - Every step id matches a step id in workflow-catalog.yaml, OR is a `custom: true`
-#     step this project added (prototype, north-star, etc.).
+#     step this project added (prototype, vision-doc, etc.).
 #   - status:  done | in-progress | skipped | leapfrogged | not-started | n-a
 #   - evidence: list of paths (globs OK) that PROVE a 'done' status. The check verifies
 #     they exist + are non-empty. done with no surviving evidence -> CONFLICT.

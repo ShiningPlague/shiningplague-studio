@@ -1,42 +1,56 @@
 name: shiningplague-studio
-version: 0.1.0
+version: 0.3.0
 description: >-
   A complete multi-agent game-development studio for Claude Code — workflow
   skills, specialist agents, gated pipelines, and hooks that turn Claude Code
   into a coordinated dev team. Engine-agnostic core with Godot / Unity / Unreal
-  specialist packs.
+  specialist packs. Fully self-contained; installs 100% project-local.
 
 lineage:
   donchitos_url: https://github.com/Donchitos/Claude-Code-Game-Studios
   donchitos_copyright: MIT © Kirill Ivanov (Donchitos)
   obra_superpowers: https://github.com/obra/superpowers
-  born_from: "Sons of Gilgamesh / Godot 4.6"
+  born_from: "a Godot narrative-RPG project"
 
 counts:
-  skills: 65
+  skills: 67          # includes godot-engine + dispatching-parallel-agents (bundled in 0.3.0)
   agents_active: 35
   agents_engine_packs: 14
   hooks: 13
   rules: 11
-  templates: 38
-  tools: 1   # workflow_state_check.py — mechanical flow-state detection
+  templates: 39       # includes settings.template.json (hook wiring, new in 0.3.0)
+  tools: 1            # workflow_state_check.py — mechanical flow-state detection
+
+skills_new_in_0_3_0:
+  - godot-engine              # bundled engine skill — replaces the anthropic-skills:godot plugin dependency
+  - dispatching-parallel-agents  # bundled parallel-dispatch skill — replaces the superpowers plugin dependency
 
 install_targets:
-  skills: "user-level (~/.claude/skills/)"
-  agents: "project (.claude/agents/)"
+  skills: "project (.claude/skills/)"
+  agents: "project (.claude/agents/) — top-level roster; engine packs via --engine flag"
   hooks: "project (.claude/hooks/)"
   rules: "project (.claude/rules/)"
-  claude_md: "project root (CLAUDE.md, from CLAUDE.md.template)"
+  docs: "project (.claude/docs/)"
+  templates: "project (.claude/docs/templates/)"
+  tools: "project (tools/)"
+  claude_md: "project root (CLAUDE.md, from CLAUDE.md.template — only if absent)"
+  settings: "project (.claude/settings.json, from templates/settings.template.json — only if absent)"
 
-prerequisites:
+isolation: >-
+  Nothing is ever written to ~/.claude or any user-level path. Every install is
+  per-project; edits stay in that project; a new game = a fresh install.
+
+prerequisites: "none (self-contained); optional: obra/superpowers, anthropic-skills"
+
+optional_enhancers:
   - name: superpowers
     source: obra/superpowers
     via: Claude Code plugin marketplace
-    reason: discipline skills + skill-authoring methodology
+    adds: vanilla discipline skills + skill-authoring methodology (studio ships its own adapted versions)
   - name: anthropic-skills
     source: Anthropic
     via: Claude Code plugin marketplace
-    reason: includes the godot skill + general-purpose skills the workflows dispatch to
+    adds: deep per-engine skills (godot, unity-development) + general-purpose document/media skills
 
 engines_supported:
   - godot

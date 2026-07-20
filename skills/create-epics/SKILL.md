@@ -1,6 +1,6 @@
 ---
 name: create-epics
-description: "Translate approved GDDs + architecture into epics — one epic per architectural module. Defines scope, governing ADRs, engine risk, and untraced requirements. Does NOT break into stories — run /create-stories [epic-slug] after each epic is created. ShiningPlague-adopted (Sons of Gilgamesh): SoG paths (docs/gdd/ + master GDD, docs/adr/, docs/architecture/), epics live at production/epics/."
+description: "Translate approved GDDs + architecture into epics — one epic per architectural module. Defines scope, governing ADRs, engine risk, and untraced requirements. Does NOT break into stories — run /create-stories [epic-slug] after each epic is created. ShiningPlague-adopted: project paths (docs/gdd/ + master GDD, docs/adr/, docs/architecture/), epics live at production/epics/."
 argument-hint: "[system-name | layer: foundation|core|feature|presentation | all] [--review full|lean|solo]"
 user-invocable: true
 allowed-tools: Read, Glob, Grep, Write, Task, AskUserQuestion
@@ -8,20 +8,17 @@ agent: technical-director
 metadata:
   origin: Donchitos
   origin_url: https://github.com/Donchitos/Claude-Code-Game-Studios
-  adopted_by: ShiningPlague (Sons of Gilgamesh)
-  adopted_date: 2026-05-15
-  vanilla_backup: docs/vanilla-backups/2026-05-15/create-epics/SKILL.md
+  adopted_by: ShiningPlague
   enhancements:
-    - SoG GDD path (docs/gdd/*.md + docs/GDD v.2.3.md master)
-    - SoG ADR path (docs/adr/NNN-*.md)
-    - SoG architecture doc path (docs/architecture/architecture.md)
-    - Control manifest cross-reference (55 rules)
-    - SoG context note (no epics created yet — small path used to date)
+    - Project GDD path (docs/gdd/*.md + {{GDD_PATH}} master)
+    - Project ADR path (docs/adr/NNN-*.md)
+    - Project architecture doc path (docs/architecture/architecture.md)
+    - Control manifest cross-reference
 ---
 
 # Create Epics
 
-> 🌱 **ShiningPlague-adopted (2026-05-15).** Originally Donchitos. Sons of Gilgamesh project adopted and enhanced. Upstream procedure preserved + SoG path corrections. Vanilla backup: `docs/vanilla-backups/2026-05-15/create-epics/`.
+> 🌱 **ShiningPlague-adopted.** Originally Donchitos; battle-tested on a shipped Godot project. Upstream procedure preserved + project path corrections.
 
 An epic is a named, bounded body of work that maps to one architectural module. It defines **what** needs to be built and **who owns it architecturally**. It does not prescribe implementation steps — that is the job of stories.
 
@@ -33,11 +30,11 @@ An epic is a named, bounded body of work that maps to one architectural module. 
 
 **When to run:** After `/create-control-manifest` and `/architecture-review` pass.
 
-## SoG Path Reference
+## Project Paths
 
-| Donchitos vanilla path | SoG path |
+| Donchitos vanilla path | Project path |
 |---|---|
-| `design/gdd/*.md` (per-system) | `docs/gdd/*.md` + `docs/GDD v.2.3.md` (master) |
+| `design/gdd/*.md` (per-system) | `docs/gdd/*.md` + `{{GDD_PATH}}` (master, e.g. `docs/GDD.md`) |
 | `design/gdd/systems-index.md` | `design/gdd/systems-index.md` (correct — auto-generated) |
 | Architecture doc | `docs/architecture/architecture.md` |
 | ADRs | `docs/adr/NNN-*.md` |
@@ -45,12 +42,10 @@ An epic is a named, bounded body of work that maps to one architectural module. 
 | TR registry | `docs/architecture/tr-registry.yaml` |
 | Epic output | `production/epics/` |
 
-## SoG Context
-
-- Epics haven't been created yet (no `production/epics/` directory)
-- Per-system GDDs don't exist yet (0/21) — epics derive from master GDD sections + ADRs
-- Project has been using the small path (spec → ADR → plan → execute) until now
-- Large path activates when work scope exceeds 1-2 weeks
+Notes:
+- If no `production/epics/` directory exists yet, this run creates it.
+- If per-system GDDs don't exist yet, epics derive from master GDD sections + ADRs.
+- Small path (spec → ADR → plan → execute) covers 1-2 week work; the large path (with epics) activates when scope exceeds that.
 
 ---
 
@@ -80,7 +75,7 @@ Grep all GDDs for `## Summary`:
 
 ```
 Grep pattern="## Summary" glob="docs/gdd/*.md" output_mode="content" -A 5
-Grep pattern="^## [0-9]" path="docs/GDD v.2.3.md" output_mode="content" -A 2
+Grep pattern="^## [0-9]" path="{{GDD_PATH}}" output_mode="content" -A 2
 ```
 
 For `layer:` or `[system-name]` modes: filter to in-scope GDDs.
@@ -127,7 +122,7 @@ Present to user before writing anything:
 ## Epic: [System Name]
 
 **Layer**: [Foundation / Core / Feature / Presentation]
-**GDD**: docs/gdd/[filename].md (or docs/GDD v.2.3.md §[section])
+**GDD**: docs/gdd/[filename].md (or {{GDD_PATH}} §[section])
 **Architecture Module**: [module name from architecture.md]
 **Governing ADRs**: [ADR-NNNN, ADR-MMMM]
 **Engine Risk**: [LOW / MEDIUM / HIGH]
@@ -168,7 +163,7 @@ After approval: "May I write the epic file to `production/epics/[epic-slug]/EPIC
 # Epic: [System Name]
 
 > **Layer**: [Foundation / Core / Feature / Presentation]
-> **GDD**: docs/gdd/[filename].md (or docs/GDD v.2.3.md §[section])
+> **GDD**: docs/gdd/[filename].md (or {{GDD_PATH}} §[section])
 > **Architecture Module**: [module name]
 > **Status**: Ready
 > **Stories**: Not yet created — run `/create-stories [epic-slug]`

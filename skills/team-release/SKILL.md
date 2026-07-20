@@ -1,24 +1,22 @@
 ---
 name: team-release
-description: "Use when preparing a release, creating changelogs, running release checklists, coordinating patch notes, or managing the deployment pipeline. Routes to the correct workflow pattern and executes step-by-step. ShiningPlague-adopted (Sons of Gilgamesh): full implementation with release-manager + devops-engineer + qa-lead dispatch, SoG context (solo dev, manual build, no CI)."
+description: "Use when preparing a release, creating changelogs, running release checklists, coordinating patch notes, or managing the deployment pipeline. Routes to the correct workflow pattern and executes step-by-step. ShiningPlague-adopted: full implementation with release-manager + devops-engineer + qa-lead dispatch and a project release-context block."
 metadata:
   origin: Donchitos
   origin_url: https://github.com/Donchitos/Claude-Code-Game-Studios
-  adopted_by: ShiningPlague (Sons of Gilgamesh)
-  adopted_date: 2026-05-15
-  vanilla_backup: docs/vanilla-backups/2026-05-15/team-release/SKILL.md
+  adopted_by: ShiningPlague
   enhancements:
     - team-orchestrator execution protocol cross-link
     - Workstream state at production/workstreams/release.md
     - Domain code RL
     - Agent routing table per execution-chain step
     - All 4 PHASE-GATEs trigger via /gate-check
-    - SoG release context (solo dev, Godot export to itch.io, git as changelog)
+    - Project release-context placeholder block (solo-dev defaults)
 ---
 
 # Team Release
 
-> 🌱 **ShiningPlague-adopted (2026-05-15).** Originally Donchitos (barebones stub). Sons of Gilgamesh project adopted and enhanced. Upstream was a pointer-only file; SoG version is the full implementation. Vanilla backup: `docs/vanilla-backups/2026-05-15/team-release/`.
+> 🌱 **ShiningPlague-adopted.** Originally Donchitos (barebones stub); battle-tested on a shipped Godot project. Upstream was a pointer-only file; this version is the full implementation.
 
 **Execution protocol:** `.claude/docs/templates/team-orchestrator.md`
 **Workstream state:** `production/workstreams/release.md`
@@ -55,8 +53,10 @@ metadata:
 - `.claude/docs/templates/release-notes.md`
 - `.claude/docs/templates/changelog-template.md`
 
-## SoG-Specific Context
+## Project-Specific Context
 
-- Solo dev — release = Godot export + itch.io or similar
-- No CI pipeline yet — manual build process
-- Git commits are the canonical changelog (no CHANGELOG.md file)
+Fill in for your project (examples):
+
+- Team shape (e.g. solo dev — release = engine export + storefront upload)
+- CI pipeline status (e.g. none yet — manual build process)
+- Changelog convention (e.g. git commits as the canonical changelog, no CHANGELOG.md file)

@@ -374,13 +374,13 @@ phases:
         required: false
         description: "Scope, implement, and QA-gate a focused day-one patch for issues found after gold master; covers player-facing notes from git history"
 
-# === WORKSTREAMS (added 2026-05-11) ==========================================
+# === WORKSTREAMS =============================================================
 # Workstreams sit ABOVE phases. Each can be in any phase independently.
 # Team orchestrators (/team-*) own workstream state files at
 # production/workstreams/<name>.md. The phases above define WHAT to do;
 # workstreams define WHERE (which domain) to do it.
 #
-# See docs/specs/2026-05-11-workstream-formalization-design.md for full spec.
+# See docs/agent-coordination-map.md § Session Protocol for the wrapping protocol.
 
 workstreams:
   combat:
@@ -396,11 +396,11 @@ workstreams:
     state_file: production/workstreams/narrative.md
     agents: [narrative-director, writer, world-builder, game-designer]
     primary_patterns: [new-feature, new-area-level]
-    # Support skills (added 2026-06-10, designer-instructed): on-demand craft references
-    # for the Act 1 Write→Distill Loop (see state_file). NOT pipeline steps — they
-    # annotate passes: storytelling → spine pass; narrative-designer → distill pass +
-    # /design-system GDD support; better-writing → designer-invoked prose pre-flight.
-    support_skills: [storytelling, narrative-designer, better-writing]
+    # Support skills: on-demand craft references for the narrative write→distill
+    # loop (see state_file). NOT pipeline steps — they annotate passes:
+    # narrative-designer → distill pass + /design-system GDD support; your
+    # preferred prose-editing skill (optional) → designer-invoked prose pre-flight.
+    support_skills: [narrative-designer]
 
   ui-ux:
     code: UX

@@ -2,9 +2,8 @@
 name: session-close
 description: "Use when ending a work session — wraps up with director reflections, consistency gate, /update ritual, session reflection, and session log. Fires on 'wrap up', 'close session', 'we're done', or on mechanical triggers (spec archived, ADR accepted, 5+ commits, phase gate pass)."
 metadata:
-  origin: ShiningPlague (Sons of Gilgamesh)
-  adopted_by: ShiningPlague (Sons of Gilgamesh)
-  adopted_date: 2026-05-15
+  origin: ShiningPlague
+  adopted_by: ShiningPlague
   vanilla_backup: none (originally authored locally — no upstream)
   enhancements:
     - Authored locally as unified session-end protocol
@@ -17,10 +16,9 @@ metadata:
 
 # Session Close
 
-> 🌱 **ShiningPlague-authored (2026-05-15).** Originally authored for the Sons of Gilgamesh project — no upstream version exists. Unified close protocol — every session ends the same way (gate → directors → consistency → /update → git → session reflection). Promoted to user-level 2026-05-15 for portability.
+> 🌱 **ShiningPlague-authored.** No upstream version exists. Unified close protocol — every session ends the same way (gate → directors → consistency → /update → git → session reflection).
 
 Unified close protocol. Every session ends the same way.
-See `docs/specs/2026-05-11-workstream-formalization-design.md` § Section 5 for the full design rationale.
 
 ## Triggers
 
@@ -41,7 +39,7 @@ When mechanical trigger fires, prompt: *"That's a natural checkpoint — want me
 
 ## Procedure
 
-### Step 0: Pre-Close Self-Check (added 2026-05-13) — GATE
+### Step 0: Pre-Close Self-Check — GATE
 
 **MUST fire BOTH `/goal-check` AND `/red-flag-scan` BEFORE Step 1.** Together they form the gate.
 
@@ -58,7 +56,7 @@ Verdict colors:
   - Commit as PARTIAL with explicit carry-over destination
   - Defer close entirely (return to work, close later)
 
-This step prevents the "marched through close while critical issues lingered" failure mode (observed 2026-05-13 during the goal-tracking skill authoring session — directors returned CONCERNS verdicts, the assistant nearly continued to Step 2 without designer resolution; designer paused close to surface the gap).
+Hard-won rule: this step exists because without it, closes march on while critical issues linger — directors return CONCERNS verdicts and the close continues to Step 2 without designer resolution. The gate forces the pause.
 
 Output of Step 0 gets written to the session log (Step 7) as the gate verdict + designer disposition table.
 

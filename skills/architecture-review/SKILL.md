@@ -1,6 +1,6 @@
 ---
 name: architecture-review
-description: "Use when validating architecture completeness against GDDs, checking ADR coverage gaps, detecting cross-ADR conflicts, verifying engine compatibility, or when the designer says 'review architecture', 'check ADR coverage', or 'are our ADRs complete?' Produces PASS/CONCERNS/FAIL verdict. ShiningPlague-adopted (Sons of Gilgamesh): uses docs/adr/*.md not docs/architecture/adr-*, integrates with system_registry.json + tr-registry.yaml, adds godot-specialist consult."
+description: "Use when validating architecture completeness against GDDs, checking ADR coverage gaps, detecting cross-ADR conflicts, verifying engine compatibility, or when the designer says 'review architecture', 'check ADR coverage', or 'are our ADRs complete?' Produces PASS/CONCERNS/FAIL verdict. ShiningPlague-adopted: uses docs/adr/*.md not docs/architecture/adr-*, integrates with system_registry.json + tr-registry.yaml, adds engine-specialist consult."
 argument-hint: "[focus: full | coverage | consistency | engine | single-gdd path/to/gdd.md | rtm]"
 user-invocable: true
 allowed-tools: Read, Glob, Grep, Write, Task, AskUserQuestion, Agent
@@ -9,12 +9,10 @@ agent: technical-director
 metadata:
   origin: Donchitos
   origin_url: https://github.com/Donchitos/Claude-Code-Game-Studios
-  adopted_by: ShiningPlague (Sons of Gilgamesh)
-  adopted_date: 2026-05-15
-  vanilla_backup: docs/vanilla-backups/2026-05-15/architecture-review/SKILL.md
+  adopted_by: ShiningPlague
   enhancements:
-    - SoG ADR path (docs/adr/*.md not docs/architecture/adr-*)
-    - Master GDD support (docs/GDD v.2.3.md + design/gdd/<system>.md mix)
+    - Project ADR path (docs/adr/*.md not docs/architecture/adr-*)
+    - Master GDD support ({{GDD_PATH}} + design/gdd/<system>.md mix)
     - system_registry.json cross-reference (system status + dependencies)
     - tr-registry.yaml preservation (never renumber TR-IDs across runs)
     - godot-specialist consultation via Agent dispatch
@@ -24,7 +22,7 @@ metadata:
 
 # Architecture Review
 
-> 🌱 **ShiningPlague-adopted (2026-05-15).** Originally Donchitos. Sons of Gilgamesh project adopted and enhanced. Upstream hardcoded `docs/architecture/adr-*.md` (line 41); SoG ADRs live at `docs/adr/*.md`. Path conventions corrected throughout + SoG-specific sources added (`data/_schemas/system_registry.json`, `tr-registry.yaml`, godot-specialist Agent dispatch). Vanilla backup: `docs/vanilla-backups/2026-05-15/architecture-review/`.
+> 🌱 **ShiningPlague-adopted.** Originally Donchitos; battle-tested on a shipped Godot project. Upstream hardcoded `docs/architecture/adr-*.md`; studio ADRs live at `docs/adr/*.md`. Path conventions corrected throughout + project sources added (`data/_schemas/system_registry.json`, `tr-registry.yaml`, engine-specialist Agent dispatch).
 
 Validates that the complete body of architectural decisions covers all game design requirements, is internally consistent, and correctly targets the project's pinned engine version. Quality gate between Technical Setup and Pre-Production.
 
@@ -52,7 +50,7 @@ Grep pattern="## Summary" glob="docs/adr/*.md" output_mode="content" -A 3
 
 Also scan master GDD for system sections:
 ```
-Grep pattern="^## [0-9]" path="docs/GDD v.2.3.md" output_mode="content"
+Grep pattern="^## [0-9]" path="{{GDD_PATH}}" output_mode="content"
 ```
 
 For `single-gdd [path]` mode: use the target GDD's summary to identify which ADRs reference the same system, then full-read only those ADRs. Skip full-reading unrelated GDDs.
@@ -64,7 +62,7 @@ For `coverage` or `full` mode: proceed to full-read everything below.
 ### Phase 1b — Full Document Load
 
 **Design Documents:**
-- `docs/GDD v.2.3.md` — master GDD (all system designs until per-system split)
+- `{{GDD_PATH}}` — master GDD (all system designs until per-system split)
 - Any per-system GDDs at `design/gdd/<system>.md`
 - `design/gdd/systems-index.md` — auto-generated from registry (authoritative system list)
 
@@ -82,7 +80,7 @@ For `coverage` or `full` mode: proceed to full-read everything below.
 **Project Standards:**
 - `.claude/docs/technical-preferences.md`
 
-**SoG Additional Sources:**
+**Project Additional Sources:**
 - `data/_schemas/system_registry.json` — authoritative system status + dependencies
 - `docs/architecture/tr-registry.yaml` — existing requirement IDs (preserve across runs)
 
@@ -252,7 +250,7 @@ If `docs/architecture/architecture.md` exists, validate:
 ## Phase 7: Output the Review Report
 
 ```
-## Architecture Review Report — Sons of Gilgamesh
+## Architecture Review Report — {{PROJECT_NAME}}
 Date: [date]
 Engine: Godot 4.6.1
 GDDs Reviewed: [N]
@@ -380,11 +378,11 @@ If any spawned agent returns BLOCKED, errors, or fails:
 
 ---
 
-## SoG Path Reference (why this override exists)
+## Project Path Reference (why this override exists)
 
-| What | Donchitos vanilla path | SoG path |
+| What | Donchitos vanilla path | Project path |
 |------|------------------------|----------|
 | ADRs | `docs/architecture/adr-*.md` | `docs/adr/*.md` |
-| Master GDD | `design/gdd/<system>.md` only | `docs/GDD v.2.3.md` + `design/gdd/<system>.md` |
+| Master GDD | `design/gdd/<system>.md` only | `{{GDD_PATH}}` + `design/gdd/<system>.md` |
 | Systems registry | `design/gdd/systems-index.md` only | `data/_schemas/system_registry.json` (source) + `design/gdd/systems-index.md` (generated view) |
-| Engine reference | `docs/engine-reference/[engine]/` | `docs/engine-reference/godot/VERSION.md` |
+| Engine reference | `docs/engine-reference/[engine]/` | `docs/engine-reference/<engine>/VERSION.md` |

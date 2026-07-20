@@ -16,4 +16,4 @@ paths:
 - Design documents MUST be written incrementally: create skeleton first, then fill
   each section one at a time with user approval between sections. Write each
   approved section to the file immediately to persist decisions and manage context
-- **Template-first rule (2026-05-09):** Use Donchitos templates at `.claude/docs/templates/` as the BASE format for all new design docs. Add SoG-specific content (Live Sources tables, dock references, data-driven pointers) ON TOP of the template sections. Creative-director or game-designer agent walks the designer through filling each section. Templates: `game-design-document.md` (per-system GDD), `game-concept.md` (concept), `systems-index.md` (decomposition).
+- **Template-first rule:** Use Donchitos templates at `.claude/docs/templates/` as the BASE format for all new design docs. Add project-specific content (Live Sources tables, dock references, data-driven pointers) ON TOP of the template sections. Creative-director or game-designer agent walks the designer through filling each section. Templates: `game-design-document.md` (per-system GDD), `game-concept.md` (concept), `systems-index.md` (decomposition).

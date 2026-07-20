@@ -54,7 +54,7 @@ if [ -d "src" ]; then
     fi
 fi
 
-# --- Workstream state overview (added 2026-05-11) ---
+# --- Workstream state overview ---
 WORKSTREAM_DIR="production/workstreams"
 if [ -d "$WORKSTREAM_DIR" ]; then
     WS_COUNT=$(find "$WORKSTREAM_DIR" -name "*.md" ! -name "TEMPLATE.md" 2>/dev/null | wc -l)
@@ -130,14 +130,14 @@ else
 fi
 echo "=== END CANONICAL-RECOMMENDED NEXT ACTION ==="
 
-# --- MANDATORY SESSION PROTOCOL REMINDER (added 2026-05-11, extended 2026-05-11b) ---
+# --- MANDATORY SESSION PROTOCOL REMINDER ---
 echo ""
 echo "=== MANDATORY SESSION PROTOCOL — DO NOT SKIP ==="
 echo "CLAUDE.md conversation-start protocol (7 steps) MUST fire NOW:"
 echo "  1. Fire using-superpowers"
 echo "  2. Context load: active.md + dev_diary (especially thoughts) + open-flags + workstream headers"
 echo "  3. 🔒 DIRECTOR POV BRIEFS: Dispatch creative-director + technical-director + producer"
-echo "     in PARALLEL via Agent tool. Prompts at docs/specs/2026-05-11-workstream-formalization-design.md § Section 3 Step 2."
+echo "     in PARALLEL via Agent tool. Protocol at .claude/docs/agent-coordination-map.md § Session open/close."
 echo "     They read GDD + registry + workstreams + dev_diary.thoughts + routine results."
 echo "     This is NON-NEGOTIABLE. Every session. No matter what the user says first."
 echo "  4. Synthesize all 3 POVs + present SESSION MENU (see format above)"

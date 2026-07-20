@@ -1,14 +1,12 @@
 ---
 name: retrospective
-description: "Use at sprint end, after completing a major milestone, or when designer says 'retro', 'retrospective', 'sprint review', 'what worked / what didn't'. ShiningPlague-adopted (Sons of Gilgamesh): full implementation that routes retrospective output to docs/devlog.md (single change-log + retro record), updates sprint-status.yaml to closed, sprint-type aware."
+description: "Use at sprint end, after completing a major milestone, or when designer says 'retro', 'retrospective', 'sprint review', 'what worked / what didn't'. ShiningPlague-adopted: full implementation that routes retrospective output to docs/devlog.md (single change-log + retro record), updates sprint-status.yaml to closed, sprint-type aware."
 user-invocable: true
 allowed-tools: Read, Glob, Grep, Write, Edit
 metadata:
   origin: Donchitos
   origin_url: https://github.com/Donchitos/Claude-Code-Game-Studios
-  adopted_by: ShiningPlague (Sons of Gilgamesh)
-  adopted_date: 2026-05-15
-  vanilla_backup: docs/vanilla-backups/2026-05-15/retrospective/SKILL.md
+  adopted_by: ShiningPlague
   enhancements:
     - Output routes to docs/devlog.md (not separate retrospective/ folder)
     - sprint-status.yaml status:closed update
@@ -17,15 +15,15 @@ metadata:
     - Auto-fire opportunity as part of /session-close if sprint closed
 ---
 
-# Retrospective — Sons of Gilgamesh
+# Retrospective
 
-> 🌱 **ShiningPlague-adopted (2026-05-15).** Originally Donchitos (barebones stub). Sons of Gilgamesh project adopted and enhanced. Upstream was a pointer-only file; SoG version is the full implementation that routes retrospective output INTO `docs/devlog.md` rather than creating separate files. Vanilla backup: `docs/vanilla-backups/2026-05-15/retrospective/`.
+> 🌱 **ShiningPlague-adopted.** Originally Donchitos (barebones stub); battle-tested on a shipped Godot project. Upstream was a pointer-only file; the studio version is the full implementation that routes retrospective output INTO `docs/devlog.md` rather than creating separate files.
 
-## SoG-specific routing
+## Devlog routing (studio rule)
 
 Retrospective output gets appended to `docs/devlog.md` under a dated section, NOT to a separate `production/retrospectives/` folder.
 
-**Why:** April reconciliation kept devlog.md as the SoG change log. When sprint workflow adopted (2026-05-12), retrospectives route INTO devlog so the doc stack stays consolidated — one canonical change-log + retro record per file. Avoids parallel docs.
+**Why:** hard-won rule — `docs/devlog.md` is the single canonical change log. Retrospectives route INTO devlog so the doc stack stays consolidated: one canonical change-log + retro record per file. Avoids parallel docs.
 
 ## Procedure
 
@@ -105,7 +103,7 @@ After retro lands, propose firing `/sprint-plan` for next sprint OR `/gate-check
 
 ## Failure modes
 
-- ❌ Creating retrospective in separate file when devlog.md exists — violates SoG consolidation
+- ❌ Creating retrospective in separate file when devlog.md exists — violates the consolidation rule
 - ❌ Skipping `sprint-status.yaml` update — leaves sprint state stale, /help misreports
 - ❌ Vague retros ("things were OK") — concrete items only, or skip
 - ❌ Firing too early (mid-sprint) — wait until natural sprint end OR designer explicitly invokes early

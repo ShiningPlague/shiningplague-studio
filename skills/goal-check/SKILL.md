@@ -4,12 +4,11 @@ description: "Use BEFORE /session-close OR when designer asks 'did we hit goals'
 user-invocable: true
 allowed-tools: Read, Edit, Glob, Grep, Bash
 metadata:
-  origin: ShiningPlague (Sons of Gilgamesh)
-  adopted_by: ShiningPlague (Sons of Gilgamesh)
-  adopted_date: 2026-05-15
+  origin: ShiningPlague
+  adopted_by: ShiningPlague
   vanilla_backup: none (originally authored locally — no upstream)
   enhancements:
-    - Authored locally for SoG session-goal tracking system
+    - Authored locally for the session-goal tracking system
     - Gates /session-close (Step 0 — mandatory pre-close)
     - Verdicts: PASS / PARTIAL / DROPPED / CARRY per goal
     - Aggregate: GREEN / YELLOW / RED session-level verdict
@@ -18,7 +17,7 @@ metadata:
 
 # Goal Check — Pre-Close Goal Verification
 
-> 🌱 **ShiningPlague-authored (2026-05-15).** Originally authored for the Sons of Gilgamesh project — no upstream version exists. Part of the session-goal tracking system (`/goal-set` + `/goal-add-minor` + `/goal-check`). Promoted to user-level 2026-05-15 for portability.
+> 🌱 **ShiningPlague-authored.** No upstream version exists. Part of the session-goal tracking system (`/goal-set` + `/goal-add-minor` + `/goal-check`).
 
 Verify session goals (primary + minors) against actual outcomes. **Gates `/session-close`** — if critical fails, close pauses for designer remediation. Closes the "shipped but didn't actually achieve goal" failure mode.
 
@@ -101,7 +100,7 @@ Read `unresolved_issues[]`. For each:
 
 ### Step 7: Carry-over write
 
-If carry-overs exist, designer chooses destination per type (clarified 2026-05-15 — "next-session-priorities" is not a literal active.md section name; see options below):
+If carry-overs exist, designer chooses destination per type (note: "next-session-priorities" is not a literal active.md section name; see options below):
 - **Workstream-relevant carry-over**: add to `active.md` → 🚨 OPEN ADOPTION PLAN TODOs → Priorities (numbered list) with `[Goal-Defer]` prefix per Item 15b
 - **Session-discipline carry-over** (next-session must-fire item): add to `active.md` → 🚨 NEXT-SESSION MUST-FIRE section
 - **Sprint-relevant carry-over** (fits next sprint): add to `production/sprint-status.yaml`

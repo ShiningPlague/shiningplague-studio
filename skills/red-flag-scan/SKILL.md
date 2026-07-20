@@ -4,9 +4,8 @@ description: "Use BEFORE /session-close (Step 0 — co-fires with /goal-check) O
 user-invocable: true
 allowed-tools: Read, Glob, Grep, Bash
 metadata:
-  origin: ShiningPlague (Sons of Gilgamesh)
-  adopted_by: ShiningPlague (Sons of Gilgamesh)
-  adopted_date: 2026-05-15
+  origin: ShiningPlague
+  adopted_by: ShiningPlague
   vanilla_backup: none (originally authored locally — no upstream)
   enhancements:
     - Authored locally as session-close orchestrator
@@ -18,11 +17,11 @@ metadata:
 
 # Red Flag Scan — Self-Check Audit Orchestrator
 
-> 🌱 **ShiningPlague-authored (2026-05-15).** Originally authored for the Sons of Gilgamesh project — no upstream version exists. Session-close orchestrator that dispatches canonical audit skills based on session change kind. Promoted to user-level 2026-05-15 for portability.
+> 🌱 **ShiningPlague-authored.** No upstream version exists. Session-close orchestrator that dispatches canonical audit skills based on session change kind.
 
 **This is an ORCHESTRATOR.** It does NOT duplicate logic from existing canonical skills — it dispatches them based on what changed in the session, then aggregates results. Existing canonical skills do the deep work; this skill is the conductor.
 
-## Orchestration logic (added 2026-05-13 — fixes prior duplication concern)
+## Orchestration logic
 
 Based on what changed in the session (detected via `git diff`), dispatch the right canonical skill:
 
@@ -59,7 +58,7 @@ git status --short
 
 - Modified files not committed: flag if >5 OR if any look critical (CLAUDE.md, settings.json, autoloads)
 - Untracked files: flag if any look like work-in-progress (specs, plans, GDDs)
-- (Cross-session dirty-file tracking removed 2026-05-15 — required session state that doesn't exist. Re-add when Phase 3 HARDENING ships session-state persistence per `docs/specs/2026-05-12-meta-framework-hardening-design.md` Item 1.)
+- (Cross-session dirty-file tracking is intentionally out of scope — it would require session state that doesn't persist. Add it only if the project ships session-state persistence.)
 
 ### Step 2: Doc stack drift scan
 
@@ -85,7 +84,7 @@ git status --short
 
 ### Step 5: Technical debt accumulation
 
-- Grep for TODO/FIXME in `src/` — flag if total count >10 (absolute threshold; 2026-05-15 replaced "increased >2 since last session" which required cross-session state that doesn't exist)
+- Grep for TODO/FIXME in `src/` — flag if total count >10 (absolute threshold — delta-based thresholds like "increased since last session" would require cross-session state that doesn't exist)
 - Open bugs in `production/qa/bugs/` — flag if count >5 or any older than 14 days
 - Open flags in `docs/open-flags.md` — flag if critical >0
 - Unresolved issues in `active-goals.json → unresolved_issues[]` with status: OPEN — flag count
@@ -160,7 +159,7 @@ Append any ORANGE/RED items to active.md `🚨 OPEN ADOPTION PLAN TODOs` section
 - ❌ Skipping Step 3 (complexity drift) because "the project is fine" — complexity buildup is invisible to anyone inside it
 - ❌ Letting RED close proceed — gate exists for a reason
 
-## Thresholds (current, 2026-05-13)
+## Thresholds
 
 Tunable. If thresholds feel wrong, designer adjusts in this SKILL.md:
 - Skills: >50 = complexity warn

@@ -3,14 +3,13 @@ name: bug-report
 description: Use when filing a bug found mid-session ('file a bug', 'log this bug', 'that's broken — track it'), when a routine finding needs manual promotion, or when verifying/closing an existing BUG-NNN after a fix ('/bug-report verify BUG-003', '/bug-report close BUG-003'). Not for triage/prioritisation — that's /bug-triage.
 metadata:
   origin: ShiningPlague-authored
-  authored_date: 2026-07-04
-  replaces: Donchitos pointer stub (deleted 2026-07-04; backup at docs/vanilla-backups/2026-07-04-removed-skills/bug-report/)
+  replaces: Donchitos pointer stub
   format_source: tools/promote_findings_to_bugs.py output shape (must stay compatible)
 ---
 
 # Bug Report
 
-> 🌱 **ShiningPlague-authored (2026-07-04).** The original Donchitos stub was a one-line pointer with no procedure, while CLAUDE.md's tracking-surface table and /day-one-patch both cited /bug-report as a working mechanism. This is the real implementation, format-compatible with the auto-promotion pipeline.
+> 🌱 **ShiningPlague-authored.** Replaces the original Donchitos pointer stub — this is the real implementation, format-compatible with the auto-promotion pipeline (`tools/promote_findings_to_bugs.py`).
 
 ## Overview
 

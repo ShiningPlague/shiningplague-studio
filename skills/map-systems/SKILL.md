@@ -1,15 +1,13 @@
 ---
 name: map-systems
-description: "Use when decomposing a game concept into systems with dependency ordering, when starting design-first work on a new feature area, or when the designer says 'what systems do we need for X?' Reads the master GDD and produces/updates design/gdd/systems-index.md. ShiningPlague-adopted (Sons of Gilgamesh): full implementation with system_registry.json as source of truth (auto-regenerates systems-index.md), creative-director + technical-director parallel gate review, SoG layer/priority taxonomy."
+description: "Use when decomposing a game concept into systems with dependency ordering, when starting design-first work on a new feature area, or when the designer says 'what systems do we need for X?' Reads the master GDD and produces/updates design/gdd/systems-index.md. ShiningPlague-adopted: full implementation with system_registry.json as source of truth (auto-regenerates systems-index.md), creative-director + technical-director parallel gate review, studio layer/priority taxonomy."
 user-invocable: true
 allowed-tools: Read, Glob, Grep, Write, Edit, Agent
 argument-hint: "[scope: full | area-name]"
 metadata:
   origin: Donchitos
   origin_url: https://github.com/Donchitos/Claude-Code-Game-Studios
-  adopted_by: ShiningPlague (Sons of Gilgamesh)
-  adopted_date: 2026-05-15
-  vanilla_backup: docs/vanilla-backups/2026-05-15/map-systems/SKILL.md
+  adopted_by: ShiningPlague
   enhancements:
     - system_registry.json as source of truth, systems-index.md auto-generated
     - Layer taxonomy (Foundation / Core / Feature / Presentation / Polish)
@@ -21,7 +19,7 @@ metadata:
 
 # Map Systems — System Decomposition and Dependency Mapping
 
-> 🌱 **ShiningPlague-adopted (2026-05-15).** Originally Donchitos (barebones stub). Sons of Gilgamesh project adopted and enhanced. Upstream was a pointer-only file; SoG version is the full implementation — scope detection, layer/priority taxonomy, dependency mapping with God Object detection, dual-director gate review. Vanilla backup: `docs/vanilla-backups/2026-05-15/map-systems/`.
+> 🌱 **ShiningPlague-adopted.** Originally Donchitos (barebones stub); battle-tested on a shipped Godot project. Upstream was a pointer-only file; this version is the full implementation — scope detection, layer/priority taxonomy, dependency mapping with God Object detection, dual-director gate review.
 
 Decomposes a game concept or feature area into systems, assigns layers and priorities, maps dependencies, produces/updates the systems index. The creative-director reviews for vision alignment; the technical-director reviews for architectural soundness.
 
@@ -31,7 +29,7 @@ Decomposes a game concept or feature area into systems, assigns layers and prior
 **`<area-name>`**: Decompose a specific feature area (e.g. "narrative", "player-progression").
 
 Read:
-1. `docs/GDD v.2.3.md` — master GDD (design intent)
+1. `{{GDD_PATH}}` (e.g. `docs/GDD.md`) — master GDD (design intent)
 2. `data/_schemas/system_registry.json` — what already exists
 3. `design/gdd/systems-index.md` — current systems table (auto-generated from registry)
 4. `docs/architecture/tr-registry.yaml` — technical requirements already identified
@@ -112,9 +110,9 @@ Propose chain follow-on: "Systems mapped. Next: `/design-system [highest-priorit
 
 ---
 
-## SoG-Specific Notes
+## Studio Notes
 
 - `system_registry.json` is source of truth. `systems-index.md` is auto-generated.
 - Update the registry, not the index directly. Hook handles regeneration.
-- Our registry uses richer status values (active/wip/partial/dormant/planned/etc.) which map to Donchitos statuses in the generated index.
-- When decomposing a new area (e.g. Narrative Layer), cross-reference existing systems in the registry to avoid duplication.
+- The studio registry uses richer status values (active/wip/partial/dormant/planned/etc.) which map to Donchitos statuses in the generated index.
+- When decomposing a new area (e.g. a narrative layer), cross-reference existing systems in the registry to avoid duplication.

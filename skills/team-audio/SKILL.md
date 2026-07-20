@@ -1,24 +1,22 @@
 ---
 name: team-audio
-description: "Use when working on music direction, sound effects, audio cues, ambient soundscapes, or mix balance. Routes to the correct workflow pattern and executes step-by-step. ShiningPlague-adopted (Sons of Gilgamesh): full implementation with team-orchestrator protocol, audio-director + sound-designer dispatch, SoG context (6 target genres via bitwize-music plugin, no audio impl yet)."
+description: "Use when working on music direction, sound effects, audio cues, ambient soundscapes, or mix balance. Routes to the correct workflow pattern and executes step-by-step. ShiningPlague-adopted: full implementation with team-orchestrator protocol, audio-director + sound-designer dispatch, project audio-context block."
 metadata:
   origin: Donchitos
   origin_url: https://github.com/Donchitos/Claude-Code-Game-Studios
-  adopted_by: ShiningPlague (Sons of Gilgamesh)
-  adopted_date: 2026-05-15
-  vanilla_backup: docs/vanilla-backups/2026-05-15/team-audio/SKILL.md
+  adopted_by: ShiningPlague
   enhancements:
     - team-orchestrator execution protocol cross-link
     - Workstream state at production/workstreams/audio.md
     - Domain code AU
     - Agent routing table per execution-chain step
     - Director gates (CD-GDD-ALIGN, CD-PILLARS)
-    - SoG audio context (GDD v2.3 §7.4, bitwize-music plugin, 6 genres)
+    - Project audio-context block ({{GDD_PATH}} audio section, target genres, tooling)
 ---
 
 # Team Audio
 
-> 🌱 **ShiningPlague-adopted (2026-05-15).** Originally Donchitos (barebones stub). Sons of Gilgamesh project adopted and enhanced. Upstream was a pointer-only file; SoG version is the full implementation — orchestration protocol, agent routing table, director gates, audio context. Vanilla backup: `docs/vanilla-backups/2026-05-15/team-audio/`.
+> 🌱 **ShiningPlague-adopted.** Originally Donchitos (barebones stub); battle-tested on a shipped Godot project. Upstream was a pointer-only file; the studio version is the full implementation — orchestration protocol, agent routing table, director gates, project audio-context block.
 
 **Execution protocol:** `.claude/docs/templates/team-orchestrator.md`
 **Workstream state:** `production/workstreams/audio.md`
@@ -57,8 +55,9 @@ When the execution chain says "dispatch specialist," use these agents:
 
 - `.claude/docs/templates/sound-bible.md`
 
-## SoG-Specific Context
+## Project Audio Context (fill for your project)
 
-- GDD v2.3 Section 7.4: Audio Direction — 6 target genres via bitwize-music plugin
-- Genres: dark ambient, dungeon synth, orchestral, dark fantasy, high fantasy, new wave synth hop
-- No audio implementation yet — this workstream starts at design phase
+- Audio direction source: `{{GDD_PATH}}` audio section — target genres, sonic identity
+- Genres: [list the project's target genres here]
+- Music tooling: [note any music-generation plugin or asset pipeline the project uses]
+- Note the workstream's current phase here (e.g. "no audio implementation yet — starts at design phase")

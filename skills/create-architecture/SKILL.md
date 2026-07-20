@@ -1,6 +1,6 @@
 ---
 name: create-architecture
-description: "Guided, section-by-section authoring of the master architecture document for the game. Reads all GDDs, the systems index, existing ADRs, and the engine reference library to produce a complete architecture blueprint before any code is written. Engine-version-aware: flags knowledge gaps and validates decisions against the pinned engine version. ShiningPlague-adopted (Sons of Gilgamesh): SoG path corrections throughout (docs/adr/ not docs/architecture/adr-*, master GDD at docs/GDD v.2.3.md, data/ not assets/data/)."
+description: "Guided, section-by-section authoring of the master architecture document for the game. Reads all GDDs, the systems index, existing ADRs, and the engine reference library to produce a complete architecture blueprint before any code is written. Engine-version-aware: flags knowledge gaps and validates decisions against the pinned engine version. ShiningPlague-adopted: project path corrections throughout (docs/adr/ not docs/architecture/adr-*, master GDD at {{GDD_PATH}}, data/ not assets/data/)."
 argument-hint: "[focus-area: full | layers | data-flow | api-boundaries | adr-audit] [--review full|lean|solo]"
 user-invocable: true
 allowed-tools: Read, Glob, Grep, Write, Bash, AskUserQuestion, Task
@@ -8,20 +8,18 @@ agent: technical-director
 metadata:
   origin: Donchitos
   origin_url: https://github.com/Donchitos/Claude-Code-Game-Studios
-  adopted_by: ShiningPlague (Sons of Gilgamesh)
-  adopted_date: 2026-05-15
-  vanilla_backup: docs/vanilla-backups/2026-05-15/create-architecture/SKILL.md
+  adopted_by: ShiningPlague
   enhancements:
-    - SoG ADR path (docs/adr/NNN-*.md not docs/architecture/adr-*)
-    - Master GDD support (docs/GDD v.2.3.md + per-system docs/gdd/*.md when split)
+    - Project ADR path (docs/adr/NNN-*.md not docs/architecture/adr-*)
+    - Master GDD support ({{GDD_PATH}} + per-system docs/gdd/*.md when split)
     - Data root corrected (data/ not assets/data/)
-    - SoG context block (3 existing ADRs, 48-req TR registry, 55-rule control manifest)
-    - Engine reference at docs/engine-reference/godot/VERSION.md
+    - Project context block (existing ADRs, TR registry, control manifest)
+    - Engine reference at docs/engine-reference/<engine>/VERSION.md
 ---
 
 # Create Architecture
 
-> 🌱 **ShiningPlague-adopted (2026-05-15).** Originally Donchitos. Sons of Gilgamesh project adopted and enhanced. Upstream procedure preserved + SoG path corrections throughout. Vanilla backup: `docs/vanilla-backups/2026-05-15/create-architecture/`.
+> 🌱 **ShiningPlague-adopted.** Originally Donchitos; battle-tested on a shipped Godot project. Upstream procedure preserved + project path corrections throughout.
 
 This skill produces `docs/architecture/architecture.md` — the master architecture document that translates all approved GDDs into a concrete technical blueprint. It sits between design and implementation, and must exist before sprint planning begins.
 
@@ -41,25 +39,25 @@ See `.claude/docs/director-gates.md` for the full check pattern.
 - **`api-boundaries`**: Focus on API boundary definitions only
 - **`adr-audit`**: Audit existing ADRs for engine compatibility gaps only
 
-## SoG Path Reference
+## Project Paths
 
-| Donchitos vanilla path | SoG path |
+| Donchitos vanilla path | Project path |
 |---|---|
-| `design/gdd/game-concept.md` | `design/gdd/game-concept.md` (correct — exists) |
+| `design/gdd/game-concept.md` | `design/gdd/game-concept.md` (correct) |
 | `design/gdd/systems-index.md` | `design/gdd/systems-index.md` (correct — auto-generated) |
-| `design/gdd/*.md` (per-system GDDs) | `docs/gdd/*.md` (when split) + `docs/GDD v.2.3.md` (master) |
-| `docs/architecture/adr-*.md` | `docs/adr/NNN-*.md` (SoG ADR path) |
+| `design/gdd/*.md` (per-system GDDs) | `docs/gdd/*.md` (when split) + `{{GDD_PATH}}` (master, e.g. `docs/GDD.md`) |
+| `docs/architecture/adr-*.md` | `docs/adr/NNN-*.md` (project ADR path) |
 | `assets/data/` | `data/` |
 | Architecture output | `docs/architecture/architecture.md` |
-| TR registry | `docs/architecture/tr-registry.md` (48 requirements) |
-| Control manifest | `docs/architecture/control-manifest.md` (55 rules) |
+| TR registry | `docs/architecture/tr-registry.md` |
+| Control manifest | `docs/architecture/control-manifest.md` |
 
-## SoG Context
+## Project Context
 
-- Master GDD: `docs/GDD v.2.3.md` (monolithic, 12 sections)
-- 0 per-system GDDs exist yet — master GDD is the only design source
-- 3 ADRs at `docs/adr/` (all combat: card-schema, trait-damage, status-effects)
-- Engine reference: `docs/engine-reference/godot/VERSION.md`
+- Master GDD: `{{GDD_PATH}}` (may be monolithic before any per-system split)
+- If no per-system GDDs exist yet, the master GDD is the only design source
+- Existing ADRs at `docs/adr/`
+- Engine reference: `docs/engine-reference/<engine>/VERSION.md`
 - Technical preferences: `.claude/docs/technical-preferences.md`
 
 ---
@@ -86,7 +84,7 @@ Read all approved design documents:
 1. `design/gdd/game-concept.md` — game pillars, genre, core loop
 2. `design/gdd/systems-index.md` — all systems, dependencies, priority tiers
 3. `.claude/docs/technical-preferences.md`
-4. **Every per-system GDD in `docs/gdd/` (when split)** + master GDD `docs/GDD v.2.3.md`
+4. **Every per-system GDD in `docs/gdd/` (when split)** + master GDD `{{GDD_PATH}}`
 
 For each, extract technical requirements:
 - Data structures implied by game rules
@@ -265,7 +263,7 @@ Group by priority:
 Once all sections approved, write to `docs/architecture/architecture.md`:
 
 ```markdown
-# Sons of Gilgamesh — Master Architecture
+# {{PROJECT_NAME}} — Master Architecture
 
 ## Document Status
 - Version: [N]

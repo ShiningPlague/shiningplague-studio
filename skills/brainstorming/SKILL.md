@@ -1,16 +1,13 @@
 ---
 name: brainstorming
-description: "You MUST use this before any creative work - creating features, building components, adding functionality, or modifying behavior. Explores user intent, requirements and design before implementation. ShiningPlague-adopted (Sons of Gilgamesh): adds 5-mode framework (OPEN/CLOSED/FOCUSED/PERSPECTIVE/STRUCTURED) with auto-detection, SoG spec paths + lifecycle + ADR handoff contracts."
+description: "You MUST use this before any creative work - creating features, building components, adding functionality, or modifying behavior. Explores user intent, requirements and design before implementation. ShiningPlague-adopted: adds 5-mode framework (OPEN/CLOSED/FOCUSED/PERSPECTIVE/STRUCTURED) with auto-detection, project spec paths + lifecycle + ADR handoff contracts."
 metadata:
   origin: obra/superpowers
   origin_url: https://github.com/obra/superpowers
-  adopted_by: ShiningPlague (Sons of Gilgamesh)
-  adopted_date: 2026-05-15
-  vanilla_backup: docs/vanilla-backups/2026-05-15/brainstorming/SKILL.md
-  superpowers_namespace_fallback: /superpowers:brainstorming (auto-preserved via plugin)
+  adopted_by: ShiningPlague
   enhancements:
     - 5-mode framework with auto-detection (OPEN / CLOSED / FOCUSED / PERSPECTIVE / STRUCTURED)
-    - SoG spec paths (docs/specs/ not docs/superpowers/specs/)
+    - Project spec paths (docs/specs/ not docs/superpowers/specs/)
     - Per-Q outcome-first rule
     - Mandatory Expected Outcomes section in every spec
     - Spec lifecycle (in_progress → final → archived) with registry registration
@@ -22,7 +19,7 @@ metadata:
 
 # Brainstorming Ideas Into Designs
 
-> 🌱 **ShiningPlague-adopted (2026-05-15).** Originally obra/superpowers. Sons of Gilgamesh project adopted and enhanced. Original behavior preserved + SoG conventions layered on top. Vanilla backup: `docs/vanilla-backups/2026-05-15/brainstorming/`. Plugin-namespace fallback `/superpowers:brainstorming` fires upstream version untouched.
+> 🌱 **ShiningPlague-adopted.** Originally obra/superpowers; battle-tested on a shipped Godot project. Original behavior preserved + project conventions layered on top.
 
 Help turn ideas into fully formed designs and specs through natural collaborative dialogue.
 
@@ -38,9 +35,9 @@ Every project goes through this process. A todo list, a single-function utility,
 
 ---
 
-## Brainstorming modes (5-mode framework — ShiningPlague addition, 2026-05-15)
+## Brainstorming modes (5-mode framework — ShiningPlague addition)
 
-The original obra/superpowers brainstorming skill is **single-mode** (linear A/B/C Q-by-Q + vote). ShiningPlague (Sons of Gilgamesh) adds **5 explicit modes** with auto-detection. The assistant picks the mode at brainstorm start based on language cues from the designer's first message; designer can override with bracket-syntax (e.g. `[OPEN]`) to force a mode.
+The original obra/superpowers brainstorming skill is **single-mode** (linear A/B/C Q-by-Q + vote). ShiningPlague adds **5 explicit modes** with auto-detection. The assistant picks the mode at brainstorm start based on language cues from the designer's first message; designer can override with bracket-syntax (e.g. `[OPEN]`) to force a mode.
 
 Source: WeWork 2022 "10 effective brainstorming techniques for teams" mapped onto our solo-dev + 49-agent context (multi-agent dispatch is our analog for team brainstorm — brainwriting becomes parallel-agent dispatch; figure storming becomes agent-as-figure; round-robin becomes director POV briefs).
 
@@ -117,7 +114,7 @@ You MUST create a task for each of these items and complete them in order:
 4. **Ask clarifying questions** — one at a time, understand purpose/constraints/success criteria. Follow per-mode Q format (CLOSED uses per-Q outcome-first rule below)
 5. **Propose 2-3 approaches** — with trade-offs and your recommendation
 6. **Present design** — in sections scaled to their complexity, get user approval after each section
-7. **Write design doc** — save to `docs/specs/YYYY-MM-DD-<topic>-design.md` (SoG path — NOT `docs/superpowers/specs/`) and commit
+7. **Write design doc** — save to `docs/specs/YYYY-MM-DD-<topic>-design.md` (project path — NOT `docs/superpowers/specs/`) and commit
 8. **Spec self-review** — quick inline check for placeholders, contradictions, ambiguity, scope (see below)
 9. **User reviews written spec** — ask user to review the spec file before proceeding
 10. **Transition to implementation** — invoke writing-plans skill to create implementation plan
@@ -199,7 +196,7 @@ digraph brainstorming {
 
 ---
 
-## Sons of Gilgamesh — spec conventions (ShiningPlague additions)
+## Project adaptation — spec conventions (ShiningPlague additions)
 
 ### Output location (hard override)
 
@@ -268,16 +265,16 @@ The `spec_index` array in `system_registry.json → documentation_stack` is the 
 
 - **Brainstorm → ADR.** At end of the design phase, fire `architecture-decision` 🟢. Target path: `docs/adr/NNN-<slug>.md`. Use [`docs/adr/TEMPLATE.md`](../../../docs/adr/TEMPLATE.md) — every ADR MUST include the `Live Sources` table.
 - **ADR → plan.** After ADR lands, fire `writing-plans` 🟢. Target path: `docs/plans/YYYY-MM-DD-<topic>-plan.md`.
-- **Plan → implementation.** Fire `test-driven-development` 🔒 + `anthropic-skills:godot` 🟢. Verify with `verification-before-completion` 🔒 before any "done" claim.
+- **Plan → implementation.** Fire `test-driven-development` 🔒 + `godot-engine` 🟢 (bundled). Verify with `verification-before-completion` 🔒 before any "done" claim.
 - **Shipment → retirement.** Move spec to `docs/z-old/specs/` + update registry + migrate any pipeline narrative into the ADR's `Implementation notes` section (or into `implementation-status.md` if it's a cross-cutting pattern).
 
 ### ADR batching rule
 
-One ADR covers 2–3 related decisions from one design phase. Don't write one ADR per decision. Example for the card system:
-- `001-card-schema-and-pools.md` covers unified schema + archetype-recipe pool model + deck-composition policy.
-- `002-damage-pipeline-and-effects.md` (later) covers trait stacking + status effect architecture + DamageCalculator extraction.
+One ADR covers 2–3 related decisions from one design phase. Don't write one ADR per decision. Example for an inventory system:
+- `001-inventory-schema-and-slots.md` covers unified item schema + slot-capacity model + stacking policy.
+- `002-loot-pipeline-and-effects.md` (later) covers drop-table resolution + item-effect architecture + InventorySystem autoload extraction.
 
-### Per-question outcome-first rule (designer's standing ask 2026-04-24)
+### Per-question outcome-first rule (hard-won rule from designer feedback)
 
 **Every brainstorm question in CLOSED mode MUST lead with a plain-English "outcome" statement — what the answer actually changes in the shipped game or in how the designer works — BEFORE the A/B/C options.**
 
@@ -307,7 +304,7 @@ When writing the spec at end of brainstorm, carry a **`## Per-question intended 
 - **Outcome we were aiming at:** <the plain-English framing used when the Q was asked>
 - **Decision:** <A / B / C + one-liner of what that means>
 - **Why:** <one-line rationale — designer's reasoning or Claude's vote that was accepted>
-- **Touches:** <files / systems / docs this answer affects — e.g. "DamageCalculator autoload signature + data/_schemas/trait_multipliers.json shape">
+- **Touches:** <files / systems / docs this answer affects — e.g. "InventorySystem autoload signature + data/_schemas/inventory_rules.json shape">
 ```
 
 This appendix becomes load-bearing the moment a designer revisits a spec post-lock or changes their mind later — it says which Qs are in play and what they were trying to achieve.
@@ -327,8 +324,8 @@ Announce explicitly to the designer: "Q<n> was previously locked as <old>; chang
 
 ### Cross-skill awareness
 
-- If the task involves Godot file work, announce `anthropic-skills:godot` will fire at implementation time.
-- If the task spawns parallel independent sub-tasks, propose `superpowers:dispatching-parallel-agents` 🟢 at plan time — NOT during brainstorm.
+- If the task involves Godot file work, announce `godot-engine` (bundled) will fire at implementation time.
+- If the task spawns parallel independent sub-tasks, propose `dispatching-parallel-agents` (bundled) 🟢 at plan time — NOT during brainstorm.
 - If the task is a bugfix rather than new design, the 🔒 sequence becomes `systematic-debugging → TDD → verification-before-completion`. Brainstorming is overkill for a reproducible bug — skip to systematic-debugging.
 
 ---
@@ -337,7 +334,7 @@ Announce explicitly to the designer: "Q<n> was previously locked as <old>; chang
 
 **Documentation:**
 
-- Write the validated design (spec) to `docs/specs/YYYY-MM-DD-<topic>-design.md` (SoG path — NOT `docs/superpowers/specs/`)
+- Write the validated design (spec) to `docs/specs/YYYY-MM-DD-<topic>-design.md` (project path — NOT `docs/superpowers/specs/`)
 - Use elements-of-style:writing-clearly-and-concisely skill if available
 - Commit the design document to git
 
@@ -393,7 +390,7 @@ If they agree to the companion, read the detailed guide before proceeding:
 
 ---
 
-## Reference files (Sons of Gilgamesh paths)
+## Reference files (project paths)
 
 - Project conventions live in [`CLAUDE.md`](../../../CLAUDE.md) → "Spec / Plan / ADR path conventions" section.
 - Skills catalogue: [`docs/skills-index.md`](../../../docs/skills-index.md).
@@ -401,5 +398,3 @@ If they agree to the companion, read the detailed guide before proceeding:
 - Specs folder: [`docs/specs/`](../../../docs/specs/).
 - ADR folder + template: [`docs/adr/`](../../../docs/adr/).
 - Plans folder: [`docs/plans/`](../../../docs/plans/).
-- Vanilla backup (pre-ShiningPlague): [`docs/vanilla-backups/2026-05-15/brainstorming/SKILL.md`](../../../docs/vanilla-backups/2026-05-15/brainstorming/SKILL.md).
-- Plugin-namespace fallback (vanilla, untouched): fire `/superpowers:brainstorming` to load the obra/superpowers original via plugin namespace.

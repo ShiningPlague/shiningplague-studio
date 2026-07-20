@@ -1,23 +1,21 @@
 ---
 name: code-review
-description: "Use after implementing a feature, fixing a bug, or completing a plan task. Reviews code architecture, adherence to ADRs and control manifest, coding standards, and Godot patterns. Fires after /dev-story or /executing-plans completes. ShiningPlague-adopted (Sons of Gilgamesh): full implementation with lead-programmer dispatch (LP-CODE-REVIEW gate), control-manifest cross-check, godot-gdscript-specialist consult, SoG architecture principles checklist."
+description: "Use after implementing a feature, fixing a bug, or completing a plan task. Reviews code architecture, adherence to ADRs and control manifest, coding standards, and Godot patterns. Fires after /dev-story or /executing-plans completes. ShiningPlague-adopted: full implementation with lead-programmer dispatch (LP-CODE-REVIEW gate), control-manifest cross-check, godot-gdscript-specialist consult, architecture principles checklist."
 metadata:
   origin: Donchitos
   origin_url: https://github.com/Donchitos/Claude-Code-Game-Studios
-  adopted_by: ShiningPlague (Sons of Gilgamesh)
-  adopted_date: 2026-05-15
-  vanilla_backup: docs/vanilla-backups/2026-05-15/code-review/SKILL.md
+  adopted_by: ShiningPlague
   enhancements:
     - lead-programmer dispatch with LP-CODE-REVIEW gate
-    - Control manifest cross-check (55 rules at docs/architecture/control-manifest.md)
-    - SoG architecture principles checklist (data-driven, tag-based, decomposed, modular, human-editable, action-based)
+    - Control manifest cross-check (docs/architecture/control-manifest.md)
+    - Architecture principles checklist (data-driven, tag-based, decomposed, modular, human-editable, action-based)
     - godot-gdscript-specialist dispatch for engine-specific review
     - Chain-propose to verification-before-completion + commit/push
 ---
 
 # Code Review
 
-> 🌱 **ShiningPlague-adopted (2026-05-15).** Originally Donchitos (barebones stub). Sons of Gilgamesh project adopted and enhanced. Upstream was a pointer-only file; SoG version is the full implementation — director-gate dispatch, control-manifest cross-check, engine-specialist consult. Vanilla backup: `docs/vanilla-backups/2026-05-15/code-review/`.
+> 🌱 **ShiningPlague-adopted.** Originally Donchitos (barebones stub); battle-tested on a shipped Godot project. Upstream was a pointer-only file; this version is the full implementation — director-gate dispatch, control-manifest cross-check, engine-specialist consult.
 
 Architectural code review that validates implementation against design decisions, coding standards, and engine-specific patterns.
 
@@ -25,7 +23,7 @@ Architectural code review that validates implementation against design decisions
 
 - **Changed files** — `git diff` or explicit file list
 - **Governing ADR(s)** — from `docs/adr/` (if the feature has one)
-- **Control manifest** — `docs/architecture/control-manifest.md` (55 rules)
+- **Control manifest** — `docs/architecture/control-manifest.md`
 
 ## Procedure
 
@@ -70,7 +68,7 @@ After APPROVE → propose `/verification-before-completion` if not yet run.
 After APPROVE → propose commit + push (with drafted commit message).
 After CONCERNS/REJECT → revise the code, then re-run `/code-review`.
 
-## SoG Paths
+## Project Paths
 
 - Source: `src/systems/`, `src/ui/`, `src/autoloads/`
 - Scenes: `scenes/`

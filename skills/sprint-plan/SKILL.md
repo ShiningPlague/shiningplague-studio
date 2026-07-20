@@ -1,18 +1,16 @@
 ---
 name: sprint-plan
-description: "Use when planning a new sprint, reviewing sprint progress, or when the designer says 'plan the next sprint', 'what should we work on next', or 'sprint status'. Creates or updates sprint plans in production/sprints/. ShiningPlague-adopted (Sons of Gilgamesh): full implementation with modes (new/status/update), capacity check (40h/sprint solo dev), producer PR-SPRINT gate, sprint-status.yaml integration."
+description: "Use when planning a new sprint, reviewing sprint progress, or when the designer says 'plan the next sprint', 'what should we work on next', or 'sprint status'. Creates or updates sprint plans in production/sprints/. ShiningPlague-adopted: full implementation with modes (new/status/update), capacity check (40h/sprint solo dev), producer PR-SPRINT gate, sprint-status.yaml integration."
 user-invocable: true
 allowed-tools: Read, Glob, Grep, Write, Edit, Agent
 argument-hint: "[new | status | update]"
 metadata:
   origin: Donchitos
   origin_url: https://github.com/Donchitos/Claude-Code-Game-Studios
-  adopted_by: ShiningPlague (Sons of Gilgamesh)
-  adopted_date: 2026-05-15
-  vanilla_backup: docs/vanilla-backups/2026-05-15/sprint-plan/SKILL.md
+  adopted_by: ShiningPlague
   enhancements:
     - Modes: new / status / update / no-arg auto-detect
-    - SoG candidate sources (specs + plans + next_session_priorities + bugs)
+    - Project candidate sources (specs + plans + next_session_priorities + bugs)
     - Solo dev capacity (40h, 8-12 items, 20% buffer)
     - Producer PR-SPRINT gate dispatch
     - sprint-status.yaml lifecycle integration
@@ -21,7 +19,7 @@ metadata:
 
 # Sprint Plan — Sprint Creation and Tracking
 
-> 🌱 **ShiningPlague-adopted (2026-05-15).** Originally Donchitos (barebones stub). Sons of Gilgamesh project adopted and enhanced. Upstream was a pointer-only file; SoG version is the full implementation — sprint creation, status report, update mode, producer gate, capacity check. Vanilla backup: `docs/vanilla-backups/2026-05-15/sprint-plan/`.
+> 🌱 **ShiningPlague-adopted.** Originally Donchitos (barebones stub); battle-tested on a shipped Godot project. Upstream was a pointer-only file; this version is the full implementation — sprint creation, status report, update mode, producer gate, capacity check.
 
 Creates new sprint plans from the story/spec backlog, tracks progress, and manages sprint lifecycle. Dispatches producer agent for feasibility review.
 
@@ -42,10 +40,10 @@ Read silently:
 3. `data/_schemas/system_registry.json` → `next_session_priorities` — designer's priorities
 4. `data/_schemas/dev_diary.json` → latest entry → `next` — immediate next actions
 5. Glob `production/epics/**/*.md` — stories (if epic/story workflow adopted)
-6. Glob `docs/specs/*.md` — active specs (current SoG workflow)
+6. Glob `docs/specs/*.md` — active specs (specs/plans workflow)
 7. Glob `docs/plans/*.md` — active plans
 
-**SoG note:** Currently uses specs/plans workflow, not epics/stories. Sprint plans can reference either. When epic/story workflow is adopted, this skill reads from both.
+**Workflow note:** if the project uses the specs/plans workflow rather than epics/stories, sprint plans can reference either. When the epic/story workflow is adopted, this skill reads from both.
 
 ---
 

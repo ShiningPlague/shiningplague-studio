@@ -48,11 +48,11 @@ You do not need to read every doc before acting. Match the question to ONE row, 
 | `test-driven-development` | Before writing implementation code. |
 | `systematic-debugging` | IMMEDIATELY on any bug / hang / crash / wrong-output report, OR before asking someone to run a manual test. Phase 1 evidence-gathering FIRST — no fix attempts before that. |
 | `verification-before-completion` | Before ANY "done / fixed / passing" claim, before commits, before PRs. Run actual verification commands; cite the output. |
-| `{{ENGINE}} skill` | When editing engine files (scripts, scenes, resources, shaders), creating an autoload/scene, or authoring a spec that will produce such files. <!-- e.g. anthropic-skills:godot, anthropic-skills:unity-development --> |
+| `godot-engine` | When editing engine files (scripts, scenes, resources, shaders), creating an autoload/scene, or authoring a spec that will produce such files. (bundled; anthropic-skills plugin = optional upgrade) <!-- Non-Godot project: swap this row for the matching engine-pack skill --> |
 | `session-close` | On ANY session-end signal ("wrap up", "we're done", "close session"), OR after 5+ commits without a sync. MUST fire before the session ends. |
 | `writing-skills` | Before editing or creating any `SKILL.md` file. Self-check before any Write/Edit on a SKILL.md path: did `writing-skills` fire this turn? If not, fire it FIRST. |
 
-**Failure-mode enforcement:** claiming done without `verification-before-completion`, proposing a fix without `systematic-debugging` Phase 1, or touching an engine file without the `{{ENGINE}}` skill primed are all protocol violations. Push back on them.
+**Failure-mode enforcement:** claiming done without `verification-before-completion`, proposing a fix without `systematic-debugging` Phase 1, or touching an engine file without `godot-engine` (or your engine-pack skill) primed are all protocol violations. Push back on them.
 
 ---
 

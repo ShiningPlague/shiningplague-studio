@@ -1,6 +1,6 @@
 ---
 name: create-stories
-description: "Break a single epic into implementable story files. Reads the epic, its GDD, governing ADRs, and control manifest. Each story embeds its GDD requirement TR-ID, ADR guidance, acceptance criteria, story type, and test evidence path. Run after /create-epics for each epic. ShiningPlague-adopted (Sons of Gilgamesh): SoG paths (docs/gdd/ + docs/adr/), stories live at production/epics/<slug>/, qa-lead embeds test cases."
+description: "Break a single epic into implementable story files. Reads the epic, its GDD, governing ADRs, and control manifest. Each story embeds its GDD requirement TR-ID, ADR guidance, acceptance criteria, story type, and test evidence path. Run after /create-epics for each epic. ShiningPlague-adopted: project paths (docs/gdd/ + docs/adr/), stories live at production/epics/<slug>/, qa-lead embeds test cases."
 argument-hint: "[epic-slug | epic-path] [--review full|lean|solo]"
 user-invocable: true
 allowed-tools: Read, Glob, Grep, Write, Task, AskUserQuestion
@@ -8,20 +8,17 @@ agent: lead-programmer
 metadata:
   origin: Donchitos
   origin_url: https://github.com/Donchitos/Claude-Code-Game-Studios
-  adopted_by: ShiningPlague (Sons of Gilgamesh)
-  adopted_date: 2026-05-15
-  vanilla_backup: docs/vanilla-backups/2026-05-15/create-stories/SKILL.md
+  adopted_by: ShiningPlague
   enhancements:
-    - SoG GDD path (docs/gdd/[system].md + docs/GDD v.2.3.md)
-    - SoG ADR path (docs/adr/NNN-*.md)
+    - Project GDD path (docs/gdd/[system].md + {{GDD_PATH}})
+    - Project ADR path (docs/adr/NNN-*.md)
     - Control manifest at docs/architecture/control-manifest.md
     - qa-lead embeds test case specs into story `## QA Test Cases` section
-    - SoG context note (stories not yet created — small path used to date)
 ---
 
 # Create Stories
 
-> 🌱 **ShiningPlague-adopted (2026-05-15).** Originally Donchitos. Sons of Gilgamesh project adopted and enhanced. Upstream procedure preserved + SoG path corrections. Vanilla backup: `docs/vanilla-backups/2026-05-15/create-stories/`.
+> 🌱 **ShiningPlague-adopted.** Originally Donchitos; battle-tested on a shipped Godot project. Upstream procedure preserved + project path corrections.
 
 A story is a single implementable behaviour — small enough to complete in one focused session, self-contained, and fully traceable to a GDD requirement and an ADR decision. Stories are what developers pick up. Epics are what architects define.
 
@@ -32,19 +29,16 @@ A story is a single implementable behaviour — small enough to complete in one 
 **Previous step:** `/create-epics [system]`
 **Next step:** `/story-readiness [story-path]` then `/dev-story [story-path]`
 
-## SoG Path Reference
+## Project Paths
 
-| Donchitos vanilla path | SoG path |
+| Donchitos vanilla path | Project path |
 |---|---|
-| `design/gdd/[filename].md` | `docs/gdd/[system].md` or `docs/GDD v.2.3.md` |
+| `design/gdd/[filename].md` | `docs/gdd/[system].md` or `{{GDD_PATH}}` |
 | ADRs | `docs/adr/NNN-*.md` |
 | Control manifest | `docs/architecture/control-manifest.md` |
 | Story output | `production/epics/[epic-slug]/` |
 
-## SoG Context
-
-- Stories haven't been created yet (no `production/stories/`)
-- Project has been using small path (spec → ADR → plan → execute) — stories activate when large path needed
+Note: if no stories exist yet, that's normal — the small path (spec → ADR → plan → execute) covers small work; stories activate when the large path is needed.
 
 ---
 
@@ -63,7 +57,7 @@ Extract `--review [full|lean|solo]` if present. If not, read `production/review-
 Read in full:
 
 - `production/epics/[epic-slug]/EPIC.md` — overview, governing ADRs, GDD requirements
-- The epic's GDD (`docs/gdd/[system].md` or `docs/GDD v.2.3.md` section)
+- The epic's GDD (`docs/gdd/[system].md` or `{{GDD_PATH}}` section)
 - All governing ADRs from `docs/adr/` — Decision, Implementation Guidelines, Engine Compatibility, Engine Notes
 - `docs/architecture/control-manifest.md` — rules for this epic's layer; note Manifest Version date
 - `docs/architecture/tr-registry.yaml` — TR-IDs for this system
@@ -192,7 +186,7 @@ For each story, write `production/epics/[epic-slug]/story-[NNN]-[slug].md`:
 
 ## Context
 
-**GDD**: `docs/gdd/[system].md` (or `docs/GDD v.2.3.md` §[section])
+**GDD**: `docs/gdd/[system].md` (or `{{GDD_PATH}}` §[section])
 **Requirement**: `TR-[system]-NNN`
 *(Requirement text in `docs/architecture/tr-registry.yaml` — read fresh at review time)*
 

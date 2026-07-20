@@ -46,7 +46,7 @@ Requires `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` environment variable.
 
 **Current status**: Not yet used in this project. Document usage here when first adopted.
 
-## Workstream Ownership Rules (added 2026-05-11)
+## Workstream Ownership Rules
 
 Each workstream has an OWNER — a team orchestrator skill that dispatches agents
 and manages workstream state. See `workflow-catalog.yaml § workstreams` for the

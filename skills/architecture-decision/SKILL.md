@@ -1,15 +1,13 @@
 ---
 name: architecture-decision
-description: "Use when locking a technical or design decision into an ADR. Fires after /brainstorming or /design-review when decisions need to be formally recorded. Batch 2-3 decisions per ADR. ShiningPlague-adopted (Sons of Gilgamesh): full implementation with SoG ADR template (Live Sources table), technical-director dispatch with TD-ADR gate, registry + control-manifest + tr-registry update pipeline."
+description: "Use when locking a technical or design decision into an ADR. Fires after /brainstorming or /design-review when decisions need to be formally recorded. Batch 2-3 decisions per ADR. ShiningPlague-adopted: full implementation with studio ADR template (Live Sources table), technical-director dispatch with TD-ADR gate, registry + control-manifest + tr-registry update pipeline."
 metadata:
   origin: Donchitos
   origin_url: https://github.com/Donchitos/Claude-Code-Game-Studios
-  adopted_by: ShiningPlague (Sons of Gilgamesh)
-  adopted_date: 2026-05-15
-  vanilla_backup: docs/vanilla-backups/2026-05-15/architecture-decision/SKILL.md
+  adopted_by: ShiningPlague
   enhancements:
-    - SoG + Donchitos merged ADR template at docs/adr/TEMPLATE.md with Live Sources table
-    - SoG paths (docs/adr/NNN-<slug>.md not docs/architecture/adr-*)
+    - Studio + Donchitos merged ADR template at docs/adr/TEMPLATE.md with Live Sources table
+    - Project paths (docs/adr/NNN-<slug>.md not docs/architecture/adr-*)
     - technical-director dispatch with TD-ADR gate
     - Batch rule (2-3 related decisions per ADR)
     - Pipeline: ADR Accept → control-manifest update → registry sync → tr-registry mark
@@ -18,9 +16,9 @@ metadata:
 
 # Architecture Decision
 
-> 🌱 **ShiningPlague-adopted (2026-05-15).** Originally Donchitos (barebones stub). Sons of Gilgamesh project adopted and enhanced. Upstream was a pointer-only file; SoG version is the full implementation — ADR authoring with Live Sources, batch rule, director gate, downstream updates. Vanilla backup: `docs/vanilla-backups/2026-05-15/architecture-decision/`.
+> 🌱 **ShiningPlague-adopted.** Originally Donchitos (barebones stub); battle-tested on a shipped Godot project. Upstream was a pointer-only file; the studio version is the full implementation — ADR authoring with Live Sources, batch rule, director gate, downstream updates.
 
-Guided ADR authoring using the SoG + Donchitos merged template at `docs/adr/TEMPLATE.md`.
+Guided ADR authoring using the studio + Donchitos merged template at `docs/adr/TEMPLATE.md`.
 
 ## When to Fire
 
@@ -38,7 +36,7 @@ Guided ADR authoring using the SoG + Donchitos merged template at `docs/adr/TEMP
 
 ### 1. Read Context
 - Read `docs/adr/TEMPLATE.md` for the format
-- Read existing ADRs at `docs/adr/` (currently 001, 002, 003 — all combat)
+- Read existing ADRs at `docs/adr/`
 - Read the source spec for decisions being locked
 - Read `docs/architecture/control-manifest.md` to check for conflicts
 
@@ -46,7 +44,7 @@ Guided ADR authoring using the SoG + Donchitos merged template at `docs/adr/TEMP
 Next number = highest existing + 1. Naming: `docs/adr/NNN-<slug>.md`.
 
 ### 3. Draft ADR Sections
-Using the template (Donchitos + SoG merged format with Live Sources):
+Using the template (Donchitos + studio merged format with Live Sources):
 - **Title + Status** (Proposed)
 - **Context** — what problem, what constraints
 - **Decision** — what we chose and why
@@ -75,11 +73,11 @@ After Accept → propose `/verification-before-completion` before any "ADR shipp
 
 ## Batch rule
 
-One ADR covers 2–3 related decisions from one design phase. Don't write one ADR per decision. Example for the card system:
-- `001-card-schema-and-pools.md` covers unified schema + archetype-recipe pool model + deck-composition policy.
-- `002-damage-pipeline-and-effects.md` (later) covers trait stacking + status effect architecture + DamageCalculator extraction.
+One ADR covers 2–3 related decisions from one design phase. Don't write one ADR per decision. Example for an inventory system:
+- `001-inventory-schema-and-slots.md` covers unified item schema + slot-capacity model + stacking policy.
+- `002-loot-pipeline-and-effects.md` (later) covers drop-table resolution + item-effect architecture + InventorySystem autoload extraction.
 
-## SoG Paths
+## Project Paths
 - ADRs: `docs/adr/NNN-<slug>.md` (NOT `docs/architecture/adr-*`)
 - Template: `docs/adr/TEMPLATE.md`
 - Control manifest: `docs/architecture/control-manifest.md`

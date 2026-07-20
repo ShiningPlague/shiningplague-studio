@@ -1,22 +1,20 @@
 ---
 name: scope-check
-description: "Use during implementation to detect scope creep — when work drifts beyond the current spec/plan/story. Fires during sprints, after plan tasks, or when the designer suspects deviation. Compares current work against the stated scope. ShiningPlague-adopted (Sons of Gilgamesh): full implementation with priority-ordered scope document lookup (plan / spec / story / workstream) and 20% drift heuristic."
+description: "Use during implementation to detect scope creep — when work drifts beyond the current spec/plan/story. Fires during sprints, after plan tasks, or when the designer suspects deviation. Compares current work against the stated scope. ShiningPlague-adopted: full implementation with priority-ordered scope document lookup (plan / spec / story / workstream) and 20% drift heuristic."
 metadata:
   origin: Donchitos
   origin_url: https://github.com/Donchitos/Claude-Code-Game-Studios
-  adopted_by: ShiningPlague (Sons of Gilgamesh)
-  adopted_date: 2026-05-15
-  vanilla_backup: docs/vanilla-backups/2026-05-15/scope-check/SKILL.md
+  adopted_by: ShiningPlague
   enhancements:
     - Priority-ordered scope document lookup
     - 20% drift heuristic for flagging
-    - SoG paths (docs/specs/, docs/plans/, production/workstreams/)
+    - Project paths (docs/specs/, docs/plans/, production/workstreams/)
     - Park-in-live_test_notes proposal for parked work
 ---
 
 # Scope Check
 
-> 🌱 **ShiningPlague-adopted (2026-05-15).** Originally Donchitos (barebones stub). Sons of Gilgamesh project adopted and enhanced. Upstream was a pointer-only file; SoG version is the full implementation — priority-ordered scope doc lookup, 20% drift heuristic, park-or-expand proposal. Vanilla backup: `docs/vanilla-backups/2026-05-15/scope-check/`.
+> 🌱 **ShiningPlague-adopted.** Originally Donchitos (barebones stub); battle-tested on a shipped Godot project. Upstream was a pointer-only file; this version is the full implementation — priority-ordered scope doc lookup, 20% drift heuristic, park-or-expand proposal.
 
 Detect scope deviation by comparing current work against the governing spec, plan, or story.
 
@@ -73,7 +71,7 @@ Propose to designer:
 - Or expand scope (with explicit acknowledgment)
 - Or revert and refocus
 
-## SoG Paths
+## Project Paths
 - Specs: `docs/specs/`
 - Plans: `docs/plans/`
 - Workstreams: `production/workstreams/`

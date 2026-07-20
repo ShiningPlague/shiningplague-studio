@@ -1,25 +1,22 @@
 ---
 name: setup-engine
-description: "Use when setting up the engine for a new project or reconfiguring engine settings. Populates technical-preferences.md, validates project.godot, and ensures engine reference docs exist. Already done for SoG — useful for future projects. ShiningPlague-adopted (Sons of Gilgamesh): full implementation with Godot 4.6.1 validation, autoload registry coverage check, status note for completed SoG setup."
+description: "Use when setting up the engine for a new project or reconfiguring engine settings. Populates technical-preferences.md, validates project.godot, and ensures engine reference docs exist. ShiningPlague-adopted: full implementation with engine-version validation and autoload registry coverage check."
 metadata:
   origin: Donchitos
   origin_url: https://github.com/Donchitos/Claude-Code-Game-Studios
-  adopted_by: ShiningPlague (Sons of Gilgamesh)
-  adopted_date: 2026-05-15
-  vanilla_backup: docs/vanilla-backups/2026-05-15/setup-engine/SKILL.md
+  adopted_by: ShiningPlague
   enhancements:
-    - Godot 4.6.1 specific validation (project.godot config/features)
+    - Engine-version validation for {{ENGINE_VERSION}} (project.godot config/features)
     - technical-preferences.md field completeness check
     - Project structure validation (src/, scenes/, data/, etc.)
     - Autoload registry coverage check (cross-ref with system_registry.json)
-    - Status note for completed SoG setup
 ---
 
 # Setup Engine
 
-> 🌱 **ShiningPlague-adopted (2026-05-15).** Originally Donchitos (barebones stub). Sons of Gilgamesh project adopted and enhanced. Upstream was a pointer-only file; SoG version is the full implementation — engine version validation, technical-preferences.md check, project structure check, autoload coverage. Vanilla backup: `docs/vanilla-backups/2026-05-15/setup-engine/`.
+> 🌱 **ShiningPlague-adopted.** Originally Donchitos (barebones stub); battle-tested on a shipped Godot project. Upstream was a pointer-only file; this version is the full implementation — engine version validation, technical-preferences.md check, project structure check, autoload coverage.
 
-Engine configuration and validation. For SoG, this was completed manually (Godot 4.6.1, technical-preferences.md populated 2026-05-09). This skill formalises the process for reproducibility.
+Engine configuration and validation for {{ENGINE_VERSION}}. Run at project setup; this skill formalises the process for reproducibility.
 
 ## Procedure
 
@@ -54,5 +51,5 @@ Check that the expected directory structure exists:
 ### 5. Output
 Report: engine health status, any mismatches or missing config.
 
-## SoG Status
-Already complete. Re-run only if engine version changes or project.godot drifts.
+## Re-Run Guidance
+After initial setup, re-run only if the engine version changes or project.godot drifts.

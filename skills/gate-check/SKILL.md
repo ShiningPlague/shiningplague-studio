@@ -1,18 +1,16 @@
 ---
 name: gate-check
-description: "Use when validating readiness to advance to the next project phase, before major milestones, after completing a full sprint or epic, or when the designer asks 'are we ready to move on?' Spawns all 4 director agents in parallel for independent verdicts. ShiningPlague-adopted (Sons of Gilgamesh): SoG paths (docs/adr/ + docs/GDD v.2.3.md + data/_schemas/system_registry.json), production phase context, review-mode (full/lean/solo) integration."
+description: "Use when validating readiness to advance to the next project phase, before major milestones, after completing a full sprint or epic, or when the designer asks 'are we ready to move on?' Spawns all 4 director agents in parallel for independent verdicts. ShiningPlague-adopted: project paths (docs/adr/ + {{GDD_PATH}} + data/_schemas/system_registry.json), review-mode (full/lean/solo) integration."
 user-invocable: true
 allowed-tools: Read, Glob, Grep, Write, Edit, Bash, Agent
 argument-hint: "[target-phase]"
 metadata:
   origin: Donchitos
   origin_url: https://github.com/Donchitos/Claude-Code-Game-Studios
-  adopted_by: ShiningPlague (Sons of Gilgamesh)
-  adopted_date: 2026-05-15
-  vanilla_backup: docs/vanilla-backups/2026-05-15/gate-check/SKILL.md
+  adopted_by: ShiningPlague
   enhancements:
     - Parallel dispatch of 4 directors (creative/technical/producer/art)
-    - SoG path adaptations (docs/adr/, docs/GDD v.2.3.md, system_registry.json)
+    - Project path adaptations (docs/adr/, {{GDD_PATH}}, system_registry.json)
     - Review-mode integration (full/lean/solo behaviour)
     - Composite verdict escalation rules
     - Stage.txt write on PASS
@@ -20,7 +18,7 @@ metadata:
 
 # Gate Check — Phase Transition Validation
 
-> 🌱 **ShiningPlague-adopted (2026-05-15).** Originally Donchitos (barebones stub). Sons of Gilgamesh project adopted and enhanced. Upstream was a pointer-only file; SoG version is the full implementation — parallel director dispatch, artifact completeness check, composite verdict, stage.txt write. Vanilla backup: `docs/vanilla-backups/2026-05-15/gate-check/`.
+> 🌱 **ShiningPlague-adopted.** Originally Donchitos (barebones stub); battle-tested on a shipped Godot project. Upstream was a pointer-only file; the studio version is the full implementation — parallel director dispatch, artifact completeness check, composite verdict, stage.txt write.
 
 Validates project readiness to advance from one phase to the next by spawning 4 director agents in parallel, each reviewing from their domain. Produces a composite PASS / CONCERNS / FAIL verdict.
 
@@ -33,8 +31,6 @@ Concept → Systems Design → Technical Setup → Pre-Production → Production
 **If argument provided:** use it as the target phase.
 
 **If no argument:** read `production/stage.txt` for current phase, then propose next phase from sequence. Confirm with designer.
-
-**SoG-specific:** project is in `production` phase. Most gate-checks will be Production → Polish or sprint-internal quality gates.
 
 ---
 
@@ -49,13 +45,13 @@ Read silently before presenting anything:
 5. `docs/architecture/control-manifest.md` — programmer rules compliance
 6. `data/_schemas/system_registry.json` — authoritative system states
 7. Glob `docs/adr/*.md` — all ADRs and statuses
-8. Glob `docs/gdd/*.md` + `docs/GDD v.2.3.md` — all GDD artifacts
+8. Glob `docs/gdd/*.md` + `{{GDD_PATH}}` — all GDD artifacts
 9. Glob `production/sprints/sprint-*.md` — sprint artifacts (if any)
 10. Glob `production/playtests/*.md` — playtest artifacts (if any)
 
-**SoG path adaptations:**
+**Project path adaptations:**
 - ADRs at `docs/adr/` (NOT `docs/architecture/adr-*.md`)
-- Master GDD at `docs/GDD v.2.3.md` (not split per-system yet)
+- Master GDD at `{{GDD_PATH}}` (if not split per-system yet)
 - System status from `data/_schemas/system_registry.json` (authoritative)
 - Design specs at `docs/specs/`, plans at `docs/plans/`
 
@@ -64,7 +60,7 @@ Read silently before presenting anything:
 ## Phase 3: Resolve Review Mode
 
 Read `production/review-mode.txt`. Apply:
-- **full** — spawn all 4 director gates (default for SoG)
+- **full** — spawn all 4 director gates (default)
 - **lean** — spawn PHASE-GATEs only (this IS a phase gate, so all 4 run anyway)
 - **solo** — skip all gates, just do artifact checks, report directly
 
@@ -79,7 +75,7 @@ Spawn ALL 4 director agents simultaneously via Agent tool. Issue all calls befor
 Reference: `.claude/docs/director-gates.md` for full gate prompts.
 
 ### Gate 1: CD-PHASE-GATE (creative-director)
-Pass: target phase, all artifact paths, game pillars from GDD v.2.3 §1.5, core fantasy.
+Pass: target phase, all artifact paths, game pillars from {{GDD_PATH}} pillars section, core fantasy.
 Verdict: READY / CONCERNS / NOT READY
 
 ### Gate 2: TD-PHASE-GATE (technical-director)

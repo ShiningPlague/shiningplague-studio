@@ -1,14 +1,14 @@
 # Skills Protocol — Extended Detail
 
-> 🌱 **ShiningPlague-adopted (2026-05-15):** Originally Donchitos framework reference doc. Extended with Sons of Gilgamesh additions — canonical-flow driving examples (moved from CLAUDE.md 2026-05-15), chain-propose full transition table, conditional auto-promotion rules, subagent tier overrides, dev branches policy. Original Donchitos content preserved; SoG additions explicitly labeled.
+> 🌱 **ShiningPlague-adopted:** Originally Donchitos framework reference doc. Extended with studio additions — canonical-flow driving examples (moved out of CLAUDE.md), chain-propose full transition table, conditional auto-promotion rules, subagent tier overrides, dev branches policy. Original Donchitos content preserved; studio additions explicitly labeled.
 
-Slim canonical version: [CLAUDE.md § Skills Protocol](../../CLAUDE.md). This file holds rarely-needed detail extracted from CLAUDE.md on 2026-04-29 to keep the entry-point file lean.
+Slim canonical version: [CLAUDE.md § Skills Protocol](../../CLAUDE.md). This file holds rarely-needed detail extracted from CLAUDE.md to keep the entry-point file lean.
 
 ---
 
 ## Conditional auto-promotion (🟢 → 🔒 with conditions)
 
-Some skills are 🟢 propose-first by default but auto-fire 🔒 when a specific condition is met. Designer instruction 2026-04-29: *"yes to 3 promote select with conditions."*
+Some skills are 🟢 propose-first by default but auto-fire 🔒 when a specific condition is met — hard-won rule: selective promotion with explicit conditions beats both always-ask and always-fire.
 
 | Skill | Default | Auto-fires (🔒) when... |
 |---|---|---|
@@ -23,7 +23,7 @@ For these, no announce-and-wait — fire on condition match. Voice still announc
 
 ## Chain-propose rule — full transition table
 
-Designer instruction 2026-04-28: *"i wont remember to manually fire any of these, you should always be coded to ask if you feel you dont advise it to be a toolchain auto fire."*
+Hard-won rule: the designer will not remember to manually fire follow-on skills — the studio lead must always propose the next step in the chain (or auto-fire it where marked).
 
 At the END of every skill that closes a phase, I MUST propose the natural follow-on:
 
@@ -51,7 +51,7 @@ At the END of every skill that closes a phase, I MUST propose the natural follow
 
 ## Subagent model-tier rules (project-local override)
 
-Designer instruction 2026-04-23: when dispatching subagents via the `Agent` tool, **prioritise quality over cost**. The user-level skill's "use the cheapest model that fits" guidance is OVERRIDDEN here because a Haiku subagent shipped 4 bugs in one task (including a critical infinite loop) that was only caught on Sonnet review.
+Hard-won rule: when dispatching subagents via the `Agent` tool, **prioritise quality over cost**. The generic "use the cheapest model that fits" guidance is OVERRIDDEN here — low-tier subagents have shipped critical bugs on code tasks that only surfaced under stronger-model review.
 
 | Task type | Model |
 |---|---|
@@ -65,44 +65,41 @@ Designer instruction 2026-04-23: when dispatching subagents via the `Agent` tool
 | Docs sync / devlog writes | **Sonnet** |
 | **Haiku** | phased out — do not use unless triaging a trivial one-shot structural check |
 
-Full detail: [docs/workflow.md § Subagent dispatch](../../docs/workflow.md).
-
-**Donchitos agent frontmatter note (2026-04-24):** the 49 subagent definitions at `.claude/agents/*.md` were normalised to `model: opus` in their YAML frontmatter (commit `eea57e4`). Dispatching any specialist via the `Agent` tool picks Opus by default — no override needed for the project-standard case. Passing `model: "opus"` explicitly is fine (belt-and-suspenders, costs nothing). For a cheaper model (data authoring, docs sync per the tier table above), pass `model: "sonnet"` explicitly — that override takes precedence over the frontmatter.
+**Donchitos agent frontmatter note:** the subagent definitions at `.claude/agents/*.md` are normalised to `model: opus` in their YAML frontmatter. Dispatching any specialist via the `Agent` tool picks Opus by default — no override needed for the project-standard case. Passing `model: "opus"` explicitly is fine (belt-and-suspenders, costs nothing). For a cheaper model (data authoring, docs sync per the tier table above), pass `model: "sonnet"` explicitly — that override takes precedence over the frontmatter.
 
 ---
 
-## Dev branches policy (2026-04-28)
+## Dev branches policy
 
 We work on `master` directly for solo-dev efficiency under the launch-and-iterate constraint. Feature branches add ceremony that usually doesn't pay off for one developer + AI. Use a feature branch (via `using-git-worktrees` 🟢) when:
 - Doing a risky experiment that might be thrown away
 - Multiple parallel features in flight (rare for solo dev)
 - A refactor that needs a clean review point before merge
 
-For Step 3a we worked on master direct — that was correct. Step 3b can also be master direct unless the designer wants a clean diff for review. Default = master.
+Default = master; reach for a branch only when one of the three conditions above holds.
 
 ---
 
 ## Donchitos framework reconciliation
 
-Full Donchitos Claude-Code-Game-Studios framework is installed (`.claude/agents/`, `.claude/docs/`, `.claude/hooks/`, `.claude/rules/`, and the studio skills at project-local `.claude/skills/` — repo-canonical since the 2026-07-04b two-home separation; user level holds only personal skills). **Our project conventions remain authoritative when they conflict.** Full conflict map: [.claude/docs/donchitos-reconciliation.md](donchitos-reconciliation.md). Quick lookups:
+Full Donchitos Claude-Code-Game-Studios framework is installed (`.claude/agents/`, `.claude/docs/`, `.claude/hooks/`, `.claude/rules/`, and the studio skills at project-local `.claude/skills/` — repo-canonical under the two-home separation; user level holds only personal skills). **Our project conventions remain authoritative when they conflict.** Quick lookups:
 
-- **Workflow shape** → `docs/workflow.md` wins for the small path; Donchitos pipeline (`workflow-catalog.yaml`) is the large path
+- **Workflow shape** → your project's workflow conventions win for the small path; Donchitos pipeline (`workflow-catalog.yaml`) is the large path
 - **Directory structure** → our `docs/specs/`, `docs/adr/`, `data/`, `src/systems/` tree wins (not `design/gdd/`, `docs/architecture/`, `src/gameplay/`)
-- **Coding standards** → `.claude/rules/gameplay-code.md` (our customised) + `.claude/docs/coding-standards.md` (Donchitos default for unspecified topics)
+- **Coding standards** → `.claude/rules/gameplay-code.md` (our customised); Donchitos defaults for unspecified topics
 - **Templates** → optional starting points; our ADR template + project-local brainstorming SKILL override win for those skills
 - **Donchitos slash commands** (`/create-epics`, `/create-stories`, `/dev-story`) → use ONLY for the large path (multi-vertical, multi-week work). NOT for small ship cycles.
 - **Donchitos audit skills** (`/consistency-check`, `/review-all-gdds`, `/architecture-review`) → opt-in per task; project-local SKILL.md overrides the consistency-check
-- **Donchitos install history** → [.claude/docs/donchitos-install-history.md](donchitos-install-history.md)
 
 ---
 
 ## Expected Outcomes checkpoint (MUST be in every spec)
 
-Every spec written via `brainstorming` MUST carry an `## Expected outcomes at ship` section near the top — before Architecture details — answering: *"When this ships, what can the designer do / edit / test? What does the player see differently?"* This becomes the Phase 6 ship checklist. Mandatory template in the project-local `.claude/skills/brainstorming/SKILL.md` (ShiningPlague-adopted, repo-canonical since the 2026-07-04b two-home separation — this is the version that fires). Never create a user-level twin: Anthropic precedence (user > project) would silently shadow the project version.
+Every spec written via `brainstorming` MUST carry an `## Expected outcomes at ship` section near the top — before Architecture details — answering: *"When this ships, what can the designer do / edit / test? What does the player see differently?"* This becomes the Phase 6 ship checklist. Mandatory template in the project-local `.claude/skills/brainstorming/SKILL.md` (ShiningPlague-adopted, repo-canonical under the two-home separation — this is the version that fires). Never create a user-level twin: Anthropic precedence (user > project) would silently shadow the project version.
 
 ---
 
-## Canonical Donchitos Flow Driving — designer/studio-lead dialogue examples (SoG addition, moved from CLAUDE.md 2026-05-15)
+## Canonical Donchitos Flow Driving — designer/studio-lead dialogue examples (studio addition)
 
 The rule itself stays in [CLAUDE.md § Canonical Donchitos Flow Driving](../../CLAUDE.md). These worked examples illustrate the rule for new agents who need pattern reference.
 

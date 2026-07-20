@@ -2,20 +2,19 @@
 name: team-marketing
 description: "Use when working on store pages, community management, social media strategy, press kits, trailer planning, or player acquisition. Routes to the correct workflow pattern and executes step-by-step."
 metadata:
-  origin: ShiningPlague (Sons of Gilgamesh)
-  adopted_by: ShiningPlague (Sons of Gilgamesh)
-  adopted_date: 2026-05-15
+  origin: ShiningPlague
+  adopted_by: ShiningPlague
   vanilla_backup: none (originally authored locally — no upstream)
   enhancements:
     - Authored locally as team-orchestrator for marketing workstream
     - community-manager + producer dispatch
     - Director gate (CD-PILLARS — marketing must represent identity accurately)
-    - SoG marketing context (solo indie, itch.io, devlogs, launch-and-iterate constraint)
+    - Project marketing-context placeholder block (indie defaults)
 ---
 
 # Team Marketing
 
-> 🌱 **ShiningPlague-authored (2026-05-15).** Originally authored for the Sons of Gilgamesh project — no upstream version exists. Team-orchestrator skill for the marketing workstream. Promoted to user-level 2026-05-15 for portability.
+> 🌱 **ShiningPlague-authored.** No upstream version exists. Team-orchestrator skill for the marketing workstream.
 
 **Execution protocol:** `.claude/docs/templates/team-orchestrator.md`
 **Workstream state:** `production/workstreams/marketing.md`
@@ -44,9 +43,11 @@ metadata:
 |---|---|---|
 | CD-PILLARS | Marketing must represent the game's identity accurately | creative-director |
 
-## SoG-Specific Context
+## Project-Specific Context
 
-- Solo indie dev — marketing = itch.io page, social media, devlogs
-- Market research at `docs/market-research/solo-indie-dev-2026.md`
-- Launch-and-iterate constraint: goal is testable slice, not full game
-- Designer handles art generation with AI tools
+Fill in for your project (examples):
+
+- Team shape + channels (e.g. solo indie — storefront page, social media, devlogs)
+- Market research docs, if any (e.g. `docs/market-research/`)
+- Launch strategy constraint (e.g. launch a testable slice and iterate on market signal)
+- Asset production approach (e.g. designer generates promotional art with AI tools)

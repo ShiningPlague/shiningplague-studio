@@ -1,27 +1,25 @@
 ---
 name: update
-description: Sons of Gilgamesh project-local /update procedure. Sync docs, run consistency check, write devlog + dev_diary entries, prompt to push. Fires when designer types /update OR says "update", "update docs", "log what we did", "let's update", or similar end-of-session sync intent. NOT to be confused with productivity:update (external task tracker sync — N/A for this project, scheduled to mute).
+description: Project-local /update — project state sync procedure. Sync docs, run consistency check, write {{CHANGELOG_DOC}} + dev_diary entries, prompt to push. Fires when designer types /update OR says "update", "update docs", "log what we did", "let's update", or similar end-of-session sync intent. NOT to be confused with productivity:update (external task tracker sync — N/A when no external tracker is used).
 metadata:
-  origin: ShiningPlague (Sons of Gilgamesh)
-  adopted_by: ShiningPlague (Sons of Gilgamesh)
-  adopted_date: 2026-05-15
-  vanilla_backup: none (originally authored locally — no upstream)
+  origin: ShiningPlague
+  adopted_by: ShiningPlague
   enhancements:
-    - Authored locally as project state sync procedure
-    - 11-step procedure (git scan → docs read → detect changes → consistency check gate → devlog → dev_diary → workstream → CLAUDE.md → memory → flag contradictions → push prompt)
+    - Authored in-studio as project state sync procedure
+    - 11-step procedure (git scan → docs read → detect changes → consistency check gate → changelog → dev_diary → workstream → CLAUDE.md → memory → flag contradictions → push prompt)
     - Auto-fires on major ships (spec archived / 5+ commits / infra adoption)
-    - Distinct from productivity:update (which syncs external trackers — N/A for SoG)
+    - Distinct from productivity:update (which syncs external trackers)
     - Date-accuracy check (ask designer if unsure)
     - No CHANGELOG.md — git commits are canonical changelog
 ---
 
-# Update — Sons of Gilgamesh project state sync
+# /update — project state sync
 
-> 🌱 **ShiningPlague-authored (2026-05-15).** Originally authored for the Sons of Gilgamesh project — no upstream version exists. Distinct from `productivity:update` (which is an external-tracker sync skill — N/A for this project). Promoted to user-level 2026-05-15 for portability.
+> 🌱 **ShiningPlague-authored.** Authored in-studio — no upstream version exists; battle-tested on a shipped Godot project. Distinct from `productivity:update` (which is an external-tracker sync skill).
 
-**Purpose:** end-of-session (or major-milestone) doc + state sync. Docs-only — never touches code. Captures the day's work in `devlog.md` + `dev_diary.json`, gates registry coverage, ensures the doc stack is consistent, prompts to push.
+**Purpose:** end-of-session (or major-milestone) doc + state sync. Docs-only — never touches code. Captures the day's work in `{{CHANGELOG_DOC}}` (e.g. `docs/devlog.md`) + `data/_schemas/dev_diary.json`, gates registry coverage, ensures the doc stack is consistent, prompts to push.
 
-**This is the SoG project-local skill. The user-level `productivity:update` skill is for external task-tracker sync (Asana/Linear/Jira/GitHub Issues) and is N/A for this project — should be muted via `enabledPlugins` if/when supported.**
+**This is the project-local skill. The user-level `productivity:update` skill is for external task-tracker sync (Asana/Linear/Jira/GitHub Issues) — mute it via `enabledPlugins` if the project uses no external tracker.**
 
 ---
 
@@ -47,16 +45,16 @@ Note uncommitted work and recent commits. Capture commit hashes for traceability
 ### 2. Read current docs
 
 - `docs/implementation-status.md` — per-architecture sections
-- `docs/devlog.md` — top entry for context
+- `{{CHANGELOG_DOC}}` (e.g. `docs/devlog.md`) — top entry for context
 - Memory at `~/.claude/projects/<project>/memory/` is auto-loaded
 
 ### 3. Detect changes per recent commit / uncommitted change
 
 For each:
-- **System status moved?** Update the relevant section in `implementation-status.md` (§1 World Map, §2 Combat, §3 Spawn, etc.) — "What's built / what's missing" rows + status pills.
-- **New gap / data-code mismatch?** Add to that section's **TBD** subsection. Mirror to §10 Open Questions / TBD if cross-cutting.
-- **New live source (new JSON, new dock)?** Update §⚠️ Staleness Warning live-source table at the top.
-- **Design decision worth preserving?** Add to `devlog.md`.
+- **System status moved?** Update the relevant per-system section in `implementation-status.md` — "What's built / what's missing" rows + status pills.
+- **New gap / data-code mismatch?** Add to that section's **TBD** subsection. Mirror to the doc's Open Questions / TBD section if cross-cutting.
+- **New live source (new JSON, new dock)?** Update the live-source table at the top (if the doc has one).
+- **Design decision worth preserving?** Add to `{{CHANGELOG_DOC}}`.
 - **NEVER** write into `## 📓 Designer Notes (Dev Diary Log)` — that is auto-written by the Project Dashboard Save button.
 
 ### 4. Run the consistency check (gate)
@@ -65,13 +63,13 @@ For each:
 python tools/consistency_check.py
 ```
 
-49 cross-doc checks + registry coverage check [17] + auto-bumps `last_full_audit` to today on PASS.
+Cross-doc checks + registry coverage check + auto-bumps `last_full_audit` to today on PASS.
 
-**On WARN:** fix the drift before continuing. That's the gate that prevents shipping without registry updates (the failure mode that bit Card System Steps 1, 2, 3a). If a step shipped a new autoload / addon / data category and the runner fails, you MUST add the matching `systems[] / tools[] / data[]` entry — runner won't pass otherwise.
+**On WARN:** fix the drift before continuing. That's the gate that prevents shipping without registry updates — a proven failure mode. If a step shipped a new autoload / addon / data category and the runner fails, you MUST add the matching `systems[] / tools[] / data[]` entry — runner won't pass otherwise.
 
-### 5. Append devlog entry
+### 5. Append changelog entry
 
-Top of `docs/devlog.md`. Format:
+Top of `{{CHANGELOG_DOC}}` (e.g. `docs/devlog.md`). Format:
 
 ```markdown
 ## YYYY-MM-DD — Short Title
@@ -154,9 +152,9 @@ CLAUDE.md "Auto-update dev_diary after major ship events" rule: do NOT wait for 
 
 ## Conventions
 
-- **No CHANGELOG.md** — git commits are the canonical changelog. devlog is higher-level context.
+- **No CHANGELOG.md** — git commits are the canonical changelog. `{{CHANGELOG_DOC}}` is higher-level context.
 - **Date accuracy** — if unsure of today's date (no recent system-reminder, nothing fresh in context), ask designer before writing dated entries.
-- **T10 docs-sync ritual** is the SHIP-time variant of this command (last task of every plan): archive shipped spec to `docs/z-old/specs/`, write devlog entry, backfill `dev_diary`, rotate `next_session_priorities[0]`, add registry entries for new autoloads/addons/data categories.
+- **T10 docs-sync ritual** is the SHIP-time variant of this command (last task of every plan): archive shipped spec to `docs/z-old/specs/`, write changelog entry, backfill `dev_diary`, rotate `next_session_priorities[0]`, add registry entries for new autoloads/addons/data categories.
 
 ---
 

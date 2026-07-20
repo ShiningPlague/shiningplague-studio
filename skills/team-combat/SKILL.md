@@ -1,24 +1,22 @@
 ---
 name: team-combat
-description: "Use when working on combat mechanics, card system, damage pipeline, status effects, timeline resolution, battle flow, or enemy behaviour. Routes to the correct workflow pattern and executes step-by-step. ShiningPlague-adopted (Sons of Gilgamesh): full implementation with team-orchestrator protocol, game-designer + systems-designer + gameplay-programmer dispatch, SoG combat context (3 ADRs, card schema, DamageCalculator, StatusEffectManager)."
+description: "Use when working on combat mechanics, damage pipeline, status effects, battle flow, or enemy behaviour. Routes to the correct workflow pattern and executes step-by-step. ShiningPlague-adopted: full implementation with team-orchestrator protocol, game-designer + systems-designer + gameplay-programmer dispatch, project combat-context block."
 metadata:
   origin: Donchitos
   origin_url: https://github.com/Donchitos/Claude-Code-Game-Studios
-  adopted_by: ShiningPlague (Sons of Gilgamesh)
-  adopted_date: 2026-05-15
-  vanilla_backup: docs/vanilla-backups/2026-05-15/team-combat/SKILL.md
+  adopted_by: ShiningPlague
   enhancements:
     - team-orchestrator execution protocol cross-link
     - Workstream state at production/workstreams/combat.md
     - Domain code CB
     - Agent routing table per execution-chain step
     - Director gates (CD-GDD-ALIGN, TD-ADR, TD-CODE-REVIEW, CD-PILLARS)
-    - SoG combat context (GDD v2.3 §4, roguelite timeline deck-builder)
+    - Project combat-context block ({{GDD_PATH}} combat section, combat ADRs, autoloads)
 ---
 
 # Team Combat
 
-> 🌱 **ShiningPlague-adopted (2026-05-15).** Originally Donchitos (barebones stub). Sons of Gilgamesh project adopted and enhanced. Upstream was a pointer-only file; SoG version is the full implementation — orchestration protocol, agent routing, director gates, combat context with 3 ADRs and shipped code. Vanilla backup: `docs/vanilla-backups/2026-05-15/team-combat/`.
+> 🌱 **ShiningPlague-adopted.** Originally Donchitos (barebones stub); battle-tested on a shipped Godot project. Upstream was a pointer-only file; the studio version is the full implementation — orchestration protocol, agent routing, director gates, project combat-context block.
 
 **Execution protocol:** `.claude/docs/templates/team-orchestrator.md`
 **Workstream state:** `production/workstreams/combat.md`
@@ -42,7 +40,7 @@ When the execution chain says "dispatch specialist," use these agents:
 | Build: implementation | `gameplay-programmer` | GDScript code, autoloads, scenes |
 | Build: code quality | `godot-gdscript-specialist` | Static typing, signals, performance |
 | Build: code review | `lead-programmer` | Architecture compliance, ADR adherence |
-| Content: data authoring | Direct — Monster Editor / Archetype Recipe Editor / Trait Multipliers Editor |
+| Content: data authoring | Direct — via the project's in-engine editor docks (if any) or data JSON edits |
 | Playtest: debugging | `gameplay-programmer` | Root cause via `/systematic-debugging` |
 | Playtest: test cases | `qa-tester` | Headless harnesses, regression entries |
 | Review: design review | `creative-director` | Gate CD-GDD-ALIGN |
@@ -57,13 +55,12 @@ When the execution chain says "dispatch specialist," use these agents:
 | TD-CODE-REVIEW / LP-CODE-REVIEW | After combat code ships | lead-programmer |
 | CD-PILLARS | If combat changes affect core pillars | creative-director |
 
-## SoG Combat Context
+## Project Combat Context (fill for your project)
 
-- Roguelite timeline deck-builder (GDD v2.3 §4)
-- Card schema: `data/_schemas/card_schema.json`
-- Archetype recipes: `data/cards/archetype_recipes.json`
-- Damage pipeline: `src/systems/damage_calculator.gd` (DamageCalculator autoload)
-- Trait multipliers: `data/_schemas/trait_multipliers.json` (dock-editable)
-- Status effects: `src/systems/status_effect_system.gd` (StatusEffectManager)
-- 3 ADRs: `docs/adr/001-*`, `002-*`, `003-*` (all combat)
-- Step 3b (control effects) paused since 2026-04-28
+- Combat model: [one-line summary, e.g. turn-based / real-time / hybrid] (`{{GDD_PATH}}` combat section)
+- Core combat schemas: `data/_schemas/[combat-schema].json`
+- Damage pipeline: `src/systems/[damage-system].gd` ([autoload name])
+- Tunable multipliers / curves: `data/_schemas/[tuning-file].json` (dock-editable if the project has docks)
+- Status/effect system: `src/systems/[effect-system].gd` ([autoload name])
+- Combat ADRs: list the `docs/adr/NNN-*` entries that govern combat
+- Note any paused combat work here so dispatched agents inherit it

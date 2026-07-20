@@ -2,20 +2,19 @@
 name: team-infra
 description: "Use when working on framework maintenance, hook extensions, skill authoring, editor tools, Python automation, CI pipeline, or Donchitos customization. Routes to the correct workflow pattern and executes step-by-step."
 metadata:
-  origin: ShiningPlague (Sons of Gilgamesh)
-  adopted_by: ShiningPlague (Sons of Gilgamesh)
-  adopted_date: 2026-05-15
+  origin: ShiningPlague
+  adopted_by: ShiningPlague
   vanilla_backup: none (originally authored locally — no upstream)
   enhancements:
     - Authored locally as team-orchestrator for infrastructure workstream
     - tools-programmer + devops-engineer + godot-gdscript-specialist dispatch
     - Director gate (TD-CODE-REVIEW)
-    - SoG infra context (16 hooks, 11 rules, project-local skill registry, MCP server, addons)
+    - Template infrastructure inventory (hooks, rules, skills, tools, addons)
 ---
 
 # Team Infra
 
-> 🌱 **ShiningPlague-authored (2026-05-15).** Originally authored for the Sons of Gilgamesh project — no upstream version exists. Team-orchestrator skill for the infrastructure workstream (Donchitos customization + tooling). Promoted to user-level 2026-05-15 for portability.
+> 🌱 **ShiningPlague-authored.** No upstream version exists. Team-orchestrator skill for the infrastructure workstream (framework customization + tooling).
 
 **Execution protocol:** `.claude/docs/templates/team-orchestrator.md`
 **Workstream state:** `production/workstreams/infrastructure.md`
@@ -50,12 +49,12 @@ metadata:
 
 - `.claude/docs/templates/technical-design-document.md`
 
-## SoG-Specific Context
+## Template Infrastructure Inventory
 
-- `.claude/hooks/` — 16 hooks (session-start, skill-trigger-detect, pre/post-compact, validate-commit, etc.)
-- `.claude/rules/` — 11 path-scoped rules
-- `.claude/skills/` — 13+ project-local overrides (this number grows)
+- `.claude/hooks/` — session lifecycle hooks (session-start, skill-trigger-detect, pre/post-compact, validate-commit, etc.)
+- `.claude/rules/` — path-scoped rules
+- `.claude/skills/` — the studio skill set (repo-canonical)
 - `tools/` — Python automation (consistency_check.py, check_registry_coverage.py, generate_systems_index.py, show_flags.py)
-- `addons/` — Godot editor docks (project_dashboard, monster_editor, rarity_tier_editor, etc.)
-- `server/` — MCP server (npm build when `server/src/` changes)
-- Donchitos framework lives at `.claude/docs/`, `.claude/agents/`, `.claude/skills/` (all project-local, repo-canonical; studio skills moved into `.claude/skills/` per the 2026-07-04 two-home ruling — user level holds only personal skills)
+- `addons/` — engine editor docks/plugins, if the project uses them (e.g. a project dashboard, data-editor docks)
+- `server/` — MCP server, if the project has one (rebuild when `server/src/` changes)
+- The framework lives at `.claude/docs/`, `.claude/agents/`, `.claude/skills/` (all project-local, repo-canonical). Two-home rule: studio skills live in the repo's `.claude/skills/`; user level holds only personal skills — never create a user-level twin of a project skill (precedence would silently shadow it).

@@ -5,9 +5,9 @@
 # CLAUDE.md MANDATORY DISPATCH rule, so Claude lands a fresh chat with
 # explicit dispatch guidance for what's queued.
 #
-# Closes the gap observed 2026-04-30 where the day's PM/audit work
-# was done inline because no chat-start prompt surfaced "this is
-# producer territory" ahead of time.
+# Closes an observed gap where queued PM/audit work was done inline
+# because no chat-start prompt surfaced "this is producer territory"
+# ahead of time.
 
 set -e
 

@@ -4,7 +4,7 @@ paths:
   - "src/combat/**"
 ---
 
-# Gameplay Code Rules (Sons of Gilgamesh — adapted from Donchitos)
+# Gameplay Code Rules (adapted from Donchitos)
 
 - ALL gameplay values MUST come from external config/data files (live JSONs in `data/`), NEVER hardcoded in code
 - Use delta time for ALL time-dependent calculations (frame-rate independence)

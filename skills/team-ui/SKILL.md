@@ -1,24 +1,22 @@
 ---
 name: team-ui
-description: "Use when working on UI screens, HUD layout, menus, editor docks, Project Dashboard, interaction patterns, or screen flow. Routes to the correct workflow pattern and executes step-by-step. ShiningPlague-adopted (Sons of Gilgamesh): full implementation with ux-designer + ui-programmer dispatch, SoG context (Control-node based .tscn, 5 editor docks, paged text UI spec)."
+description: "Use when working on UI screens, HUD layout, menus, editor docks, dashboards, interaction patterns, or screen flow. Routes to the correct workflow pattern and executes step-by-step. ShiningPlague-adopted: full implementation with ux-designer + ui-programmer dispatch and a project UI-context block."
 metadata:
   origin: Donchitos
   origin_url: https://github.com/Donchitos/Claude-Code-Game-Studios
-  adopted_by: ShiningPlague (Sons of Gilgamesh)
-  adopted_date: 2026-05-15
-  vanilla_backup: docs/vanilla-backups/2026-05-15/team-ui/SKILL.md
+  adopted_by: ShiningPlague
   enhancements:
     - team-orchestrator execution protocol cross-link
     - Workstream state at production/workstreams/ui-ux.md
     - Domain code UX
     - Agent routing table per execution-chain step
     - Director gates (CD-GDD-ALIGN, TD-CODE-REVIEW)
-    - SoG UI context (Control-node based, Project Dashboard dock, 5 editor docks, paged text spec)
+    - Project UI-context placeholder block
 ---
 
 # Team UI
 
-> 🌱 **ShiningPlague-adopted (2026-05-15).** Originally Donchitos (barebones stub). Sons of Gilgamesh project adopted and enhanced. Upstream was a pointer-only file; SoG version is the full implementation. Vanilla backup: `docs/vanilla-backups/2026-05-15/team-ui/`.
+> 🌱 **ShiningPlague-adopted.** Originally Donchitos (barebones stub); battle-tested on a shipped Godot project. Upstream was a pointer-only file; this version is the full implementation.
 
 **Execution protocol:** `.claude/docs/templates/team-orchestrator.md`
 **Workstream state:** `production/workstreams/ui-ux.md`
@@ -56,11 +54,12 @@ metadata:
 - `.claude/docs/templates/hud-design.md`
 - `.claude/docs/templates/interaction-pattern-library.md`
 
-## SoG-Specific Context
+## Project-Specific Context
 
-- UI is Control-node based (.tscn scenes editable in Godot, not programmatic)
-- Project Dashboard dock: `addons/project_dashboard/`
-- Editor docks: Monster Editor, Rarity Tier Editor, Location Graph Editor, Archetype Recipe Editor, Trait Multipliers Editor
-- Main scenes: `scenes/ui/main_menu.tscn`, `scenes/map/map_screen.tscn`
-- Design spec reference: see memory file `reference_ui_design_spec.md`
-- Paged text (not scroll), anchored choices, stats strip
+Fill in for your project (examples):
+
+- UI approach (e.g. Control-node based `.tscn` scenes editable in Godot, not programmatic)
+- In-engine dashboard/editor docks, if any (e.g. `addons/project_dashboard/`, data-editor docks)
+- Main UI scenes (e.g. `scenes/ui/main_menu.tscn`)
+- UI design spec reference, if one exists
+- Interaction conventions (e.g. paged text vs scroll, anchored choices, stats strip)

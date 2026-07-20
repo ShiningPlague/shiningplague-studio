@@ -1,26 +1,23 @@
 ---
 name: start
-description: "Use when onboarding a new project or starting fresh with the Donchitos framework, when the designer says 'start', 'set up the project', or 'onboard'. Routes to the right path based on project state: fresh (Path A/B/C) or existing (Path D -> /adopt). ShiningPlague-adopted (Sons of Gilgamesh): full implementation with 4-path routing, SoG-specific Path D context (project in Production phase, adopt run 2026-05-09)."
+description: "Use when onboarding a new project or starting fresh with the Donchitos framework, when the designer says 'start', 'set up the project', or 'onboard'. Routes to the right path based on project state: fresh (Path A/B/C) or existing (Path D -> /adopt). ShiningPlague-adopted: full implementation with 4-path routing and review-mode setup."
 user-invocable: true
 allowed-tools: Read, Glob, Grep, Write, Edit, Agent
 metadata:
   origin: Donchitos
   origin_url: https://github.com/Donchitos/Claude-Code-Game-Studios
-  adopted_by: ShiningPlague (Sons of Gilgamesh)
-  adopted_date: 2026-05-15
-  vanilla_backup: docs/vanilla-backups/2026-05-15/start/SKILL.md
+  adopted_by: ShiningPlague
   enhancements:
     - 4-path routing (A/B/C/D) based on project state
-    - SoG-specific Path D context (always for this project)
     - Review-mode prompt (full/lean/solo)
     - Already-onboarded report (project status + suggested re-entry skills)
 ---
 
 # Start — Guided Project Onboarding
 
-> 🌱 **ShiningPlague-adopted (2026-05-15).** Originally Donchitos (barebones stub). Sons of Gilgamesh project adopted and enhanced. Upstream was a pointer-only file; SoG version is the full implementation — state detection, 4-path routing, review-mode setup. Vanilla backup: `docs/vanilla-backups/2026-05-15/start/`.
+> 🌱 **ShiningPlague-adopted.** Originally Donchitos (barebones stub); battle-tested on a shipped Godot project. Upstream was a pointer-only file; the studio version is the full implementation — state detection, 4-path routing, review-mode setup.
 
-Routes the designer to the right onboarding path based on what exists. For Sons of Gilgamesh, this is always Path D (existing project) which hands off to `/adopt`.
+Routes the designer to the right onboarding path based on what exists — fresh projects take Path A/B/C; existing projects take Path D, which hands off to `/adopt`.
 
 ## Phase 1: Detect Project State
 
@@ -81,10 +78,6 @@ Write choice to `production/review-mode.txt`.
 
 ---
 
-## SoG-Specific Notes
+## Re-invocation Note
 
-- Sons of Gilgamesh is always Path D (existing project, already in Production phase)
-- `/adopt` was run 2026-05-09, produced `docs/migration/adoption-plan-2026-05-09.md`
-- Engine configured: Godot 4.6.1 in `.claude/docs/technical-preferences.md`
-- Review mode set: `full` in `production/review-mode.txt`
-- If `/start` is invoked again, report: "Project already onboarded. Current phase: [stage]. Run `/adopt` to re-audit, `/gate-check` to validate readiness, or `/help` for what to do next."
+- If `/start` is invoked on an already-onboarded project (stage.txt exists), report: "Project already onboarded. Current phase: [stage]. Run `/adopt` to re-audit, `/gate-check` to validate readiness, or `/help` for what to do next."

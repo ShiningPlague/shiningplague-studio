@@ -2,20 +2,19 @@
 name: team-art
 description: "Use when working on art direction, visual identity, art bible, asset pipeline, illustration style, card art, or character art specifications. Routes to the correct workflow pattern and executes step-by-step."
 metadata:
-  origin: ShiningPlague (Sons of Gilgamesh)
-  adopted_by: ShiningPlague (Sons of Gilgamesh)
-  adopted_date: 2026-05-15
+  origin: ShiningPlague
+  adopted_by: ShiningPlague
   vanilla_backup: none (originally authored locally — no upstream)
   enhancements:
     - Authored locally as team-orchestrator for art workstream
     - art-director + technical-artist dispatch
     - Director gates (AD-CONCEPT-VISUAL, AD-ART-BIBLE, AD-VISUAL, CD-PILLARS)
-    - SoG art context (2D illustrated panels + DM log, AI-generated art, no 3D)
+    - Project art-context placeholder block
 ---
 
 # Team Art
 
-> 🌱 **ShiningPlague-authored (2026-05-15).** Originally authored for the Sons of Gilgamesh project — no upstream version exists. Team-orchestrator skill for the art workstream. Promoted to user-level 2026-05-15 for portability.
+> 🌱 **ShiningPlague-authored.** No upstream version exists. Team-orchestrator skill for the art workstream.
 
 **Execution protocol:** `.claude/docs/templates/team-orchestrator.md`
 **Workstream state:** `production/workstreams/art.md`
@@ -57,10 +56,12 @@ When the execution chain says "dispatch specialist," use these agents:
 
 - `.claude/docs/templates/art-bible.md`
 
-## SoG-Specific Context
+## Project-Specific Context
 
-- 2D illustrated panels + DM narration log (no 3D)
-- Card art: PNG format (not WebP — Godot 4.6 webp import issues)
-- AI-generated art (designer generates with AI tools)
-- No art bible exists yet — Concept phase gap
-- Style reference: dark fantasy, illustrated storybook aesthetic
+Fill in for your project (examples):
+
+- Rendering approach (e.g. 2D illustrated panels, no 3D)
+- Asset format constraints (e.g. preferred image formats; engine importer quirks such as Godot's WebP issues)
+- Art production approach (e.g. AI-generated art directed by the designer)
+- Art bible status (exists / Concept-phase gap)
+- Style reference (genre + aesthetic keywords)

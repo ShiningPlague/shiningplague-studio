@@ -10,56 +10,76 @@ POSIX shells, one for PowerShell. Pick whichever matches your platform.
 
 ## What they do
 
-Both scripts run in one of two modes.
-
-### 1. User-level skills install (default — no arguments)
-
-```sh
-./install.sh
-```
-```powershell
-./install.ps1
-```
-
-Copies each skill under `skills/` into `~/.claude/skills/` (`$HOME\.claude\skills\`
-on Windows), where personal skills live and take precedence.
-
-### 2. Project install
+Installation is **100% project-local**. Everything lands inside the target game
+project — nothing is ever written to `~/.claude` or any other user-level path.
 
 ```sh
-./install.sh --project /path/to/your/project
+./install.sh /path/to/your/game
 ```
 ```powershell
-./install.ps1 -Project C:\path\to\your\project
+./install.ps1 C:\path\to\your\game
 ```
 
-Copies the framework — `agents/`, `hooks/`, `rules/`, `templates/`, and
-`CLAUDE.md.template` — into `<project>/.claude/`, and seeds `<project>/CLAUDE.md`
-from the template **only if the project has no `CLAUDE.md` yet**.
+If you run the installer with no target from inside a directory that looks like
+a project root (contains `.git`, `.claude`, `CLAUDE.md`, `project.godot`,
+`package.json`, a `*.uproject`, or Unity's `Assets/` + `ProjectSettings/`), the
+current directory is used. Otherwise the target argument is required.
 
-## Safety behaviour
+What gets copied where:
 
-- **Existing user-level skills are never overwritten.** If a skill directory of
-  the same name already exists in `~/.claude/skills/`, the installer **skips it
-  and prints a warning** — your personal customizations are safe.
-- **Existing project files are never overwritten** either — framework folders and
-  an existing `CLAUDE.md` are skipped with a warning.
-- To intentionally overwrite, pass `--force` (bash) / `-Force` (PowerShell). This
-  is the only way anything gets replaced; there are no other destructive ops.
+| Bundle | Destination |
+|---|---|
+| `skills/` | `<target>/.claude/skills/` |
+| `agents/*.md` (top level only) | `<target>/.claude/agents/` |
+| `hooks/` | `<target>/.claude/hooks/` |
+| `rules/` | `<target>/.claude/rules/` |
+| `docs/` | `<target>/.claude/docs/` |
+| `templates/` | `<target>/.claude/docs/templates/` |
+| `tools/` | `<target>/tools/` |
+| `CLAUDE.md.template` | `<target>/CLAUDE.md` — **only if no CLAUDE.md exists** |
+| `templates/settings.template.json` | `<target>/.claude/settings.json` — **only if absent** (wires the hooks; if a settings.json exists you get a "merge the hooks block manually" notice instead) |
+
+### Engine packs (optional)
+
+```sh
+./install.sh /path/to/your/game --engine unity
+```
+```powershell
+./install.ps1 C:\path\to\your\game -Engine unity
+```
+
+Copies `agents/engine-packs/<pack>/` into `<target>/.claude/agents/`.
+Valid packs: `unity`, `unreal`, `godot-extras`, `multiplayer`. The flag may be
+repeated (bash) or given a list (PowerShell).
+
+## Idempotency & safety
+
+- **Re-run = update in place.** New bundle files are added, changed ones are
+  updated, identical ones are left alone. The summary prints new / updated /
+  unchanged counts.
+- **Local-modification warning.** Any existing file that differed from the
+  bundle is counted and listed after the update — if you had local edits under
+  `.claude/`, recover them from your project's git history.
+- **`CLAUDE.md` and `.claude/settings.json` are never overwritten**, ever.
+- **Isolation guarantee:** the installers never write to `~/.claude` or any
+  user-level path. Every install is per-project; edits you make stay in that
+  project; a new game = a fresh install.
 
 Run `./install.sh --help` or `Get-Help ./install.ps1` for full usage.
 
 ## Manual install fallback
 
-If you'd rather not run a script:
+If you'd rather not run a script, copy everything project-local by hand:
 
-1. Copy each directory under `skills/` into `~/.claude/skills/` — but skip any
-   name that already exists there.
-2. Copy `agents/`, `hooks/`, `rules/`, `templates/` into your project's `.claude/`.
-3. Copy `CLAUDE.md.template` to your project root as `CLAUDE.md` and fill the
-   `{{PLACEHOLDERS}}`.
-4. Install the referenced plugins:
-   ```
-   /plugin install superpowers
-   /plugin install anthropic-skills
-   ```
+1. `skills/` → `<project>/.claude/skills/`
+2. `agents/*.md` (plus any engine pack you want) → `<project>/.claude/agents/`
+3. `hooks/` → `<project>/.claude/hooks/` ; `rules/` → `<project>/.claude/rules/`
+4. `docs/` → `<project>/.claude/docs/` ; `templates/` → `<project>/.claude/docs/templates/`
+5. `tools/` → `<project>/tools/`
+6. `CLAUDE.md.template` → `<project>/CLAUDE.md` (skip if one exists) and fill
+   the `{{PLACEHOLDERS}}`
+7. `templates/settings.template.json` → `<project>/.claude/settings.json`
+   (or merge its `hooks` block into your existing settings.json)
+
+No prerequisites — the studio is fully self-contained. The `obra/superpowers`
+and `anthropic-skills` plugins are optional enhancers, never required.

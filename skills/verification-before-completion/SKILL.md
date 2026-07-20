@@ -1,17 +1,14 @@
 ---
 name: verification-before-completion
-description: "Use when about to claim work is complete, fixed, or passing, before committing or creating PRs - requires running verification commands and confirming output before making any success claims; evidence before assertions always. ShiningPlague-adopted (Sons of Gilgamesh): adds concrete project verification commands (godot headless harness, JSON parse checks, T10 ship checklist) + banned-phrasing list."
+description: "Use when about to claim work is complete, fixed, or passing, before committing or creating PRs - requires running verification commands and confirming output before making any success claims; evidence before assertions always. ShiningPlague-adopted: adds concrete per-change-kind verification commands ({{VERIFY_CMD}} pattern, e.g. engine headless harness, JSON parse checks, ship checklist) + banned-phrasing list."
 metadata:
   origin: obra/superpowers
   origin_url: https://github.com/obra/superpowers
-  adopted_by: ShiningPlague (Sons of Gilgamesh)
-  adopted_date: 2026-05-15
-  vanilla_backup: docs/vanilla-backups/2026-05-15/verification-before-completion/SKILL.md
-  superpowers_namespace_fallback: /superpowers:verification-before-completion (auto-preserved via plugin)
+  adopted_by: ShiningPlague
   enhancements:
-    - Concrete SoG verification commands per change-kind (code/data/doc/commit/step ship)
-    - Project-specific headless harness pattern (godot --headless --script tools/<step>_check.gd)
-    - T10 ship checklist (7 items) — what "shipped" actually means
+    - Concrete verification commands per change-kind ({{VERIFY_CMD}} for code/data/doc/commit/step ship)
+    - Project headless harness pattern ({{TEST_HARNESS}}, e.g. godot --headless --script tools/<step>_check.gd)
+    - Ship checklist — what "shipped" actually means
     - Banned phrasing list (eyeball-only claims)
     - Designer-action verification clause (when claims can only be verified in-engine)
     - Auto-fire 🔒 MUST-USE trigger expansion (commits, pushes, PRs, TODO marks)
@@ -19,7 +16,7 @@ metadata:
 
 # Verification Before Completion
 
-> 🌱 **ShiningPlague-adopted (2026-05-15).** Originally obra/superpowers. Sons of Gilgamesh project adopted and enhanced. Iron law preserved + SoG verification commands layered on. Vanilla backup: `docs/vanilla-backups/2026-05-15/verification-before-completion/`. Plugin-namespace fallback `/superpowers:verification-before-completion` fires upstream version untouched.
+> 🌱 **ShiningPlague-adopted.** Originally obra/superpowers; battle-tested on a shipped Godot project. Iron law preserved + concrete per-change-kind verification commands layered on.
 
 **🔒 MUST-USE — auto-fire on trigger match, no announce-and-wait.**
 
@@ -66,15 +63,15 @@ Skip any step = lying, not verifying
 
 ---
 
-## Sons of Gilgamesh — what "verified" means concretely
+## Project adaptation — what "verified" means concretely
 
-For each kind of change in this project, verification has a CONCRETE command/action that must run:
+For each kind of change, verification has a CONCRETE command/action ({{VERIFY_CMD}}) that must run. Fill these per project; Godot examples shown:
 
 ### Code change in `src/`
 
-1. **Parse check** — `godot --headless --path . scenes/<entry-scene>.tscn 2>&1 | grep -E "(SCRIPT ERROR|FATAL)"` returns no output
-2. **Relevant harness** — if a `tools/<step>_<feature>_check.gd` exists for the affected system, run it via `godot --headless --path . --script "res://tools/<harness>.gd"` and confirm the SUMMARY line shows `N/N PASS`
-3. **In-engine smoke test** — designer presses F5 and confirms the user-facing behaviour. Only the designer can do this — propose it explicitly when the change affects user-facing behaviour.
+1. **Parse check** — run the project's parse/compile check {{VERIFY_CMD}} (e.g. Godot: `godot --headless --path . scenes/<entry-scene>.tscn 2>&1 | grep -E "(SCRIPT ERROR|FATAL)"` returns no output)
+2. **Relevant harness** — if a {{TEST_HARNESS}} exists for the affected system (e.g. `tools/<step>_<feature>_check.gd`), run it (e.g. `godot --headless --path . --script "res://tools/<harness>.gd"`) and confirm the SUMMARY line shows `N/N PASS`
+3. **In-engine smoke test** — designer runs the game and confirms the user-facing behaviour. Only the designer can do this — propose it explicitly when the change affects user-facing behaviour.
 
 ### Data change in `data/*.json`
 
@@ -98,7 +95,7 @@ For each kind of change in this project, verification has a CONCRETE command/act
 1. Spec moved to `docs/z-old/specs/`
 2. `system_registry.json → spec_index` updated with state=archived, shipped, archive_path, ship_evidence
 3. `next_session_priorities[0]` rotated to next step
-4. `data/_schemas/dev_diary.json` 2026-MM-DD entry has done_major + done_minor
+4. `data/_schemas/dev_diary.json` dated entry has done_major + done_minor
 5. `docs/devlog.md` top entry written
 6. `production/session-state/active.md` header + handoff updated
 7. `tools/consistency_check.py` exits 0
@@ -118,8 +115,8 @@ If ANY of the above is incomplete, the step is NOT shipped. Do not claim it.
 | Regression test works | Red-green cycle verified | Test passes once |
 | Agent completed | VCS diff shows changes | Agent reports "success" |
 | Requirements met | Line-by-line checklist | Tests passing |
-| SoG step shipped | All 7 T10 items checked | Code lands + 1-line "done" |
-| SoG fix shipped | Harness PASS + headless no SCRIPT ERROR | Vibes-check on diff |
+| Step shipped | All 7 ship-checklist items checked | Code lands + 1-line "done" |
+| Fix shipped | Harness PASS + headless no errors | Vibes-check on diff |
 
 ## Red Flags - STOP
 
@@ -189,9 +186,9 @@ Any of those without a concrete command-output reference = failure.
 ❌ Trust agent report
 ```
 
-**SoG harness:**
+**Project harness (Godot example):**
 ```
-✅ godot --headless --script tools/step3a_status_effect_check.gd → "SUMMARY: 8/8 PASS" → "M1 shipped"
+✅ godot --headless --script tools/step3_inventory_check.gd → "SUMMARY: 8/8 PASS" → "step shipped"
 ❌ "Headless looked clean" (where's the SUMMARY line?)
 ```
 
@@ -203,19 +200,19 @@ Any of those without a concrete command-output reference = failure.
 2. **Match it to a verification kind** above.
 3. **Run the verification command(s).** Do NOT skip and do NOT substitute "I checked" for an actual command.
 4. **Read the output.** If the verification fails, the work is not done — go back to the implementation phase.
-5. **Only then make the claim.** Reference the verification in the claim: *"M1 shipped — `tools/step3a_status_effect_check.gd` reports 8/8 PASS, headless `combat_screen.tscn` loads with no SCRIPT ERROR."*
+5. **Only then make the claim.** Reference the verification in the claim: *"Step shipped — `tools/step3_inventory_check.gd` reports 8/8 PASS, headless entry scene loads with no SCRIPT ERROR."*
 
 ---
 
 ## When verification cannot run
 
-Some claims can't be verified by the assistant — only by the designer in-engine. Examples: "the green pill renders correctly under the wolf", "the menu button feels responsive", "the slot animation looks good." For these:
+Some claims can't be verified by the assistant — only by the designer in-engine. Examples: "the item icon renders correctly in the inventory grid", "the menu button feels responsive", "the slot animation looks good." For these:
 
 1. State explicitly that verification requires designer action
-2. Propose the exact F5-and-test steps
+2. Propose the exact run-and-test steps
 3. Do NOT claim the work is verified until designer confirms
 
-The session's M1/M2 fixes hit this — shipped headless verification (no SCRIPT ERROR + harness 8/8 PASS) but the user-facing behaviour required the designer's manual run (F5). Correct — both layers of verification applied.
+Hard-won rule: fixes have shipped with headless verification passing (no script errors + harness N/N PASS) while the user-facing behaviour still required the designer's manual run to confirm. Both layers of verification must apply.
 
 ---
 

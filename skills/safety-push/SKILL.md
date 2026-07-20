@@ -5,9 +5,8 @@ user-invocable: true
 allowed-tools: Bash, Read
 model: haiku
 metadata:
-  origin: ShiningPlague (Sons of Gilgamesh)
-  adopted_by: ShiningPlague (Sons of Gilgamesh)
-  adopted_date: 2026-05-15
+  origin: ShiningPlague
+  adopted_by: ShiningPlague
   vanilla_backup: none (originally authored locally — no upstream)
   enhancements:
     - Authored locally as one-shot disaster insurance commit
@@ -19,7 +18,7 @@ metadata:
 
 # Safety Push — Disaster Insurance Commit
 
-> 🌱 **ShiningPlague-authored (2026-05-15).** Originally authored for the Sons of Gilgamesh project — no upstream version exists. One-shot disaster-insurance backup that gets local work to GitHub before machine failure / disk loss / OS reinstall. Promoted to user-level 2026-05-15 for portability.
+> 🌱 **ShiningPlague-authored.** No upstream version exists. One-shot disaster-insurance backup that gets local work to GitHub before machine failure / disk loss / OS reinstall.
 
 One-shot: scan git status, commit safe files, push to remote. Skips secrets, large binaries, gitignored files. Pre-disaster backup that gets the local work to GitHub before the machine can die.
 

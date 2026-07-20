@@ -1,6 +1,6 @@
 ---
 name: content-audit
-description: "Audit GDD-specified content counts against implemented content. Identifies what's planned vs built. ShiningPlague-adopted (Sons of Gilgamesh): SoG data paths (data/combat_enemies/, data/cards/, data/traits/, data/locations/), system_registry.json as the entity-level source-of-truth instead of design/registry/entities.yaml."
+description: "Audit GDD-specified content counts against implemented content. Identifies what's planned vs built. ShiningPlague-adopted: project data paths ({{DATA_DIR}}/enemies/, {{DATA_DIR}}/items/, etc.), system_registry.json as the entity-level source-of-truth instead of design/registry/entities.yaml."
 argument-hint: "[system-name | --summary | (no arg = full audit)]"
 user-invocable: true
 allowed-tools: Read, Glob, Grep, Write
@@ -8,43 +8,37 @@ agent: producer
 metadata:
   origin: Donchitos
   origin_url: https://github.com/Donchitos/Claude-Code-Game-Studios
-  adopted_by: ShiningPlague (Sons of Gilgamesh)
-  adopted_date: 2026-05-15
-  vanilla_backup: docs/vanilla-backups/2026-05-15/content-audit/SKILL.md
+  adopted_by: ShiningPlague
   enhancements:
-    - SoG data paths (data/combat_enemies/, data/cards/, etc.)
-    - SoG GDD paths (docs/gdd/ + master at docs/GDD v.2.3.md)
+    - Project data paths ({{DATA_DIR}}/<content-type>/ per project convention)
+    - Project GDD paths (docs/gdd/ + master at {{GDD_PATH}})
     - Registry as authority (data/_schemas/system_registry.json)
-    - Pre-seeded content counts (52 enemies, 13 cards, 19 traits, 52 locations)
 ---
 
 # Content Audit
 
-> 🌱 **ShiningPlague-adopted (2026-05-15).** Originally Donchitos. Sons of Gilgamesh project adopted and enhanced. Upstream procedure preserved + SoG data paths + registry-as-authority. Vanilla backup: `docs/vanilla-backups/2026-05-15/content-audit/`.
+> 🌱 **ShiningPlague-adopted.** Originally Donchitos; battle-tested on a shipped Godot project. Upstream procedure preserved + project data paths + registry-as-authority.
 
 When this skill is invoked, parse the argument:
 - No argument → full audit across all systems
 - `[system-name]` → audit that single system only
 - `--summary` → summary table only, no file write
 
-## SoG Path Reference
+## Project Paths
 
-| Donchitos vanilla path | SoG path |
+| Donchitos vanilla path | Project path |
 |---|---|
 | `design/gdd/systems-index.md` | `design/gdd/systems-index.md` (correct) |
-| `design/gdd/*.md` | `docs/gdd/*.md` + `docs/GDD v.2.3.md` (master) |
-| `assets/data/**/enemies/` | `data/combat_enemies/` (52 JSON files) |
-| `assets/data/**/items/` | `data/items/` |
-| `assets/data/**/loot/` | `data/loot_tables/` |
-| `assets/data/**/characters/` | `data/npcs/` |
+| `design/gdd/*.md` | `docs/gdd/*.md` + `{{GDD_PATH}}` (master, e.g. `docs/GDD.md`) |
+| `assets/data/**/enemies/` | `{{DATA_DIR}}/enemies/` |
+| `assets/data/**/items/` | `{{DATA_DIR}}/items/` |
+| `assets/data/**/loot/` | `{{DATA_DIR}}/loot_tables/` |
+| `assets/data/**/characters/` | `{{DATA_DIR}}/npcs/` |
 | `design/registry/entities.yaml` | `data/_schemas/system_registry.json` |
 
-## SoG Content Inventory (as of 2026-05-15)
+## Project Content Inventory
 
-- 52 combat enemies at `data/combat_enemies/`
-- 13 cards at `data/cards/`
-- 19 traits at `data/traits/`
-- 52 locations at `data/locations/`
+- List each populated `{{DATA_DIR}}/<content-type>/` directory and its JSON file count (e.g. `{{DATA_DIR}}/enemies/`, `{{DATA_DIR}}/quest-log/`, `{{DATA_DIR}}/locations/`).
 - Content counts come from GDD + checked against actual JSON file counts.
 
 ---
@@ -55,8 +49,8 @@ When this skill is invoked, parse the argument:
 
 2. **L0 pre-scan**: Before full-reading any GDDs, Grep for `## Summary` + content-count keywords:
    ```
-   Grep pattern="(## Summary|N enemies|N levels|N items|N abilities|enemy types|item types|N cards|N traits|N locations)" glob="docs/gdd/*.md" output_mode="files_with_matches"
-   Grep pattern="(## Summary|N enemies|N levels|N items|N cards|N traits|N locations)" path="docs/GDD v.2.3.md" output_mode="content"
+   Grep pattern="(## Summary|N enemies|N levels|N items|N abilities|enemy types|item types|N quests|N locations)" glob="docs/gdd/*.md" output_mode="files_with_matches"
+   Grep pattern="(## Summary|N enemies|N levels|N items|N quests|N locations)" path="{{GDD_PATH}}" output_mode="content"
    ```
    Single-system audit: skip and go straight to full-read.
    Full audit: full-read only GDDs that matched content-count keywords.
@@ -68,7 +62,7 @@ When this skill is invoked, parse the argument:
    - "N levels" / "N areas" / "N maps" / "N stages"
    - "N items" / "N weapons" / "N equipment pieces"
    - "N abilities" / "N skills" / "N spells"
-   - "N cards" / "N traits" / "N locations" (SoG-specific)
+   - Any project-specific content nouns (e.g. "N locations", "N enemy archetypes")
    - "N dialogue scenes" / "N conversations" / "N cutscenes"
    - "N quests" / "N missions" / "N objectives"
    - Any explicit enumerated bullet list of named content pieces
@@ -84,30 +78,27 @@ When this skill is invoked, parse the argument:
 
 ## Phase 2 — Implementation Scan
 
-**Combat enemies (SoG-specific):**
-- Glob `data/combat_enemies/*.json`
+**Enemies:**
+- Glob `{{DATA_DIR}}/enemies/*.json`
 - Count unique files
 
-**Cards:**
-- Glob `data/cards/*.json`
-
-**Traits:**
-- Glob `data/traits/*.json`
-
 **Locations:**
-- Glob `data/locations/*.json`
+- Glob `{{DATA_DIR}}/locations/*.json`
 
 **Items / Equipment / Loot:**
-- Glob `data/items/*.json`, `data/loot_tables/*.json`
+- Glob `{{DATA_DIR}}/items/*.json`, `{{DATA_DIR}}/loot_tables/*.json`
 
 **Characters / NPCs:**
-- Glob `data/npcs/*.json`
+- Glob `{{DATA_DIR}}/npcs/*.json`
 
 **Dialogue / Conversations / Cutscenes:**
-- Glob `data/dialogue/*.json`, `data/scenes/*.json`
+- Glob `{{DATA_DIR}}/dialogue/*.json`, `{{DATA_DIR}}/scenes/*.json`
 
 **Quests / Missions:**
-- Glob `data/quests/*.json`, `data/missions/*.json`
+- Glob `{{DATA_DIR}}/quests/*.json`, `{{DATA_DIR}}/missions/*.json`
+
+**Any other populated `{{DATA_DIR}}/<content-type>/` directory:**
+- Glob and count per directory
 
 **Scenes (Godot):**
 - Glob `scenes/**/*.tscn`
@@ -178,7 +169,7 @@ If yes, write:
 ## Per-System Breakdown
 
 ### [System Name]
-- **GDD**: `docs/gdd/[file].md` or `docs/GDD v.2.3.md §[section]`
+- **GDD**: `docs/gdd/[file].md` or `{{GDD_PATH}} §[section]`
 - **Content types audited**: [list]
 - **Notes**: [caveats]
 

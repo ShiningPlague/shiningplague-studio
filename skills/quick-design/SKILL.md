@@ -1,44 +1,42 @@
 ---
 name: quick-design
-description: "Lightweight design spec for small changes — tuning adjustments, minor mechanics, balance tweaks. Skips full GDD authoring when a system GDD already exists or the change is too small to warrant one. Produces a Quick Design Spec that embeds directly into story files. ShiningPlague-adopted (Sons of Gilgamesh): SoG paths (data/ not assets/data/, docs/gdd/+master GDD, output to docs/specs/)."
+description: "Lightweight design spec for small changes — tuning adjustments, minor mechanics, balance tweaks. Skips full GDD authoring when a system GDD already exists or the change is too small to warrant one. Produces a Quick Design Spec that embeds directly into story files. ShiningPlague-adopted: project paths (data/ not assets/data/, docs/gdd/+master GDD, output to docs/specs/)."
 argument-hint: "[brief description of the change]"
 user-invocable: true
 allowed-tools: Read, Glob, Grep, Write, Edit
 metadata:
   origin: Donchitos
   origin_url: https://github.com/Donchitos/Claude-Code-Game-Studios
-  adopted_by: ShiningPlague (Sons of Gilgamesh)
-  adopted_date: 2026-05-15
-  vanilla_backup: docs/vanilla-backups/2026-05-15/quick-design/SKILL.md
+  adopted_by: ShiningPlague
   enhancements:
-    - SoG data path (data/ not assets/data/)
-    - SoG GDD path (docs/gdd/*.md + docs/GDD v.2.3.md master)
+    - Project data path (data/ not assets/data/)
+    - Project GDD path (docs/gdd/*.md + {{GDD_PATH}} master)
     - Output to docs/quick-specs/YYYY-MM-DD-<topic>-quick-design.md
-    - Dock-editable data note (Monster Editor, Rarity Tier Editor, etc.)
+    - Dock-editable data note (in-engine editor docks)
 ---
 
 # Quick Design
 
-> 🌱 **ShiningPlague-adopted (2026-05-15).** Originally Donchitos. Sons of Gilgamesh project adopted and enhanced. Upstream procedure preserved + SoG path corrections. Vanilla backup: `docs/vanilla-backups/2026-05-15/quick-design/`.
+> 🌱 **ShiningPlague-adopted.** Originally Donchitos; battle-tested on a shipped Godot project. Upstream procedure preserved + project path corrections.
 
 This is the **lightweight design path** for changes that don't need a full GDD. Full GDD authoring via `/design-system` is the heavyweight path. Use this skill for work under approximately 4 hours of implementation — tuning adjustments, minor behavioral tweaks, small additions to existing systems, or standalone features too small to warrant a full document.
 
-**Output:** `docs/quick-specs/YYYY-MM-DD-<topic>-quick-design.md` (SoG path) — formerly `design/quick-specs/`
+**Output:** `docs/quick-specs/YYYY-MM-DD-<topic>-quick-design.md` (project path) — formerly `design/quick-specs/`
 
 **When to run:** Anytime a change is too small for `/design-system` but too meaningful to implement without a written rationale.
 
-## SoG Path Reference
+## Project Paths
 
-| Donchitos vanilla path | SoG path |
+| Donchitos vanilla path | Project path |
 |---|---|
-| `design/gdd/` | `docs/gdd/*.md` + `docs/GDD v.2.3.md` (master) |
+| `design/gdd/` | `docs/gdd/*.md` + `{{GDD_PATH}}` (master, e.g. `docs/GDD.md`) |
 | `design/gdd/systems-index.md` | `design/gdd/systems-index.md` (correct) |
 | `assets/data/` | `data/` |
 | `design/quick-specs/` | `docs/quick-specs/YYYY-MM-DD-<topic>-quick-design.md` (auto-indexed via `tools/generate_quick_specs_index.py` hook) |
 
-## SoG Context
+## Project Context
 
-- Data files at `data/` are dock-editable (Monster Editor, Rarity Tier Editor, etc.)
+- Data files at `data/` may be dock-editable via in-engine editor docks (if the project has them)
 - Quick designs embed directly into story files when using the large path
 - For the small path, they go to `docs/specs/` with the standard naming convention
 
@@ -63,7 +61,7 @@ Present classification, confirm before proceeding. If no argument, ask user to d
 
 Before drafting:
 
-- Search `docs/gdd/` and `docs/GDD v.2.3.md` for the GDD section relevant to this change. Read affected sections.
+- Search `docs/gdd/` and `{{GDD_PATH}}` for the GDD section relevant to this change. Read affected sections.
 - Check `design/gdd/systems-index.md` (if exists) to understand where this system sits in dependency graph.
 - Check prior `docs/specs/*-quick-design.md` files for any that touched this system.
 - For Tuning changes, check `data/` for the data file holding relevant values.
@@ -81,7 +79,7 @@ Report findings: "Found GDD at [path]. Relevant section: [section]. No conflicti
 
 **Type**: Tuning
 **System**: [System name]
-**GDD Reference**: `docs/gdd/[filename].md` (or `docs/GDD v.2.3.md §[section]`) — Tuning Knobs section
+**GDD Reference**: `docs/gdd/[filename].md` (or `{{GDD_PATH}} §[section]`) — Tuning Knobs section
 **Date**: [today]
 
 ## Change
@@ -109,7 +107,7 @@ New value is [within / at the edge of / outside] the documented range.
 
 **Type**: [Tweak / Addition]
 **System**: [System name]
-**GDD Reference**: `docs/gdd/[filename].md` or `docs/GDD v.2.3.md §[section]`
+**GDD Reference**: `docs/gdd/[filename].md` or `{{GDD_PATH}} §[section]`
 **Date**: [today]
 
 ## Change Summary

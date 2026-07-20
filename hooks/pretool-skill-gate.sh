@@ -50,7 +50,7 @@ CONTEXT=""
 
 # Branch 1 — file_path targets a SKILL.md inside ANY .claude/skills/ path —
 # project-local (.claude/skills/...) OR user-level (~/.claude/skills/).
-# Two-home ruling 2026-07-04b: studio skills live project-local at .claude/skills/
+# Two-home rule: studio skills live project-local at .claude/skills/
 # (repo-canonical); user-level holds only personal skills. NEVER create a
 # user-level twin of a project skill — precedence (user > project) shadows it.
 SKILL_MATCH=0
@@ -64,7 +64,7 @@ esac
 if [ "$SKILL_MATCH" -eq 1 ]; then
   CONTEXT="[pretool-gate 🔒 MANDATORY] About to ${TOOL_NAME} a SKILL.md file at: ${FILE_PATH}
 
-CLAUDE.md MANDATORY rule (added 2026-04-30 after discipline drift):
+CLAUDE.md MANDATORY rule (hard-won after observed discipline drift):
   /writing-skills MUST fire BEFORE any Write or Edit on a .claude/skills/<name>/SKILL.md path.
 
 Self-check before this tool call completes:
@@ -73,7 +73,7 @@ Self-check before this tool call completes:
   3. Is this an upstream concern or a project-local override?
 
 The writing-skills skill (.claude/skills/writing-skills/)
-documents 2026-04-30 drift rationalisations. The rule is hard, not advisory.
+documents the drift rationalisations observed in practice. The rule is hard, not advisory.
 
 If you have already fired /writing-skills this turn: proceed. Otherwise: STOP,
 fire it, then re-attempt the tool call. The hook is stateless and cannot

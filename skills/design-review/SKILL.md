@@ -1,37 +1,35 @@
 ---
 name: design-review
-description: "Use after authoring or updating a spec, GDD, or design document. Validates completeness, pillar alignment, MDA consistency, and flags design theory violations. Fires after /brainstorming or /design-system completes. ShiningPlague-adopted (Sons of Gilgamesh): adapts to SoG pillars (GDD v.2.3 §1.3/§1.5), spec paths, creative-director dispatch with CD-GDD-ALIGN gate."
+description: "Use after authoring or updating a spec, GDD, or design document. Validates completeness, pillar alignment, MDA consistency, and flags design theory violations. Fires after /brainstorming or /design-system completes. ShiningPlague-adopted: adapts to the project's pillars ({{GDD_PATH}} pillars/MDA sections), spec paths, creative-director dispatch with CD-GDD-ALIGN gate."
 metadata:
   origin: Donchitos
   origin_url: https://github.com/Donchitos/Claude-Code-Game-Studios
-  adopted_by: ShiningPlague (Sons of Gilgamesh)
-  adopted_date: 2026-05-15
-  vanilla_backup: docs/vanilla-backups/2026-05-15/design-review/SKILL.md
+  adopted_by: ShiningPlague
   enhancements:
-    - SoG pillars + MDA from GDD v.2.3 §1.3/§1.5
+    - Project pillars + MDA from {{GDD_PATH}} pillars/MDA sections
     - creative-director dispatch with CD-GDD-ALIGN gate from .claude/docs/director-gates.md
     - Expected Outcomes section verification (mandatory per project-local brainstorming)
     - Chain-propose to architecture-decision and writing-plans
-    - SoG spec/GDD/ADR paths
+    - Project spec/GDD/ADR paths
 ---
 
 # Design Review
 
-> 🌱 **ShiningPlague-adopted (2026-05-15).** Originally Donchitos (barebones stub). Sons of Gilgamesh project adopted and enhanced. Upstream was a pointer-only file; SoG version is the full implementation — pillar alignment, MDA validation, creative-director dispatch, Expected Outcomes check. Vanilla backup: `docs/vanilla-backups/2026-05-15/design-review/`.
+> 🌱 **ShiningPlague-adopted.** Originally Donchitos (barebones stub); battle-tested on a shipped Godot project. Upstream was a pointer-only file; the studio version is the full implementation — pillar alignment, MDA validation, creative-director dispatch, Expected Outcomes check.
 
 Validates a design document against project pillars, MDA framework, and design theory. Chain-fires after `/brainstorming` (spec review) or `/design-system` (GDD review).
 
 ## Inputs
 
 - **Document path** — the spec or GDD to review
-- **Game pillars** — from `docs/GDD v.2.3.md` (or dedicated pillars doc when it exists)
-- **MDA aesthetics** — target aesthetic hierarchy from GDD §1.5
+- **Game pillars** — from `{{GDD_PATH}}` (or dedicated pillars doc when it exists)
+- **MDA aesthetics** — target aesthetic hierarchy from the GDD's MDA section
 
 ## Procedure
 
 ### 1. Read Context
 - Read the document under review
-- Read `docs/GDD v.2.3.md` §1.3 (pillars), §1.5 (MDA)
+- Read `{{GDD_PATH}}` pillars section + MDA section
 - Read `data/_schemas/system_registry.json` for related systems
 - If system GDD: also read `design/gdd/systems-index.md` for dependency context
 
@@ -63,9 +61,9 @@ After APPROVE → propose `/writing-plans` if the design is ready for implementa
 
 After CONCERNS/REJECT → revise the spec, then re-run `/design-review`.
 
-## SoG Paths
+## Project Paths
 
 - Specs: `docs/specs/YYYY-MM-DD-<topic>-design.md`
-- GDDs: `docs/GDD v.2.3.md` (master) or `docs/gdd/<system>.md` (per-system when split)
+- GDDs: `{{GDD_PATH}}` (master) or `docs/gdd/<system>.md` (per-system when split)
 - ADRs: `docs/adr/NNN-<slug>.md`
 - Director gates: `.claude/docs/director-gates.md`

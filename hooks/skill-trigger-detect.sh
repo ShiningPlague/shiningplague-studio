@@ -102,7 +102,7 @@ case "$INPUT" in
     add_reminder "[skill-trigger 🟢] Tech-debt context — propose firing /red-flag-scan via Skill tool to log + prioritise debt items." ;;
 esac
 
-# === AGENT-TRIGGER patterns (added 2026-04-30) ============================
+# === AGENT-TRIGGER patterns ===============================================
 # Maps designer intent to specialist agent dispatch + relevant templates.
 # Full mapping at docs/agents-index.md § Intent -> Agent + Templates table.
 # Pattern: case-insensitive substring match on user prompt -> inject reminder
@@ -147,7 +147,7 @@ esac
 # Worldbuilding / factions / lore depth
 case "$INPUT" in
   *"worldbuild"*|*"world building"*|*"faction"*|*"history of"*|*"lore depth"*)
-    add_reminder "[agent-trigger] Worldbuilding context. Propose dispatching world-builder. Template: faction-design.md. Cross-reference docs/lorebook_v3.md for canon." ;;
+    add_reminder "[agent-trigger] Worldbuilding context. Propose dispatching world-builder. Template: faction-design.md. Cross-reference {{LORE_DOC}} (your project's canonical lore doc) for canon." ;;
 esac
 
 # Level / encounter design
@@ -244,7 +244,7 @@ esac
 # AI / NPC behaviour
 case "$INPUT" in
   *"ai behaviour"*|*"ai behavior"*|*"npc behavior"*|*"npc behaviour"*|*"behaviour tree"*|*"behavior tree"*|*"pathfinding"*|*"enemy logic"*)
-    add_reminder "[agent-trigger] AI/NPC context. Propose dispatching ai-programmer. Skills: anthropic-skills:godot 🔒, test-driven-development 🔒." ;;
+    add_reminder "[agent-trigger] AI/NPC context. Propose dispatching ai-programmer. Skills: godot-engine (bundled) 🔒, test-driven-development 🔒." ;;
 esac
 
 # Shader / VFX
@@ -253,7 +253,7 @@ case "$INPUT" in
     add_reminder "[agent-trigger] Shader/VFX context. Propose dispatching godot-shader-specialist (+ technical-artist for art pipeline)." ;;
 esac
 
-# === WORKSTREAM-TRIGGER patterns (added 2026-05-11) =======================
+# === WORKSTREAM-TRIGGER patterns ==========================================
 # Maps designer intent to workstream + team orchestrator dispatch.
 # Each workstream has a dedicated state file at production/workstreams/<name>.md
 # and a team-* orchestrator. Remind the assistant to load workstream state on match.
@@ -335,7 +335,7 @@ esac
 # Session close trigger
 case "$INPUT" in
   *"wrap up"*|*"close session"*|*"we're done"*|*"that's it"*|*"good session"*|*"let's close"*|*"call it"*)
-    add_reminder "[session-trigger] Session close language detected. Initiate close protocol: director bookend re-dispatch, consistency gate, /update ritual, session reflection. See docs/specs/2026-05-11-workstream-formalization-design.md § Section 5." ;;
+    add_reminder "[session-trigger] Session close language detected. Initiate close protocol: director bookend re-dispatch, consistency gate, /update ritual, session reflection. Fire the /session-close skill." ;;
 esac
 
 # === DRIFT-RECOVERY reminder (fires on EVERY prompt if no other trigger matched) ===

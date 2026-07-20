@@ -1,6 +1,6 @@
 ---
 name: help
-description: "Use when designer asks 'where are we', 'what should I do now', 'what's next', 'I'm stuck', 'status', OR at session start to surface canonical state. Analyzes what is done and the user's query and offers advice on what to do next. ShiningPlague-adopted (Sons of Gilgamesh): adds workstream + adoption-TODO awareness + paused-spec surfacing on top of canonical phase logic."
+description: "Use when designer asks 'where are we', 'what should I do now', 'what's next', 'I'm stuck', 'status', OR at session start to surface canonical state. Analyzes what is done and the user's query and offers advice on what to do next. ShiningPlague-adopted: adds workstream + adoption-TODO awareness + paused-spec surfacing on top of canonical phase logic."
 argument-hint: "[optional: what you just finished, e.g. 'finished design-review' or 'stuck on ADRs']"
 user-invocable: true
 allowed-tools: Read, Glob, Grep, Bash
@@ -10,20 +10,18 @@ model: haiku
 metadata:
   origin: Donchitos
   origin_url: https://github.com/Donchitos/Claude-Code-Game-Studios
-  adopted_by: ShiningPlague (Sons of Gilgamesh)
-  adopted_date: 2026-05-15
-  vanilla_backup: docs/vanilla-backups/2026-05-15/help/SKILL.md
+  adopted_by: ShiningPlague
   enhancements:
     - Workstream awareness (reads production/workstreams/*.md state)
     - Adoption-TODO surfacing (active.md + docs/migration/adoption-plan-*.md)
     - Paused-spec surfacing (in_progress specs)
-    - SoG-specific next-action priority (canonical-first, then workstream, then in-progress)
+    - Next-action priority (canonical-first, then workstream, then in-progress)
     - Cross-link to /project-stage-detect for deeper gap audit
 ---
 
 # Studio Help — What Do I Do Next?
 
-> 🌱 **ShiningPlague-adopted (2026-05-15).** Originally Donchitos. Sons of Gilgamesh project adopted and enhanced. Upstream canonical phase logic preserved + SoG workstream/adoption awareness layered on. Vanilla backup: `docs/vanilla-backups/2026-05-15/help/`.
+> 🌱 **ShiningPlague-adopted.** Originally Donchitos; battle-tested on a shipped Godot project. Upstream canonical phase logic preserved + workstream/adoption awareness layered on.
 
 This skill is read-only — it reports findings but writes no files.
 
@@ -90,7 +88,7 @@ This personalizes the output.
 
 ---
 
-## Step 4: Read Per-Workstream State (SoG addition)
+## Step 4: Read Per-Workstream State (studio addition)
 
 Glob `production/workstreams/*.md`. For each, extract:
 - `Current Phase:` line
@@ -102,7 +100,7 @@ Report per-workstream phase + what's in flight + blockers.
 
 ---
 
-## Step 5: Read Open Adoption TODOs (SoG addition)
+## Step 5: Read Open Adoption TODOs (studio addition)
 
 Read `production/session-state/active.md`. Look for `🚨 OPEN ADOPTION PLAN TODOs` section. List unresolved items.
 
@@ -110,7 +108,7 @@ Also check `docs/migration/adoption-plan-*.md` for any unchecked items not yet s
 
 ---
 
-## Step 6: Read Open Specs (SoG addition)
+## Step 6: Read Open Specs (studio addition)
 
 Glob `docs/specs/*.md`. For each, extract Status (🚧 IN PROGRESS / ✅ FINAL / 🗄️ ARCHIVED). List in-progress specs — paused work waiting to resume.
 
@@ -154,7 +152,7 @@ For repeatable steps outside production (e.g. "System GDDs"), artifact check tel
 
 ## Step 8: Determine Recommended Next Canonical Action
 
-SoG priority order:
+Priority order:
 1. **Project canonical phase gap (foundational)** — if Concept/Systems-Design artifacts missing, recommend canonical skill (e.g., `/design-system game-concept` if pointer-only).
 2. **Workstream-specific work** — if foundational gaps closed, check which workstream the designer was last on (active.md priorities[0]) and recommend the next canonical step.
 3. **In-progress paused work** — if a spec is 🚧 IN PROGRESS, recommend resuming.
@@ -178,18 +176,18 @@ Keep it **short and direct**. Quick orientation, not a report.
 **[Step name]** — [description]
 Command: `[/command]`
 
-### Workstream Status (SoG)
+### Workstream Status
 
 | Workstream | Phase | In Progress | Blocked |
 |---|---|---|---|
 | Combat | Production | [item] | — |
 | Narrative | Concept | — | [blocker] |
 
-### Open Adoption TODOs (SoG)
+### Open Adoption TODOs
 - [item 1]
 - [item 2]
 
-### Open Specs (paused — SoG)
+### Open Specs (paused)
 - 🚧 [spec path] — [topic]
 
 ### ~ Also available (OPTIONAL)
@@ -243,7 +241,7 @@ Only show if input suggested confusion ("I don't know", "stuck", "lost", "not su
 - After firing this skill, if user picks canonical recommendation, the natural next skill fires per `team-orchestrator.md` activity chain.
 - Pair with `/project-stage-detect` (also project-local) — that skill does the deep gap audit; this one does the day-to-day "what's next" framing.
 
-## Reference files (SoG)
+## Reference files (project)
 
 - `.claude/docs/workflow-catalog.yaml` — canonical phase pipeline
 - `production/stage.txt` — current canonical phase

@@ -1,27 +1,25 @@
 ---
 name: regression-suite
-description: "Map test coverage to GDD critical paths, identify fixed bugs without regression tests, flag coverage drift from new features, and maintain tests/regression-suite.md. Run after implementing a bug fix or before a release gate. ShiningPlague-adopted (Sons of Gilgamesh): adapts to SoG headless harness pattern (tools/<step>_<feature>_check.gd) + scene parse-checks + GUT-deferred decision."
+description: "Map test coverage to GDD critical paths, identify fixed bugs without regression tests, flag coverage drift from new features, and maintain tests/regression-suite.md. Run after implementing a bug fix or before a release gate. ShiningPlague-adopted: adapts to the project's headless harness pattern ({{TEST_HARNESS}}, e.g. tools/<step>_<feature>_check.gd) + scene parse-checks + deferred test-framework decision."
 argument-hint: "[update | audit | report]"
 user-invocable: true
 allowed-tools: Read, Glob, Grep, Write, Edit
 metadata:
   origin: Donchitos
   origin_url: https://github.com/Donchitos/Claude-Code-Game-Studios
-  adopted_by: ShiningPlague (Sons of Gilgamesh)
-  adopted_date: 2026-05-15
-  vanilla_backup: docs/vanilla-backups/2026-05-15/regression-suite/SKILL.md
+  adopted_by: ShiningPlague
   enhancements:
-    - SoG test-type taxonomy (headless GDScript harness / Python validators / scene parse / smoke)
+    - Project test-type taxonomy (headless script harness / Python validators / scene parse / smoke)
     - Capture-as-test procedure after every bug fix
     - Coverage-gap procedure after every step ships
     - On-demand audit procedure
-    - Known regression test gaps log (with commit hashes)
-    - GUT framework adoption deferred per CLAUDE.md
+    - Known regression test gaps log (template starts blank)
+    - Test-framework adoption deferrable per project CLAUDE.md
 ---
 
 # Regression Suite
 
-> 🌱 **ShiningPlague-adopted (2026-05-15).** Originally Donchitos. Sons of Gilgamesh project adopted and enhanced. Upstream pattern preserved (capture-as-test + coverage drift detection + manifest at `tests/regression-suite.md`); SoG-specific test types added (GDScript headless harness, Python validators, scene parse-checks). Vanilla backup: `docs/vanilla-backups/2026-05-15/regression-suite/`.
+> 🌱 **ShiningPlague-adopted.** Originally Donchitos; battle-tested on a shipped Godot project. Upstream pattern preserved (capture-as-test + coverage drift detection + manifest at `tests/regression-suite.md`); project test types added (headless script harness, Python validators, scene parse-checks).
 
 **Core principle:** every fixed bug should have a regression test that would have caught it. A regression suite is not a new test category — it is a **curated list of tests already in `tools/` and `tests/`** that collectively cover critical paths and known failure points. This skill maintains that list.
 
@@ -49,17 +47,17 @@ metadata:
 
 ---
 
-## In-scope test types for SoG
+## In-scope test types (project pattern — {{TEST_HARNESS}})
 
 | Type | Where it lives | Example |
 |---|---|---|
-| Headless GDScript harness | `tools/<step>_<feature>_check.gd` | `tools/step3a_status_effect_check.gd` (8 tests) |
-| Headless data validation | Python script in `tools/` | `tools/consistency_check.py` (44 checks across doc stack) |
-| Scene parse-check | `godot --headless scene.tscn` parse output | combat_screen.tscn no SCRIPT ERROR |
-| Cross-step regression runner | `tools/regression_check.gd` (planned, not yet built per registry) | runs all step harnesses in sequence |
-| Manual smoke test | F5 in editor + designer eyeball | T9 in-engine smoke test |
+| Headless script harness | `{{TEST_HARNESS}}` (e.g. `tools/<step>_<feature>_check.gd`) | `tools/step3_inventory_check.gd` |
+| Headless data validation | Python script in `tools/` | `tools/consistency_check.py` (cross-doc checks) |
+| Scene parse-check | `godot --headless scene.tscn` parse output | entry scene loads with no SCRIPT ERROR |
+| Cross-step regression runner | `tools/regression_check.gd` (if built — check registry) | runs all step harnesses in sequence |
+| Manual smoke test | run in editor + designer eyeball | in-engine smoke test at step ship |
 
-GUT framework adoption is a deferred decision per CLAUDE.md — for now, scene-based + headless-script verification.
+A full test-framework adoption (e.g. GUT for Godot) may be a deferred decision per the project's CLAUDE.md — until then, scene-based + headless-script verification.
 
 ---
 
@@ -109,7 +107,7 @@ Read `tests/regression-suite.md` if it exists. Extract total registered tests, l
 Glob all test files (`tools/*_check.gd`, `tools/*.py`, `tests/`). For each file, note system + filename.
 
 ### Step C — Load GDD critical paths
-Read `docs/GDD v.2.3.md` or per-system GDDs. For each MVP-tier system, extract Acceptance Criteria, Formulas, Edge Cases. These define critical paths.
+Read `{{GDD_PATH}}` or per-system GDDs. For each MVP-tier system, extract Acceptance Criteria, Formulas, Edge Cases. These define critical paths.
 
 ### Step D — Load closed bugs
 From `system_registry.json → flagged_for_designer_review[]` with `resolved_in_commit`. For each, check if a test references the bug or its scenario.
@@ -209,7 +207,7 @@ python tools/consistency_check.py
 
 These are bugs that shipped without regression tests — every one is a future-firing of this skill:
 
-_None currently logged._ The 3 seed entries (front_image_null `746cb06`, pill expiry `629534c`, slot drift `fd52283`) were confirmed fixed and resolved (designer 2026-05-15). Append new gap entries here as bugs ship without regression tests.
+_None currently logged._ Append new gap entries here as bugs ship without regression tests.
 
 **Template for new entries:**
 
@@ -254,4 +252,4 @@ Verdict: **COMPLETE** — regression suite updated. (If user declined write: Ver
 
 ## Cross-link
 
-Regression Harness routine is parked in `system_registry.json → next_session_priorities` as a deferred item. When that lands (~150 LOC, 2 hours per registry estimate), it'll provide the cross-step runner that this skill writes tests for.
+If a cross-step regression runner is parked in `system_registry.json → next_session_priorities` as a deferred item, note that when it lands it provides the cross-step runner this skill writes tests for.

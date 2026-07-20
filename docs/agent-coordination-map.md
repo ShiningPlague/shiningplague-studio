@@ -1,6 +1,6 @@
 # Agent Coordination and Delegation Map
 
-> 🌱 **ShiningPlague-adopted (2026-05-15):** Originally Donchitos framework reference doc. Extended with Sons of Gilgamesh additions — Three dispatch patterns detail (moved from CLAUDE.md 2026-05-15), session protocol section, workstream dispatch flow. Original Donchitos hierarchy + delegation rules + escalation paths + workflow patterns preserved verbatim; SoG additions explicitly labeled.
+> 🌱 **ShiningPlague-adopted:** Originally Donchitos framework reference doc. Extended with studio additions — Three dispatch patterns detail (moved out of CLAUDE.md), session protocol section, workstream dispatch flow. Original Donchitos hierarchy + delegation rules + escalation paths + workflow patterns preserved verbatim; studio additions explicitly labeled.
 
 ## Organizational Hierarchy
 
@@ -256,7 +256,7 @@ When the art bible or asset standards change, the art-director must notify:
 - All content creators working with affected assets
 - devops-engineer (if build pipeline is affected)
 
-## Session Protocol (added 2026-05-11)
+## Session Protocol
 
 The session protocol defines how every chat opens and closes. It sits above all
 workflow patterns — patterns fire WITHIN sessions, the protocol wraps them.
@@ -307,7 +307,7 @@ Designer intent
   → Returns report to the studio lead
 ```
 
-## Three dispatch patterns — detailed (SoG addition, moved from CLAUDE.md 2026-05-15)
+## Three dispatch patterns — detailed (studio addition)
 
 Agents are auto-available via the `Agent` tool — no install. Each has a defined role + restricted tool set + scoped skills + Opus-tier model + maxTurns budget. They run in isolated context and return a report.
 
@@ -334,7 +334,7 @@ Examples:
 - `/team-audio` (audio-director + sound-designer)
 - `/team-level`, `/team-polish`, `/team-release` (similar composition per vertical)
 
-**Use these as the entry point per vertical workstream.** Never fired pre-2026-04-29 — adopt going forward.
+**Use these as the entry point per vertical workstream.**
 
 ### Pattern C — In-line execution
 
@@ -342,7 +342,7 @@ Just main agent. For trivial tasks (<50 LOC, one-file edits, doc tweaks). Don't 
 
 ### Hook reliability layer
 
-`.claude/hooks/skill-trigger-detect.sh` (extended 2026-04-30) injects agent-dispatch hints when the designer's prompt matches an Intent → Agent keyword. Designer says *"let's redesign our game"* → hook surfaces creative-director + game-pillars.md template. Says *"loot tables"* → economy-designer + economy-model.md. Mechanical reliability layer for agent dispatch.
+`.claude/hooks/skill-trigger-detect.sh` injects agent-dispatch hints when the designer's prompt matches an Intent → Agent keyword. Designer says *"let's redesign our game"* → hook surfaces creative-director + game-pillars.md template. Says *"loot tables"* → economy-designer + economy-model.md. Mechanical reliability layer for agent dispatch.
 
 ---
 

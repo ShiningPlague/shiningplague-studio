@@ -4,12 +4,11 @@ description: "Use when designer adds new scope mid-session ('let's also do X', '
 user-invocable: true
 allowed-tools: Read, Edit, Bash
 metadata:
-  origin: ShiningPlague (Sons of Gilgamesh)
-  adopted_by: ShiningPlague (Sons of Gilgamesh)
-  adopted_date: 2026-05-15
+  origin: ShiningPlague
+  adopted_by: ShiningPlague
   vanilla_backup: none (originally authored locally — no upstream)
   enhancements:
-    - Authored locally for SoG session-goal tracking system
+    - Authored locally for the session-goal tracking system
     - Pairs with /goal-set + /goal-check
     - Prevents scope-creep-in-chat-context failure mode
     - Survives compaction + chat deletion via active-goals.json persistence
@@ -17,7 +16,7 @@ metadata:
 
 # Goal Add Minor — Append Mid-Session Goal Addition
 
-> 🌱 **ShiningPlague-authored (2026-05-15).** Originally authored for the Sons of Gilgamesh project — no upstream version exists. Part of the session-goal tracking system (`/goal-set` + `/goal-add-minor` + `/goal-check`). Promoted to user-level 2026-05-15 for portability.
+> 🌱 **ShiningPlague-authored.** No upstream version exists. Part of the session-goal tracking system (`/goal-set` + `/goal-add-minor` + `/goal-check`).
 
 Write a minor goal addition to `production/session-state/active-goals.json → minor_goals_added[]`. Prevents the scope-creep-in-chat-context failure mode where the assistant adds items verbally but they're never persisted.
 

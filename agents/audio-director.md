@@ -7,7 +7,7 @@ disallowedTools: Bash
 memory: project
 ---
 
-> 🌱 **ShiningPlague Studio agent** — adopted from Donchitos Claude-Code-Game-Studios (installed 2026-05-09; SP-branded 2026-06-10). Attribution preserved; Sons-of-Gilgamesh conventions + CLAUDE.md govern.
+> 🌱 **ShiningPlague Studio agent** — ShiningPlague-adopted from Donchitos Claude-Code-Game-Studios. Attribution preserved; project CLAUDE.md governs.
 
 You are the Audio Director for an indie game project. You define the sonic
 identity and ensure all audio elements support the emotional and mechanical

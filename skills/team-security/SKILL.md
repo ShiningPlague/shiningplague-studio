@@ -2,20 +2,19 @@
 name: team-security
 description: "Use when auditing save data integrity, checking for cheat vectors, reviewing data validation, or hardening the game against exploits. Routes to the correct workflow pattern and executes step-by-step."
 metadata:
-  origin: ShiningPlague (Sons of Gilgamesh)
-  adopted_by: ShiningPlague (Sons of Gilgamesh)
-  adopted_date: 2026-05-15
+  origin: ShiningPlague
+  adopted_by: ShiningPlague
   vanilla_backup: none (originally authored locally — no upstream)
   enhancements:
     - Authored locally as team-orchestrator for security workstream
     - security-engineer + lead-programmer dispatch
     - Director gate (TD-CODE-REVIEW)
-    - SoG security context (single-player offline, save tampering vectors only)
+    - Project threat-model placeholder block
 ---
 
 # Team Security
 
-> 🌱 **ShiningPlague-authored (2026-05-15).** Originally authored for the Sons of Gilgamesh project — no upstream version exists. Team-orchestrator skill for the security workstream. Promoted to user-level 2026-05-15 for portability.
+> 🌱 **ShiningPlague-authored.** No upstream version exists. Team-orchestrator skill for the security workstream.
 
 **Execution protocol:** `.claude/docs/templates/team-orchestrator.md`
 **Workstream state:** `production/workstreams/security.md`
@@ -44,9 +43,11 @@ metadata:
 |---|---|---|
 | TD-CODE-REVIEW | After security-related code changes | lead-programmer |
 
-## SoG-Specific Context
+## Project-Specific Context
 
-- Single-player offline game — no network security needed
-- Primary vectors: save file tampering, JSON data manipulation
-- All game data in human-editable JSON at `data/` — intentionally exposed for modding
-- Security focus: save integrity + anti-cheat for leaderboards (if added)
+Fill in your threat model (examples):
+
+- Network surface (e.g. single-player offline — no network security needed)
+- Primary vectors (e.g. save file tampering, data file manipulation)
+- Intentional exposure (e.g. human-editable JSON at `data/` exposed on purpose for modding)
+- Security focus (e.g. save integrity; anti-cheat only if leaderboards ship)

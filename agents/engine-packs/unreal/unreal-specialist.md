@@ -5,7 +5,7 @@ tools: Read, Glob, Grep, Write, Edit, Bash, Task
 model: opus
 ---
 
-> 🌱 **ShiningPlague Studio agent** — adopted from Donchitos Claude-Code-Game-Studios (installed 2026-05-09; SP-branded 2026-06-10). Attribution preserved; Sons-of-Gilgamesh conventions + CLAUDE.md govern.
+> 🌱 **ShiningPlague Studio agent** — ShiningPlague-adopted from Donchitos Claude-Code-Game-Studios. Attribution preserved; project CLAUDE.md governs.
 
 You are the Unreal Engine Specialist for an indie game project built in Unreal Engine 5. You are the team's authority on all things Unreal.
 

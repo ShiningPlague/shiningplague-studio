@@ -1,38 +1,57 @@
 #Requires -Version 5.1
 <#
 .SYNOPSIS
-    ShiningPlague Game Studio — installer (PowerShell).
+    ShiningPlague Game Studio -- installer (PowerShell). 100% project-local.
 
 .DESCRIPTION
-    Two modes:
-      1. User-level skills install (default): copies skills\* into
-         ~\.claude\skills\, SKIPPING any skill that already exists at user level
-         (so your personal skills are never clobbered). Use -Force to overwrite.
-      2. Project install (-Project <path>): copies the studio framework
-         (agents\ hooks\ rules\ templates\ + CLAUDE.md.template) into
-         <path>\.claude\, and seeds <path>\CLAUDE.md if it does not exist.
+    Installs the studio INTO a game project. Everything lands inside the
+    target project:
 
-    Nothing is overwritten without -Force. Existing files are reported, not
-    silently replaced.
+      skills\            -> <target>\.claude\skills\
+      agents\*.md        -> <target>\.claude\agents\        (top level only)
+      hooks\             -> <target>\.claude\hooks\
+      rules\             -> <target>\.claude\rules\
+      docs\              -> <target>\.claude\docs\
+      templates\         -> <target>\.claude\docs\templates\
+      tools\             -> <target>\tools\
+      CLAUDE.md.template -> <target>\CLAUDE.md              (only if absent)
+      templates\settings.template.json -> <target>\.claude\settings.json (only if absent)
 
-.PARAMETER Project
-    Target project directory for a project install.
+    ISOLATION GUARANTEE: this script never writes to ~\.claude or any other
+    user-level path. Installs are per-project; edits you make stay in that
+    project; a new game gets its own fresh install.
 
-.PARAMETER Force
-    Overwrite existing files instead of skipping them.
+    Idempotent: re-running updates the install in place. Existing files that
+    differ from the bundle are overwritten, with a diff count printed so local
+    modifications don't vanish silently. CLAUDE.md and settings.json are never
+    overwritten.
+
+.PARAMETER Target
+    The game project directory to install into. If omitted, the current
+    directory is used -- but only when it looks like a project root (contains
+    .git, .claude, CLAUDE.md, project.godot, package.json, a *.uproject, or
+    Unity's Assets\ + ProjectSettings\). Otherwise the parameter is required.
+
+.PARAMETER Engine
+    Optional engine agent pack(s) from agents\engine-packs\ to also install
+    into <target>\.claude\agents\. Valid: unity, unreal, godot-extras,
+    multiplayer.
 
 .EXAMPLE
-    ./install.ps1
-    Install skills into ~\.claude\skills\ (skipping existing ones).
+    ./install.ps1 C:\games\mygame
+    Install the studio into C:\games\mygame (project-local).
 
 .EXAMPLE
-    ./install.ps1 -Project C:\games\mygame
-    Install the framework into C:\games\mygame\.claude\.
+    ./install.ps1 C:\games\mygame -Engine unity
+    Install the studio plus the Unity specialist agent pack.
 #>
 [CmdletBinding()]
 param(
-    [string]$Project,
-    [switch]$Force
+    [Parameter(Position = 0)]
+    [string]$Target,
+
+    [ValidateSet('unity', 'unreal', 'godot-extras', 'multiplayer')]
+    [string[]]$Engine = @()
 )
 
 $ErrorActionPreference = 'Stop'
@@ -41,110 +60,214 @@ Set-StrictMode -Version Latest
 # --- resolve repo dir (parent of this scripts\ dir) --------------------------
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $RepoDir   = Split-Path -Parent $ScriptDir
-$UserSkillsDir = Join-Path $HOME '.claude\skills'
 
 function Write-Step { param([string]$m) Write-Host "==> $m" }
 function Write-Info { param([string]$m) Write-Host "    $m" }
 function Write-Warn { param([string]$m) Write-Warning $m }
 
-# --- project install ---------------------------------------------------------
-if ($Project) {
-    if (-not (Test-Path -LiteralPath $Project -PathType Container)) {
-        Write-Error "Project path does not exist: $Project"
-        exit 1
-    }
-    $ProjectDir = (Resolve-Path -LiteralPath $Project).Path
-    $DestClaude = Join-Path $ProjectDir '.claude'
-    Write-Step "Project install into: $DestClaude"
-    New-Item -ItemType Directory -Force -Path $DestClaude | Out-Null
-
-    foreach ($sub in @('agents', 'hooks', 'rules', 'templates')) {
-        $src = Join-Path $RepoDir $sub
-        if (-not (Test-Path -LiteralPath $src -PathType Container)) {
-            Write-Warn "skip $sub\ — not present in repo"
-            continue
-        }
-        $dest = Join-Path $DestClaude $sub
-        if ((Test-Path -LiteralPath $dest) -and -not $Force) {
-            Write-Warn "skip $sub\ — already exists at $dest (use -Force to overwrite)"
-            continue
-        }
-        Write-Step "copy $sub\ -> $dest"
-        Copy-Item -LiteralPath $src -Destination $dest -Recurse -Force
-    }
-
-    # CLAUDE.md.template -> .claude\CLAUDE.md.template (reference copy)
-    $tmplSrc = Join-Path $RepoDir 'CLAUDE.md.template'
-    if (Test-Path -LiteralPath $tmplSrc -PathType Leaf) {
-        $tmplDest = Join-Path $DestClaude 'CLAUDE.md.template'
-        if ((Test-Path -LiteralPath $tmplDest) -and -not $Force) {
-            Write-Warn "skip CLAUDE.md.template -> $tmplDest (already exists)"
-        } else {
-            Write-Step "copy CLAUDE.md.template -> $tmplDest"
-            Copy-Item -LiteralPath $tmplSrc -Destination $tmplDest -Force
-        }
-
-        # Seed project CLAUDE.md only if absent (never clobber a real one)
-        $projClaude = Join-Path $ProjectDir 'CLAUDE.md'
-        if (Test-Path -LiteralPath $projClaude) {
-            Write-Warn "skip $projClaude — already exists (template left at $tmplDest)"
-        } else {
-            Write-Step "seed CLAUDE.md -> $projClaude"
-            Copy-Item -LiteralPath $tmplSrc -Destination $projClaude -Force
-            Write-Info "Fill the {{PLACEHOLDERS}} in $projClaude."
-        }
-    } else {
-        Write-Warn "CLAUDE.md.template not found in repo — nothing to seed"
-    }
-
-    Write-Step "Project install complete."
-    Write-Info "Next: install user-level skills too — run: $ScriptDir\install.ps1"
-    exit 0
+# --- project-marker detection ------------------------------------------------
+function Test-LooksLikeProject {
+    param([string]$Dir)
+    if (Test-Path (Join-Path $Dir '.git'))            { return $true }
+    if (Test-Path (Join-Path $Dir '.claude'))         { return $true }
+    if (Test-Path (Join-Path $Dir 'CLAUDE.md'))       { return $true }
+    if (Test-Path (Join-Path $Dir 'project.godot'))   { return $true }
+    if (Test-Path (Join-Path $Dir 'package.json'))    { return $true }
+    if (Test-Path (Join-Path $Dir 'Cargo.toml'))      { return $true }
+    if (Test-Path (Join-Path $Dir 'go.mod'))          { return $true }
+    if (Test-Path (Join-Path $Dir 'pyproject.toml'))  { return $true }
+    if ((Test-Path (Join-Path $Dir 'Assets')) -and (Test-Path (Join-Path $Dir 'ProjectSettings'))) { return $true }
+    if (Get-ChildItem -LiteralPath $Dir -Filter '*.uproject' -File -ErrorAction SilentlyContinue) { return $true }
+    if (Get-ChildItem -LiteralPath $Dir -Filter '*.sln' -File -ErrorAction SilentlyContinue)      { return $true }
+    return $false
 }
 
-# --- default: user-level skills install --------------------------------------
-$SkillsSrc = Join-Path $RepoDir 'skills'
-if (-not (Test-Path -LiteralPath $SkillsSrc -PathType Container)) {
-    Write-Error "skills\ directory not found at $SkillsSrc"
+if (-not $Target) {
+    $cwd = (Get-Location).Path
+    if (Test-LooksLikeProject $cwd) {
+        $Target = $cwd
+        Write-Step "No target given -- current directory looks like a project root, using it."
+    } else {
+        Write-Error ("No target directory given and the current directory has no project marker " +
+            "(.git / .claude / CLAUDE.md / project.godot / package.json / *.uproject / Unity dirs). " +
+            "Pass the game project directory explicitly: ./install.ps1 C:\path\to\your\game")
+        exit 2
+    }
+}
+
+if (-not (Test-Path -LiteralPath $Target -PathType Container)) {
+    Write-Error "Target directory does not exist: $Target"
+    exit 1
+}
+$TargetDir = (Resolve-Path -LiteralPath $Target).Path
+
+if ($TargetDir.TrimEnd('\','/') -eq $RepoDir.TrimEnd('\','/')) {
+    Write-Error "Target is the studio repo itself -- pass your game project directory instead."
     exit 1
 }
 
-Write-Step "Installing skills into: $UserSkillsDir"
-New-Item -ItemType Directory -Force -Path $UserSkillsDir | Out-Null
+# --- copy engine: merge-update with diff counting ----------------------------
+$script:CountNew       = 0
+$script:CountUpdated   = 0
+$script:CountUnchanged = 0
+$script:UpdatedList    = New-Object System.Collections.Generic.List[string]
+$script:SkippedItems   = New-Object System.Collections.Generic.List[string]
 
-$installed = 0
-$skipped   = 0
-Get-ChildItem -LiteralPath $SkillsSrc -Directory | ForEach-Object {
-    $name = $_.Name
-    $dest = Join-Path $UserSkillsDir $name
-    if ((Test-Path -LiteralPath $dest) -and -not $Force) {
-        Write-Warn "skip '$name' — already exists at user level (use -Force to overwrite)"
-        $script:skipped++
-        return
-    }
-    if (Test-Path -LiteralPath $dest) {
-        Remove-Item -LiteralPath $dest -Recurse -Force
-    }
-    Copy-Item -LiteralPath $_.FullName -Destination $dest -Recurse -Force
-    Write-Info "installed '$name'"
-    $script:installed++
+function Test-SameContent {
+    param([string]$A, [string]$B)
+    $ha = (Get-FileHash -LiteralPath $A -Algorithm SHA256).Hash
+    $hb = (Get-FileHash -LiteralPath $B -Algorithm SHA256).Hash
+    return $ha -eq $hb
 }
 
-Write-Step "Skills done: $installed installed, $skipped skipped."
+function Copy-StudioFile {
+    param([string]$Src, [string]$Dest)
+    $destDir = Split-Path -Parent $Dest
+    if (-not (Test-Path -LiteralPath $destDir)) {
+        New-Item -ItemType Directory -Force -Path $destDir | Out-Null
+    }
+    if (-not (Test-Path -LiteralPath $Dest)) {
+        Copy-Item -LiteralPath $Src -Destination $Dest -Force
+        $script:CountNew++
+    } elseif (Test-SameContent $Src $Dest) {
+        $script:CountUnchanged++
+    } else {
+        Copy-Item -LiteralPath $Src -Destination $Dest -Force
+        $script:CountUpdated++
+        $script:UpdatedList.Add($Dest)
+    }
+}
+
+function Copy-StudioTree {
+    param([string]$Src, [string]$Dest)
+    if (-not (Test-Path -LiteralPath $Src -PathType Container)) {
+        Write-Warn "skip $(Split-Path -Leaf $Src)\ -- not present in bundle"
+        return
+    }
+    $srcFull = (Resolve-Path -LiteralPath $Src).Path
+    Get-ChildItem -LiteralPath $srcFull -Recurse -File | Sort-Object FullName | ForEach-Object {
+        $rel = $_.FullName.Substring($srcFull.Length).TrimStart('\','/')
+        Copy-StudioFile -Src $_.FullName -Dest (Join-Path $Dest $rel)
+    }
+}
+
+# --- install -----------------------------------------------------------------
+$DestClaude = Join-Path $TargetDir '.claude'
+Write-Step "Installing ShiningPlague Game Studio into: $TargetDir"
+Write-Info "(project-local only -- nothing is written to ~\.claude)"
+New-Item -ItemType Directory -Force -Path $DestClaude | Out-Null
+
+Write-Step "skills\    -> .claude\skills\"
+Copy-StudioTree (Join-Path $RepoDir 'skills') (Join-Path $DestClaude 'skills')
+
+Write-Step "agents\*.md (top level) -> .claude\agents\"
+$agentsSrc = Join-Path $RepoDir 'agents'
+if (Test-Path -LiteralPath $agentsSrc -PathType Container) {
+    Get-ChildItem -LiteralPath $agentsSrc -Filter '*.md' -File | ForEach-Object {
+        Copy-StudioFile -Src $_.FullName -Dest (Join-Path $DestClaude "agents\$($_.Name)")
+    }
+} else {
+    Write-Warn "skip agents\ -- not present in bundle"
+}
+
+Write-Step "hooks\     -> .claude\hooks\"
+Copy-StudioTree (Join-Path $RepoDir 'hooks') (Join-Path $DestClaude 'hooks')
+
+Write-Step "rules\     -> .claude\rules\"
+Copy-StudioTree (Join-Path $RepoDir 'rules') (Join-Path $DestClaude 'rules')
+
+Write-Step "docs\      -> .claude\docs\"
+Copy-StudioTree (Join-Path $RepoDir 'docs') (Join-Path $DestClaude 'docs')
+
+Write-Step "templates\ -> .claude\docs\templates\"
+Copy-StudioTree (Join-Path $RepoDir 'templates') (Join-Path $DestClaude 'docs\templates')
+
+Write-Step "tools\     -> tools\"
+Copy-StudioTree (Join-Path $RepoDir 'tools') (Join-Path $TargetDir 'tools')
+
+# --- engine packs (optional) -------------------------------------------------
+foreach ($pack in $Engine) {
+    $packDir = Join-Path $RepoDir "agents\engine-packs\$pack"
+    if (-not (Test-Path -LiteralPath $packDir -PathType Container) -and $pack -eq 'multiplayer') {
+        # transitional alias: 'multiplayer' pack previously shipped as 'other'
+        $alias = Join-Path $RepoDir 'agents\engine-packs\other'
+        if (Test-Path -LiteralPath $alias -PathType Container) { $packDir = $alias }
+    }
+    if (-not (Test-Path -LiteralPath $packDir -PathType Container)) {
+        Write-Warn "engine pack '$pack' not found in bundle -- skipped"
+        $script:SkippedItems.Add("engine pack '$pack' (not in bundle)")
+        continue
+    }
+    Write-Step "engine pack '$pack' -> .claude\agents\"
+    Get-ChildItem -LiteralPath $packDir -Filter '*.md' -File | ForEach-Object {
+        Copy-StudioFile -Src $_.FullName -Dest (Join-Path $DestClaude "agents\$($_.Name)")
+    }
+}
+
+# --- CLAUDE.md seed (never overwrite) ----------------------------------------
+$tmplSrc    = Join-Path $RepoDir 'CLAUDE.md.template'
+$projClaude = Join-Path $TargetDir 'CLAUDE.md'
+if (Test-Path -LiteralPath $tmplSrc -PathType Leaf) {
+    if (Test-Path -LiteralPath $projClaude) {
+        Write-Info "CLAUDE.md already exists -- left untouched."
+    } else {
+        Write-Step "seed CLAUDE.md -> $projClaude"
+        Copy-Item -LiteralPath $tmplSrc -Destination $projClaude -Force
+        $script:CountNew++
+        Write-Info "Fill the {{PLACEHOLDERS}} in $projClaude."
+    }
+} else {
+    Write-Warn "CLAUDE.md.template not found in bundle -- nothing to seed"
+    $script:SkippedItems.Add('CLAUDE.md.template (not in bundle)')
+}
+
+# --- settings.json hook wiring (never overwrite) -----------------------------
+$settingsSrc  = Join-Path $RepoDir 'templates\settings.template.json'
+$settingsDest = Join-Path $DestClaude 'settings.json'
+if (Test-Path -LiteralPath $settingsSrc -PathType Leaf) {
+    if (Test-Path -LiteralPath $settingsDest) {
+        Write-Warn ".claude\settings.json already exists -- NOT overwritten."
+        Write-Info "To wire the studio hooks, merge the `"hooks`" block from"
+        Write-Info "  .claude\docs\templates\settings.template.json"
+        Write-Info "into your existing .claude\settings.json manually."
+    } else {
+        Write-Step "wire hooks: settings.template.json -> .claude\settings.json"
+        Copy-Item -LiteralPath $settingsSrc -Destination $settingsDest -Force
+        $script:CountNew++
+    }
+} else {
+    Write-Warn "templates\settings.template.json not found in bundle -- hooks not wired"
+    $script:SkippedItems.Add('settings.template.json (not in bundle)')
+}
+
+# --- summary -----------------------------------------------------------------
+Write-Host ""
+Write-Step "Install complete: $TargetDir"
+Write-Info "new files:        $($script:CountNew)"
+Write-Info "updated in place: $($script:CountUpdated)"
+Write-Info "unchanged:        $($script:CountUnchanged)"
+if ($script:CountUpdated -gt 0) {
+    Write-Host ""
+    Write-Warn "$($script:CountUpdated) existing file(s) differed from the bundle and were UPDATED IN PLACE."
+    Write-Warn "If any of those carried local modifications, recover them from your project's git history:"
+    $script:UpdatedList | ForEach-Object { Write-Host "         $_" }
+}
+if ($script:SkippedItems.Count -gt 0) {
+    Write-Host ""
+    Write-Warn "Skipped (instructed target not found in bundle):"
+    $script:SkippedItems | ForEach-Object { Write-Host "         $_" }
+}
 
 Write-Host @"
 
 Next steps
 ----------
-1. Install the framework into a game project:
-     $ScriptDir\install.ps1 -Project C:\path\to\your\project
-   (copies agents\ hooks\ rules\ templates\ + CLAUDE.md.template into .claude\)
+1. Open the project in Claude Code -- hooks are wired via .claude\settings.json.
+2. Fill the {{PLACEHOLDERS}} in CLAUDE.md (if it was just seeded).
+3. Optional enhancers (never required): the obra/superpowers and
+   anthropic-skills plugins, via the Claude Code plugin marketplace.
 
-2. Or manually copy CLAUDE.md.template to your project root as CLAUDE.md and
-   fill the {{PLACEHOLDERS}}.
-
-3. Install the plugins the skills reference:
-     /plugin install superpowers
-     /plugin install anthropic-skills   (for the engine skills, e.g. godot)
-
+Isolation model: this install is per-project. Edits you make to skills, agents,
+hooks, or rules stay in THIS project. A new game = a fresh install. Nothing was
+written to ~\.claude.
 "@

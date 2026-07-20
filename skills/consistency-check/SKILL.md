@@ -1,17 +1,15 @@
 ---
 name: consistency-check
-description: "Scan project docs / GDDs / registries against each other to detect cross-document inconsistencies — same entity with different stats, same item with different values, same formula with different variables, stale wording, broken paths, untraceable commits. Grep-first approach. ShiningPlague-adopted (Sons of Gilgamesh): adapts to system_registry.json + active.md + dev_diary.json doc stack instead of Donchitos's design/registry/entities.yaml. Runner at tools/consistency_check.py."
+description: "Scan project docs / GDDs / registries against each other to detect cross-document inconsistencies — same entity with different stats, same item with different values, same formula with different variables, stale wording, broken paths, untraceable commits. Grep-first approach. ShiningPlague-adopted: adapts to the studio doc stack (system_registry.json + active.md + dev_diary.json) instead of Donchitos's design/registry/entities.yaml. Runner at tools/consistency_check.py."
 argument-hint: "[full | since-last-review | entity:<name> | item:<name>]"
 user-invocable: true
 allowed-tools: Read, Glob, Grep, Write, Edit, Bash
 metadata:
   origin: Donchitos
   origin_url: https://github.com/Donchitos/Claude-Code-Game-Studios
-  adopted_by: ShiningPlague (Sons of Gilgamesh)
-  adopted_date: 2026-05-15
-  vanilla_backup: docs/vanilla-backups/2026-05-15/consistency-check/SKILL.md
+  adopted_by: ShiningPlague
   enhancements:
-    - SoG doc stack (system_registry.json + active.md + dev_diary.json + devlog.md + ADRs + specs)
+    - Studio doc stack (system_registry.json + active.md + dev_diary.json + devlog.md + ADRs + specs)
     - Cross-doc value/path/date agreement checks
     - Commit traceability (resolved_in_commit hashes must resolve)
     - Stale wording sweep with classify ⚠️/ℹ️
@@ -23,7 +21,7 @@ metadata:
 
 # Consistency Check
 
-> 🌱 **ShiningPlague-adopted (2026-05-15).** Originally Donchitos. Sons of Gilgamesh project adopted and enhanced. Upstream skill expected `design/registry/entities.yaml` + `design/gdd/*.md`; SoG version adapts to our actual doc stack (`data/_schemas/system_registry.json` + `production/session-state/active.md` + `data/_schemas/dev_diary.json` + `docs/devlog.md`). Spirit preserved (cross-doc consistency, grep-first); paths + cross-checks adapted. Vanilla backup: `docs/vanilla-backups/2026-05-15/consistency-check/`.
+> 🌱 **ShiningPlague-adopted.** Originally Donchitos; battle-tested on a shipped Godot project. Upstream skill expected `design/registry/entities.yaml` + `design/gdd/*.md`; this version adapts to the studio doc stack ({{REGISTRY}} = `data/_schemas/system_registry.json` + {{SESSION_STATE}} = `production/session-state/active.md` + `data/_schemas/dev_diary.json` + `docs/devlog.md`). Spirit preserved (cross-doc consistency, grep-first); paths + cross-checks adapted.
 
 **Core principle:** scan our doc stack for cross-document inconsistencies — claims that disagree, file paths that don't resolve, commit hashes that don't exist, stale wording that contradicts current state. The registry is the entity-level source of truth; cross-check everything against it.
 
@@ -72,7 +70,7 @@ The scheduled task `consistency-check` (every 2 days at 6am, cron `0 6 */2 * *`)
 - `docs/plans/*.md` files referenced by spec_index `plan` fields
 
 For GDD review modes, also load:
-- `docs/GDD v.2.3.md` (master) and `docs/gdd/*.md` (per-system, when split)
+- `{{GDD_PATH}}` (master, e.g. `docs/GDD.md`) and `docs/gdd/*.md` (per-system, when split)
 
 If the registry is empty:
 > "Registry has no systems. Run `/design-system` or build systems first; the registry populates as systems land. Nothing to check yet."
@@ -133,7 +131,7 @@ This phase is the upstream Donchitos consistency-check spirit — grep-first, ta
 ## Phase 3: Output Report
 
 ```
-=== CONSISTENCY CHECK — Sons of Gilgamesh ===
+=== CONSISTENCY CHECK — {{PROJECT_NAME}} ===
 Date: [today]
 Registry: [N systems, N specs, N ADRs, N flagged, N priorities]
 In-scope docs: [list]
