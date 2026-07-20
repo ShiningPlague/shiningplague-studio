@@ -30,3 +30,9 @@ Every skill and agent in this studio carries a `metadata.origin` marker recordin
 | **vanilla** | Unmodified upstream artifact, carried for reference; no ShiningPlague marker beyond the origin note. |
 
 If you fork or extend this studio, please keep these markers intact and preserve the copyright notices in [LICENSE](LICENSE). The upstream authors did the hard early work, and their names should travel with it.
+
+---
+
+## Built with Claude Code
+
+This studio was designed, refactored, and packaged in collaboration with [Claude Code](https://claude.com/claude-code) — which is also the tool it runs on. The framework is the working method distilled from building a game that way.
