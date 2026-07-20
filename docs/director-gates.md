@@ -1,5 +1,10 @@
 # Director Gates — Shared Review Pattern
 
+> **Advanced reference — you do not need this on day one.**
+> This documents the formal phase-gate review layer of the studio.
+> If you're new, start with [docs/START-HERE.md](START-HERE.md) and
+> come back when you want director reviews between phases.
+
 This document defines the standard gate prompts for all director and lead reviews
 across every workflow stage. Skills reference gate IDs from this document instead
 of embedding full prompts inline — eliminating drift when prompts need updating.

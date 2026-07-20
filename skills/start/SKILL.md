@@ -1,6 +1,6 @@
 ---
 name: start
-description: "Use when onboarding a new project or starting fresh with the Donchitos framework, when the designer says 'start', 'set up the project', or 'onboard'. Routes to the right path based on project state: fresh (Path A/B/C) or existing (Path D -> /adopt). ShiningPlague-adopted: full implementation with 4-path routing and review-mode setup."
+description: "Use when onboarding a new project or starting fresh with the studio framework, when the designer says 'start', 'set up the project', or 'onboard'. Routes to the right path based on project state: fresh (Path A/B/C) or existing (Path D -> /adopt). ShiningPlague-adopted: full implementation with 4-path routing and review-mode setup."
 user-invocable: true
 allowed-tools: Read, Glob, Grep, Write, Edit, Agent
 metadata:
@@ -33,7 +33,7 @@ Read silently:
 
 ## Phase 2: Route to Path
 
-Based on findings, present the appropriate path:
+Based on findings, present the appropriate path. Frame it as a friendly roadmap, not a checklist to be enforced — the designer can describe their game in plain words at any point, and steps can be skipped or reordered if they ask:
 
 ### Path A: "I have no idea what to build" (nothing exists)
 1. `/brainstorming` — guided creative exploration

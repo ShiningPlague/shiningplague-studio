@@ -28,9 +28,11 @@
 
 .PARAMETER Target
     The game project directory to install into. If omitted, the current
-    directory is used -- but only when it looks like a project root (contains
-    .git, .claude, CLAUDE.md, project.godot, package.json, a *.uproject, or
-    Unity's Assets\ + ProjectSettings\). Otherwise the parameter is required.
+    directory is used when it looks like a project root (contains .git,
+    .claude, CLAUDE.md, project.godot, package.json, a *.uproject, or Unity's
+    Assets\ + ProjectSettings\) OR when it is an empty/new folder. Otherwise
+    the parameter is required. Guard: the installer refuses to install into
+    the studio repo itself (a folder with manifest.yaml + skills\).
 
 .PARAMETER Engine
     Optional engine agent pack(s) from agents\engine-packs\ to also install
@@ -82,15 +84,42 @@ function Test-LooksLikeProject {
     return $false
 }
 
+function Test-EmptyOrNew {
+    # True if the dir is a brand-new project folder -- no entries besides the
+    # temp studio clone and OS cruft.
+    param([string]$Dir)
+    $ignorable = @('.sp-studio-tmp', 'shiningplague-studio', '.DS_Store', 'Thumbs.db', 'desktop.ini')
+    $entries = Get-ChildItem -LiteralPath $Dir -Force -ErrorAction SilentlyContinue
+    foreach ($e in $entries) {
+        if ($ignorable -notcontains $e.Name) { return $false }
+    }
+    return $true
+}
+
+function Test-StudioRepo {
+    # True if the dir looks like the studio repo itself (any clone of it).
+    param([string]$Dir)
+    return ((Test-Path (Join-Path $Dir 'manifest.yaml') -PathType Leaf) -and
+            (Test-Path (Join-Path $Dir 'skills') -PathType Container))
+}
+
 if (-not $Target) {
     $cwd = (Get-Location).Path
-    if (Test-LooksLikeProject $cwd) {
+    if (Test-StudioRepo $cwd) {
+        Write-Error ("The current directory is the ShiningPlague Studio repo itself (manifest.yaml + skills\). " +
+            "cd into your GAME project folder and run the installer from there: " +
+            "cd C:\path\to\your\game; & C:\path\to\shiningplague-studio\scripts\install.ps1")
+        exit 1
+    } elseif (Test-LooksLikeProject $cwd) {
         $Target = $cwd
         Write-Step "No target given -- current directory looks like a project root, using it."
+    } elseif (Test-EmptyOrNew $cwd) {
+        $Target = $cwd
+        Write-Step "No target given -- current directory is an empty/new folder, using it as the project root."
     } else {
-        Write-Error ("No target directory given and the current directory has no project marker " +
-            "(.git / .claude / CLAUDE.md / project.godot / package.json / *.uproject / Unity dirs). " +
-            "Pass the game project directory explicitly: ./install.ps1 C:\path\to\your\game")
+        Write-Error ("No target directory given, and the current directory is neither an empty/new folder " +
+            "nor a recognizable project root (.git / .claude / CLAUDE.md / project.godot / package.json / " +
+            "*.uproject / Unity dirs). Pass the game project directory explicitly: ./install.ps1 C:\path\to\your\game")
         exit 2
     }
 }
@@ -101,8 +130,10 @@ if (-not (Test-Path -LiteralPath $Target -PathType Container)) {
 }
 $TargetDir = (Resolve-Path -LiteralPath $Target).Path
 
-if ($TargetDir.TrimEnd('\','/') -eq $RepoDir.TrimEnd('\','/')) {
-    Write-Error "Target is the studio repo itself -- pass your game project directory instead."
+# Refuse to install into the studio repo itself (this clone or any other).
+if (($TargetDir.TrimEnd('\','/') -eq $RepoDir.TrimEnd('\','/')) -or (Test-StudioRepo $TargetDir)) {
+    Write-Error ("Target is the ShiningPlague Studio repo itself (manifest.yaml + skills\ present). " +
+        "Pass your game project directory instead, or cd into it and re-run.")
     exit 1
 }
 
@@ -189,7 +220,7 @@ Copy-StudioTree (Join-Path $RepoDir 'tools') (Join-Path $TargetDir 'tools')
 foreach ($pack in $Engine) {
     $packDir = Join-Path $RepoDir "agents\engine-packs\$pack"
     if (-not (Test-Path -LiteralPath $packDir -PathType Container) -and $pack -eq 'multiplayer') {
-        # transitional alias: 'multiplayer' pack previously shipped as 'other'
+        # transitional alias: 'multiplayer' pack previously shipped as 'multiplayer'
         $alias = Join-Path $RepoDir 'agents\engine-packs\other'
         if (Test-Path -LiteralPath $alias -PathType Container) { $packDir = $alias }
     }

@@ -12,7 +12,7 @@
 5. **No Unilateral Cross-Domain Changes**: An agent must never modify files
    outside its designated directories without explicit delegation.
 
-Model tiers: all active agents run model: opus — see docs/agents-index.md.
+Model tiers: all active agents run model: opus — see .claude/docs/agents-index.md.
 
 ## Subagents vs Agent Teams
 

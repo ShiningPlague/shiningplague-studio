@@ -84,7 +84,7 @@ case "$INPUT" in
 esac
 case "$INPUT" in
   *"new skill"*|*"edit skill"*|*"write skill"*|*"skill.md"*|*"author a skill"*|*"create a skill"*|*"rewrite skill"*|*"skill override"*)
-    add_reminder "[skill-trigger 🔒 MANDATORY per CLAUDE.md] SKILL.md authoring context. **YOU MUST FIRE /writing-skills via Skill tool BEFORE any Write/Edit on a SKILL.md path.** Self-check: did /writing-skills fire this turn? If no, fire it FIRST. Treating this as 🟢 advisory has caused drift before — promoted to 🔒." ;;
+    add_reminder "[skill-trigger Recommended per CLAUDE.md] SKILL.md authoring context. **Fire /writing-skills via Skill tool BEFORE any Write/Edit on a SKILL.md path.** Self-check: did /writing-skills fire this turn? If no, fire it FIRST. Treating this as 🟢 advisory has caused drift before — promoted to 🔒." ;;
 esac
 # "scope" needs a word boundary — bare substring over-matches ("telescope", "microscope").
 SCOPE_MATCH=0
@@ -104,14 +104,14 @@ esac
 
 # === AGENT-TRIGGER patterns ===============================================
 # Maps designer intent to specialist agent dispatch + relevant templates.
-# Full mapping at docs/agents-index.md § Intent -> Agent + Templates table.
+# Full mapping at .claude/docs/agents-index.md § Intent -> Agent + Templates table.
 # Pattern: case-insensitive substring match on user prompt -> inject reminder
 # pointing me at the right agent(s) + templates to consider dispatching.
 
 # Vision / pivot / redesign work
 case "$INPUT" in
   *"redesign"*|*"vision"*|*"pivot"*|*"direction"*|*"core pillar"*|*"game pillars"*|*"6 pillars"*)
-    add_reminder "[agent-trigger] Vision/pivot context detected. Propose dispatching creative-director (Agent tool, subagent_type=creative-director) + reading templates: .claude/docs/templates/game-pillars.md (6-pillar exercise), game-concept.md (pitch), game-design-document.md (full GDD). See docs/agents-index.md for full Intent->Agent mapping." ;;
+    add_reminder "[agent-trigger] Vision/pivot context detected. Propose dispatching creative-director (Agent tool, subagent_type=creative-director) + reading templates: .claude/docs/templates/game-pillars.md (6-pillar exercise), game-concept.md (pitch), game-design-document.md (full GDD). See .claude/docs/agents-index.md for full Intent->Agent mapping." ;;
 esac
 
 # Mechanic / system design
@@ -190,13 +190,13 @@ if [ "$PM_MATCH" -eq 0 ] && printf '%s' "$INPUT" | grep -qiE '\b(audits?|registr
   PM_MATCH=1
 fi
 if [ "$PM_MATCH" -eq 1 ]; then
-  add_reminder "[agent-trigger 🔒 MANDATORY DISPATCH per CLAUDE.md] PM / audit / registry / coordination context. **YOU MUST PROPOSE DISPATCHING \`producer\` FIRST.** Doing it inline = silent skill skipping failure mode. Templates: sprint-plan.md, milestone-definition.md, risk-register-entry.md. Skills: sprint-plan, retrospective, scope-check, estimate, red-flag-scan, content-audit, bug-triage. See docs/agents-index.md Intent table."
+  add_reminder "[agent-trigger Recommended dispatch] PM / audit / registry / coordination context. **Consider dispatching \`producer\` FIRST.** Dispatching keeps specialist context isolated — prefer it for scoped work. Templates: sprint-plan.md, milestone-definition.md, risk-register-entry.md. Skills: sprint-plan, retrospective, scope-check, estimate, red-flag-scan, content-audit, bug-triage. See .claude/docs/agents-index.md Intent table."
 fi
 
 # Tools-programmer dispatch triggers (registry / consistency check tooling = tools-programmer territory)
 case "$INPUT" in
   *"build a script"*|*"build the script"*|*"automation script"*|*"check_"*|*"consistency_check"*|*"registry coverage"*|*"hook extension"*|*"extend the hook"*|*"helper script"*|*"validation script"*)
-    add_reminder "[agent-trigger 🔒 MANDATORY DISPATCH per CLAUDE.md] Tools / automation context. **YOU MUST PROPOSE DISPATCHING \`tools-programmer\` FIRST** for non-trivial Python/GDScript automation. Inline only for trivial one-liner edits. See docs/agents-index.md." ;;
+    add_reminder "[agent-trigger Recommended dispatch] Tools / automation context. **Consider dispatching \`tools-programmer\` FIRST** for non-trivial Python/GDScript automation. Inline only for trivial one-liner edits. See .claude/docs/agents-index.md." ;;
 esac
 
 # Architecture / engine-level

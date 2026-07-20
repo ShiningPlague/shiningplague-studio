@@ -393,7 +393,7 @@ If they agree to the companion, read the detailed guide before proceeding:
 ## Reference files (project paths)
 
 - Project conventions live in [`CLAUDE.md`](../../../CLAUDE.md) → "Spec / Plan / ADR path conventions" section.
-- Skills catalogue: [`docs/skills-index.md`](../../../docs/skills-index.md).
+- Skills catalogue: [`.claude/docs/skills-index.md`](.claude/docs/skills-index.md).
 - Registry authoritative state: [`data/_schemas/system_registry.json`](../../../data/_schemas/system_registry.json).
 - Specs folder: [`docs/specs/`](../../../docs/specs/).
 - ADR folder + template: [`docs/adr/`](../../../docs/adr/).

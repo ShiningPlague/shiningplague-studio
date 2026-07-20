@@ -7,7 +7,7 @@ metadata:
   adopted_by: ShiningPlague
   enhancements:
     - Project path conventions (.claude/skills/<name>/SKILL.md per project)
-    - Studio skill catalogue cross-link (see docs/skills-index.md for the live list)
+    - Studio skill catalogue cross-link (see .claude/docs/skills-index.md for the live list)
     - Verbatim rationalisations from an observed drift session
     - Pre-tool self-check (3 questions) before any SKILL.md Write/Edit
     - Red-flag list with project-specific triggers
@@ -47,7 +47,7 @@ If any answer is unclear, STOP and resolve before tool call.
 
 ### Project skill paths
 
-Project-customised studio SKILLs live PROJECT-LOCAL at `.claude/skills/<name>/SKILL.md` (repo-canonical) — see `docs/skills-index.md` for the live catalogue (bulk adopted from Donchitos + obra/superpowers). Personal skills stay user-level (`~/.claude/skills/`).
+Project-customised studio SKILLs live PROJECT-LOCAL at `.claude/skills/<name>/SKILL.md` (repo-canonical) — see `.claude/docs/skills-index.md` for the live catalogue (bulk adopted from Donchitos + obra/superpowers). Personal skills stay user-level (`~/.claude/skills/`).
 
 Selection of high-traffic overrides:
 

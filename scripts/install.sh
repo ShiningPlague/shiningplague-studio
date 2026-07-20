@@ -40,10 +40,12 @@ Usage:
   install.sh [TARGET_DIR] [--engine unity|unreal|godot-extras|multiplayer]...
 
   TARGET_DIR   The game project to install into. If omitted, the current
-               directory is used — but only when it looks like a project root
-               (contains .git, .claude, CLAUDE.md, project.godot, package.json,
-               a *.uproject, or Unity's Assets/+ProjectSettings/). Otherwise
-               the argument is required.
+               directory is used when it looks like a project root (contains
+               .git, .claude, CLAUDE.md, project.godot, package.json, a
+               *.uproject, or Unity's Assets/+ProjectSettings/) OR when it is
+               an empty/new folder. Otherwise the argument is required.
+               Guard: the installer refuses to install into the studio repo
+               itself (a folder with manifest.yaml + skills/).
 
 Options:
   --engine <pack>   Also install an engine agent pack from agents/engine-packs/
@@ -102,13 +104,42 @@ looks_like_project() {
   return 1
 }
 
+is_empty_or_new() {
+  # $1 = dir. True if it is a brand-new project folder — no entries besides
+  # the temp studio clone and OS cruft.
+  local d="$1" entry name
+  for entry in "${d}"/* "${d}"/.[!.]* "${d}"/..?*; do
+    [ -e "${entry}" ] || continue
+    name="$(basename "${entry}")"
+    case "${name}" in
+      .sp-studio-tmp|shiningplague-studio|.DS_Store|Thumbs.db|desktop.ini) : ;;
+      *) return 1 ;;
+    esac
+  done
+  return 0
+}
+
+is_studio_repo() {
+  # $1 = dir. True if it looks like the studio repo itself (any clone of it).
+  [ -f "$1/manifest.yaml" ] && [ -d "$1/skills" ]
+}
+
 if [ -z "${TARGET_DIR}" ]; then
-  if looks_like_project "$(pwd)"; then
+  if is_studio_repo "$(pwd)"; then
+    echo "ERROR: the current directory is the ShiningPlague Studio repo itself (manifest.yaml + skills/)." >&2
+    echo "       cd into your GAME project folder and run the installer from there:" >&2
+    echo "         cd /path/to/your/game && bash /path/to/shiningplague-studio/scripts/install.sh" >&2
+    exit 1
+  elif looks_like_project "$(pwd)"; then
     TARGET_DIR="$(pwd)"
     step "No target given — current directory looks like a project root, using it."
+  elif is_empty_or_new "$(pwd)"; then
+    TARGET_DIR="$(pwd)"
+    step "No target given — current directory is an empty/new folder, using it as the project root."
   else
-    echo "ERROR: no target directory given and the current directory has no project marker" >&2
-    echo "       (.git / .claude / CLAUDE.md / project.godot / package.json / *.uproject / Unity dirs)." >&2
+    echo "ERROR: no target directory given, and the current directory is neither an empty/new folder" >&2
+    echo "       nor a recognizable project root (.git / .claude / CLAUDE.md / project.godot /" >&2
+    echo "       package.json / *.uproject / Unity dirs)." >&2
     echo "       Pass the game project directory explicitly: install.sh /path/to/your/game" >&2
     exit 2
   fi
@@ -120,9 +151,11 @@ if [ ! -d "${TARGET_DIR}" ]; then
 fi
 TARGET_DIR="$(cd "${TARGET_DIR}" && pwd)"
 
-# Refuse to install into the studio repo itself.
-if [ "${TARGET_DIR}" = "${REPO_DIR}" ]; then
-  echo "ERROR: target is the studio repo itself — pass your game project directory instead." >&2
+# Refuse to install into the studio repo itself (this clone or any other).
+if [ "${TARGET_DIR}" = "${REPO_DIR}" ] || is_studio_repo "${TARGET_DIR}"; then
+  echo "ERROR: target is the ShiningPlague Studio repo itself (manifest.yaml + skills/ present)." >&2
+  echo "       Pass your game project directory instead, or cd into it and re-run:" >&2
+  echo "         cd /path/to/your/game && bash /path/to/shiningplague-studio/scripts/install.sh" >&2
   exit 1
 fi
 
@@ -135,8 +168,8 @@ resolve_pack_dir() {
     echo "${dir}"; return 0
   fi
   # transitional alias: 'multiplayer' pack previously shipped as 'other'
-  if [ "${pack}" = "multiplayer" ] && [ -d "${REPO_DIR}/agents/engine-packs/other" ]; then
-    echo "${REPO_DIR}/agents/engine-packs/other"; return 0
+  if [ "${pack}" = "multiplayer" ] && [ -d "${REPO_DIR}/agents/engine-packs/multiplayer" ]; then
+    echo "${REPO_DIR}/agents/engine-packs/multiplayer"; return 0
   fi
   echo ""
 }

@@ -1,5 +1,10 @@
 # Skills Protocol — Extended Detail
 
+> **Advanced reference — you do not need this on day one.**
+> This is the full-discipline mode of the skills protocol — the strict
+> version of the light default in your project's CLAUDE.md. If you're new,
+> start with [docs/START-HERE.md](START-HERE.md) and adopt this when it helps.
+
 > 🌱 **ShiningPlague-adopted:** Originally Donchitos framework reference doc. Extended with studio additions — canonical-flow driving examples (moved out of CLAUDE.md), chain-propose full transition table, conditional auto-promotion rules, subagent tier overrides, dev branches policy. Original Donchitos content preserved; studio additions explicitly labeled.
 
 Slim canonical version: [CLAUDE.md § Skills Protocol](../../CLAUDE.md). This file holds rarely-needed detail extracted from CLAUDE.md to keep the entry-point file lean.

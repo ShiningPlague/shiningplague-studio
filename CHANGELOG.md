@@ -4,6 +4,20 @@ All notable changes to the ShiningPlague Game Studio framework are recorded here
 The format follows [Keep a Changelog](https://keepachangelog.com/); versions follow
 [Semantic Versioning](https://semver.org/).
 
+## [0.4.0] - 2026-07-20 — first public release
+
+### Added
+- One-paste setup: README ships a message you paste into Claude Code; Claude clones, installs, cleans up, interviews you for the 3 project fill-ins, and suggests your first move. Installers now default to the current directory (guarded against running inside the studio repo itself).
+- `docs/skills-index.md` + `docs/agents-index.md` — machine-readable routing tables (auto-generated from frontmatter); every reference across the bundle now resolves on a fresh install.
+- `docs/START-HERE.md` — Claude's 15-minute orientation. All docs are Claude's reference library; users drive everything from the conversation.
+- Adaptive mode sensing in CLAUDE.md + session-start hook: LIGHT default (act directly, no ceremony) with FULL discipline (director briefs, gates, strict pipeline) engaged when signals warrant — Claude chooses per-request.
+- `production/README.md` explaining the state directory.
+
+### Changed
+- Newbie lean pass: README rewritten for first-timers; CLAUDE.md.template cut to ~150 lines with safe defaults; drill-language ("MANDATORY", "PROTOCOL FAIL") softened to recommendations across hooks; advanced docs labeled as such.
+- Engine pack `other` renamed `multiplayer` (matches README/installer naming).
+- Template count corrected (41).
+
 ## [0.3.0] - 2026-07-20
 
 ### Added

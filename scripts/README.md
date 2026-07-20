@@ -20,10 +20,14 @@ project — nothing is ever written to `~/.claude` or any other user-level path.
 ./install.ps1 C:\path\to\your\game
 ```
 
-If you run the installer with no target from inside a directory that looks like
-a project root (contains `.git`, `.claude`, `CLAUDE.md`, `project.godot`,
-`package.json`, a `*.uproject`, or Unity's `Assets/` + `ProjectSettings/`), the
-current directory is used. Otherwise the target argument is required.
+The target argument is optional. With no target, the current directory is used
+when it looks like a project root (contains `.git`, `.claude`, `CLAUDE.md`,
+`project.godot`, `package.json`, a `*.uproject`, or Unity's `Assets/` +
+`ProjectSettings/`) **or** when it is an empty/new folder (ignoring a
+`.sp-studio-tmp` / `shiningplague-studio` clone and OS cruft). Otherwise the
+target argument is required. One guard: the installer refuses to install into
+the studio repo itself (any folder with `manifest.yaml` + `skills/`) — `cd`
+into your game project and run it from there.
 
 What gets copied where:
 

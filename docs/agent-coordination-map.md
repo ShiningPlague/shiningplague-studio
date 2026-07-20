@@ -1,5 +1,10 @@
 # Agent Coordination and Delegation Map
 
+> **Advanced reference — you do not need this on day one.**
+> This is the complete org chart, delegation rules, and escalation paths.
+> Day to day, the studio routes work for you. If you're new, start with
+> [docs/START-HERE.md](START-HERE.md) and come back when you want the full map.
+
 > 🌱 **ShiningPlague-adopted:** Originally Donchitos framework reference doc. Extended with studio additions — Three dispatch patterns detail (moved out of CLAUDE.md), session protocol section, workstream dispatch flow. Original Donchitos hierarchy + delegation rules + escalation paths + workflow patterns preserved verbatim; studio additions explicitly labeled.
 
 ## Organizational Hierarchy

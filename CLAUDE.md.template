@@ -1,10 +1,31 @@
 # {{PROJECT_NAME}} — Claude Code Instructions
 
-> {{GAME_PITCH}}. Engine: {{ENGINE}}.
+## Project
 
-<!-- GUIDANCE: Fill every {{PLACEHOLDER}} below, then delete the GUIDANCE comments.
-     This file is read cold by every new chat — it is the ONE doc a fresh session
-     sees before doing anything. Keep it tight and current. -->
+<!-- FILL-IN: these are the only three placeholders in this file. Claude Code
+     can ask you for them and fill them in (see the README setup message). -->
+
+- **Name:** {{PROJECT_NAME}}
+- **Engine:** {{ENGINE}} <!-- e.g. Godot 4.x, Unity 6, Unreal 5.5 -->
+- **Description:** {{PROJECT_DESCRIPTION}} <!-- one sentence: what is this game? -->
+
+<!-- GUIDANCE: Everything below this block works as-is — the paths are safe
+     defaults (docs/GDD.md, data/_schemas/system_registry.json, …) that get
+     created as the studio workflows run. Adjust a path only if your project
+     keeps that doc somewhere else. This file is read cold by every new chat —
+     it is the ONE doc a fresh session sees before doing anything. Keep it
+     tight and current, and delete the GUIDANCE comments as you customize. -->
+
+## How to drive this studio (mode sensing)
+
+Two operating modes ship in this install. **Choose per-request — the user never picks a mode; you sense it:**
+
+- **LIGHT (default):** quick questions, small fixes, early projects, casual asks. Act directly, keep ceremony near zero, end with the recommended next step.
+- **FULL:** escalate when signals warrant — a multi-system feature, release preparation, the user asking for rigor/thoroughness, repeated bugs in the same area, or returning after a long gap. Full mode means: director briefs at session open, the complete pipeline (brainstorm → decide → plan → build → verify), gate checks between phases. The full-discipline reference lives in `.claude/docs/skills-protocol-extended.md` and `.claude/docs/director-gates.md`.
+
+De-escalate as readily as you escalate. When unsure, start light and offer: *"want me to run this with full discipline?"*
+
+**Never assign reading.** The docs in `.claude/docs/` are YOUR reference library, not the user's homework. Never answer with "see docs/X" or "read the README" — read it yourself, give them the part that matters, and offer the recommended next step. The user's entire interface is this conversation.
 
 ---
 
@@ -14,64 +35,63 @@ You do not need to read every doc before acting. Match the question to ONE row, 
 
 | The question is about… | Open this |
 |---|---|
-| **Current state — what's built, what's next, status** | `{{REGISTRY_PATH}}` — the authoritative built-state source. Open first. |
-| "Something's wrong with my test / nothing happens when I X" | `{{REGISTRY_PATH}}` → live test notes / known-working state, before grepping code. |
-| **Design** — mechanics, pillars, systems intent | `{{GDD_PATH}}` |
-| **Data / pipeline reference** — formulas, tables, tuning | `{{IMPL_STATUS_PATH}}` (points at the data files; numbers live in the data, not here) |
+| **Current state — what's built, what's next, status** | `data/_schemas/system_registry.json` — the authoritative built-state source. Open first. |
+| "Something's wrong with my test / nothing happens when I X" | `data/_schemas/system_registry.json` → live test notes / known-working state, before grepping code. |
+| **Design** — mechanics, pillars, systems intent | `docs/GDD.md` <!-- default path — adjust if your GDD lives elsewhere --> |
+| **Data / pipeline reference** — formulas, tables, tuning | `docs/implementation-status.md` (points at the data files; numbers live in the data, not here) |
 | **Architecture decisions** — locked technical/design choices | `docs/adr/` — one ADR per decision, permanent. |
 | **In-progress feature design** — "where's the spec for X?" | `docs/specs/` — check BEFORE restarting a brainstorm. |
-| **Which skill do I invoke?** | `docs/skills-index.md` — skill catalogue + triggers. |
-| **Which agent do I dispatch?** | `docs/agents-index.md` — Intent → Agent table + roster. |
+| **Which skill do I invoke?** | `.claude/docs/skills-index.md` — skill catalogue + triggers. |
+| **Which agent do I dispatch?** | `.claude/docs/agents-index.md` — Intent → Agent table + roster. |
 | **Workstream states** — per-domain progress + open questions | `production/workstreams/<name>.md` |
 | **Last session / next steps / carry-forward** | `production/session-state/active.md` |
 | **What changed recently** | `docs/devlog.md` + `git log --oneline` |
 | **Project phase** | `production/stage.txt` |
-| **Engine gotchas / coding standards** | `{{ENGINE_NOTES_PATH}}` |
+| **Engine gotchas / coding standards** | `.claude/docs/engine-notes/godot-gotchas.md` <!-- bundled default; swap for your engine's notes --> |
 
 <!-- GUIDANCE: Add project-specific rows as your doc stack grows. Keep the map
      pointing at ONE authoritative doc per question — never two that can disagree. -->
 
 ---
 
-## Skills Protocol (MUST FOLLOW)
+## Skills Protocol
 
-**Standing rules:**
-- **Silent skipping = failure mode.** If you catch yourself improvising what looks like a skill's job (your own consistency check, your own verification routine), STOP and fire the skill instead.
-- **User phrasing matching a skill name IS the trigger.** *"run a consistency check"* / *"brainstorm this"* / *"verify it"* / *"design review"* / *"code review"* — those are skill names, not generic verbs.
+Prefer firing a skill over improvising its job. If work looks like something a skill covers (a consistency check, a verification pass, a design review), invoke that skill. The user's phrasing is often the trigger — *"run a consistency check"*, *"brainstorm this"*, *"code review"* name skills, not generic verbs.
 
-### The 8 🔒 MUST-USE skills (auto-fire on trigger match, no permission ask)
+### The 8 auto-fire skills
 
-| Skill | Trigger |
+The studio fires these automatically when their trigger matches — no permission ask, just a brief announcement:
+
+| Skill | Fires when… |
 |---|---|
-| `using-superpowers` | Always, at chat start. |
-| `brainstorming` | Before ANY creative work — new feature, mechanic, UI, or behaviour change. |
-| `test-driven-development` | Before writing implementation code. |
-| `systematic-debugging` | IMMEDIATELY on any bug / hang / crash / wrong-output report, OR before asking someone to run a manual test. Phase 1 evidence-gathering FIRST — no fix attempts before that. |
-| `verification-before-completion` | Before ANY "done / fixed / passing" claim, before commits, before PRs. Run actual verification commands; cite the output. |
-| `godot-engine` | When editing engine files (scripts, scenes, resources, shaders), creating an autoload/scene, or authoring a spec that will produce such files. (bundled; anthropic-skills plugin = optional upgrade) <!-- Non-Godot project: swap this row for the matching engine-pack skill --> |
-| `session-close` | On ANY session-end signal ("wrap up", "we're done", "close session"), OR after 5+ commits without a sync. MUST fire before the session ends. |
-| `writing-skills` | Before editing or creating any `SKILL.md` file. Self-check before any Write/Edit on a SKILL.md path: did `writing-skills` fire this turn? If not, fire it FIRST. |
-
-**Failure-mode enforcement:** claiming done without `verification-before-completion`, proposing a fix without `systematic-debugging` Phase 1, or touching an engine file without `godot-engine` (or your engine-pack skill) primed are all protocol violations. Push back on them.
+| `using-superpowers` | Every chat starts. |
+| `brainstorming` | Creative work begins — a new feature, mechanic, UI, or behaviour change. |
+| `test-driven-development` | Implementation code is about to be written. |
+| `systematic-debugging` | A bug / hang / crash / wrong-output report arrives. Evidence-gathering comes before fix attempts. |
+| `verification-before-completion` | A "done / fixed / passing" claim, commit, or PR is coming up. Run the verification commands; cite the output. |
+| `godot-engine` | Engine files are being edited (scripts, scenes, resources, shaders) or specced. (bundled; anthropic-skills plugin = optional upgrade) <!-- Non-Godot project: swap this row for the matching engine-pack skill --> |
+| `session-close` | The session is ending ("wrap up", "we're done"), or 5+ commits have landed without a sync. |
+| `writing-skills` | Any `SKILL.md` file is about to be created or edited. |
 
 ---
 
-## MANDATORY DISPATCH rule
+## Dispatch rule
 
-**Before any non-trivial scoped work, check `docs/agents-index.md` Intent → Agent table. If the work maps to a specialist's domain, propose dispatching that specialist FIRST.** Doing it inline when an agent should own it is the same failure mode as silent skill skipping.
+Before non-trivial scoped work, check the `.claude/docs/agents-index.md` Intent → Agent table — if the work maps to a specialist's domain, propose dispatching that specialist first and let the user confirm. Inline is fine for trivial work (small doc tweak, <~50 LOC) or when the user says "do it yourself."
 
-**Self-check before non-trivial work:**
-1. Match the request against the Intent → Agent table.
-2. If a specialist owns it: announce *"This is `<agent>` territory — propose dispatching."* and wait.
-3. Inline is OK only if (a) trivial (small doc tweak, <~50 LOC), OR (b) the designer explicitly says "do it yourself."
+---
 
-Rationalizations that do NOT excuse skipping dispatch: token cost, "faster inline", "not THAT scoped", "I'll dispatch next time." Dispatch.
+## Session open / close
+
+**Open:** read `production/session-state/active.md` + the session-start hook output, surface where the last session left off, and recommend one concrete next action (`/help` logic). Three files, one recommendation, then work.
+
+**Close:** on any wrap-up signal, fire `session-close` — it syncs state files, logs the session, and sets up the next chat to resume cleanly. Full protocol: the `session-close` skill itself.
 
 ---
 
 ## Pipeline (when to use which path)
 
-Two legitimate paths. The small path is a SUBSET of the large path — it skips the GDD/architecture/epic ceremony. **Default: brainstorm first, THEN choose the path** based on how big the scope turns out to be.
+Two legitimate paths. The small path is a SUBSET of the large path — it skips the GDD/architecture/epic ceremony. **Default: brainstorm first, THEN choose the path** based on how big the scope turns out to be. Small change that fits in a sentence? No path — just do it.
 
 ### Small path (single-system work, 1–2 weeks)
 
@@ -89,7 +109,7 @@ brainstorming → design-system (GDD) → map-systems (decompose)
   → qa-plan → test-driven-development → gate-check
   → finishing-a-development-branch
 ```
-Director gates apply between phases. Needed for large, cross-cutting feature areas.
+Director gates apply between phases (see `docs/director-gates.md`). Needed for large, cross-cutting feature areas.
 
 ---
 
@@ -107,7 +127,7 @@ Every spec carries a `## Expected outcomes at ship` section near the top — wha
 
 ### State tracking
 
-`{{REGISTRY_PATH}}` is the single source of truth for "is it built?". Update it whenever a chat adds or changes a system, tool, or data category. Trust the registry over any prose doc if they disagree.
+`data/_schemas/system_registry.json` is the single source of truth for "is it built?". Update it whenever a chat adds or changes a system, tool, or data category. Trust the registry over any prose doc if they disagree.
 
 ### Numbers live in data, not docs
 
@@ -121,11 +141,11 @@ Tunable values (formulas, stat tables, rarity bands, curves) live in editable da
      These four are a sane default for a data-driven game; add engine- and
      genre-specific ones (signals, modularity, render boundaries, AI bridges…). -->
 
-1. **Data-driven** — content lives in editable data files under `{{DATA_DIR}}`, never embedded in scripts.
+1. **Data-driven** — content lives in editable data files under `data/`, never embedded in scripts.
 2. **Decomposed** — each system is one unit with a clear boundary; systems communicate through events/signals, not direct reach-in calls.
 3. **Modular** — no system assumes another exists. Check for a dependency and degrade gracefully when it's absent.
 4. **Human-editable** — every data type has a schema; adding content = adding a data file, not editing code.
 
 ---
 
-*This template was scaffolded from ShiningPlague Game Studio. Fill the placeholders and delete the GUIDANCE comments.*
+*This template was scaffolded from ShiningPlague Game Studio. Fill the three `{{…}}` fields in the `## Project` block (everything else has safe defaults) and delete the GUIDANCE comments as you customize.*

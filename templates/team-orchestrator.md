@@ -211,7 +211,7 @@ Skill(skill="session-close")
 
 ## Cross-references — Template + Agent per Activity
 
-This file defines the **skill chain** for each activity. For the **template + agent** that backs each skill in each phase, see **[docs/agents-index.md § Phase → Template → Skill → Agent Map](../../../docs/agents-index.md)**.
+This file defines the **skill chain** for each activity. For the **template + agent** that backs each skill in each phase, see **[.claude/docs/agents-index.md § Phase → Template → Skill → Agent Map](../../../docs/agents-index.md)**.
 
 Example lookup: in DESIGN Activity Step 1 (`/brainstorming`), agents-index.md tells you:
 - Concept-phase target → template `game-concept.md`, primary agent `creative-director`

@@ -47,7 +47,7 @@ if [ -z "$NEXT_LOWER" ]; then
 fi
 
 # Build dispatch reminders based on keywords in the `next` field.
-# Maps mirror the CLAUDE.md MANDATORY DISPATCH table + docs/agents-index.md.
+# Maps mirror the CLAUDE.md MANDATORY DISPATCH table + .claude/docs/agents-index.md.
 REMINDERS=""
 
 add_dispatch() {
@@ -59,7 +59,7 @@ add_dispatch() {
 
 case "$NEXT_LOWER" in
   *"audit"*|*"registry"*|*"consistency"*|*"sprint"*|*"milestone"*|*"scope"*|*"tech debt"*|*"retrospective"*|*"bug triage"*|*"project management"*|*"doc sync"*|*"docs sync"*|*"stock check"*|*"restructure"*|*"cleanup"*|*"reorganis"*|*"reorganiz"*)
-    add_dispatch "[chat-start 🔒 MANDATORY DISPATCH] dev_diary.next field flags PM/audit territory. **DISPATCH \`producer\` agent FIRST** for any non-trivial scoped work — Agent({subagent_type: 'producer', prompt: '...'}). See CLAUDE.md MANDATORY DISPATCH rule + docs/agents-index.md Intent table. Today's primary work is producer-owned." ;;
+    add_dispatch "[chat-start 🔒 MANDATORY DISPATCH] dev_diary.next field flags PM/audit territory. **DISPATCH \`producer\` agent FIRST** for any non-trivial scoped work — Agent({subagent_type: 'producer', prompt: '...'}). See CLAUDE.md MANDATORY DISPATCH rule + .claude/docs/agents-index.md Intent table. Today's primary work is producer-owned." ;;
 esac
 
 case "$NEXT_LOWER" in
@@ -127,7 +127,7 @@ fi
 
 # Output as additionalContext.
 CONTEXT="$(printf "%b" "$REMINDERS")"
-CONTEXT="$(printf 'dev_diary.json next field for the most recent entry contains keywords matching specialist-dispatch territory:\n\n%s\n\nNext = %s\n\nPer CLAUDE.md MANDATORY DISPATCH rule + docs/agents-index.md, dispatch the relevant specialist BEFORE doing the work inline. Doing it inline = silent skill skipping failure mode.' "$CONTEXT" "$NEXT_VAL")"
+CONTEXT="$(printf 'dev_diary.json next field for the most recent entry contains keywords matching specialist-dispatch territory:\n\n%s\n\nNext = %s\n\nPer CLAUDE.md MANDATORY DISPATCH rule + .claude/docs/agents-index.md, dispatch the relevant specialist BEFORE doing the work inline. Doing it inline = silent skill skipping failure mode.' "$CONTEXT" "$NEXT_VAL")"
 
 if command -v jq >/dev/null 2>&1; then
   printf '%s' "$CONTEXT" | jq -Rsa '{hookSpecificOutput: {hookEventName: "SessionStart", additionalContext: .}}'

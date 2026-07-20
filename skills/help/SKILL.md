@@ -172,7 +172,7 @@ Keep it **short and direct**. Quick orientation, not a report.
 ### ✓ Done
 - [completed step name]
 
-### → Next up (REQUIRED)
+### → Next up (recommended)
 **[Step name]** — [description]
 Command: `[/command]`
 
@@ -190,24 +190,23 @@ Command: `[/command]`
 ### Open Specs (paused)
 - 🚧 [spec path] — [topic]
 
-### ~ Also available (OPTIONAL)
+### ~ Also available (optional)
 - **[Step name]** — [description] → `/command`
 
 ### Coming up after that
-- [Next required step name] (`/command`)
+- [Next step name] (`/command`)
 
 ---
-Approaching **[next phase]** gate → run `/gate-check` when ready.
+Getting close to the **[next phase]** gate → run `/gate-check` when you're ready.
 ```
 
 **Formatting rules:**
 - `✓` for confirmed complete
-- `→` for the current required next step (only one — the first blocker)
+- `→` for the recommended next step (only one — the first blocker)
 - `~` for optional steps available now
 - Show commands inline as backtick code
 - For MANUAL steps, ask: "I can't tell if [step] is done — has it been completed?"
-
-Verdict: **COMPLETE** — next steps identified.
+- Keep the tone friendly and orienting — this is a helpful signpost, not a compliance report.
 
 ---
 
