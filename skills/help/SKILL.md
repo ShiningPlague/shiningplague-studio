@@ -63,6 +63,8 @@ Show only if at least one uncataloged skill exists. Limit to the 10 most relevan
 ## Step 2: Determine Current Phase
 
 1. **Read `production/stage.txt`** — authoritative. Map to catalog phase key:
+   - "not-started" → **the seeded default, not a phase.** No gate has been cleared;
+     fall through to step 2 and infer from artifacts.
    - "Concept" → `concept`
    - "Systems Design" → `systems-design`
    - "Technical Setup" → `technical-setup`
@@ -71,7 +73,7 @@ Show only if at least one uncataloged skill exists. Limit to the 10 most relevan
    - "Polish" → `polish`
    - "Release" → `release`
 
-2. **If missing** (a `--no-scaffold` install), infer phase from artifacts (most-advanced match wins). The installer seeds this stack blank, so judge these on **content**, not existence — an unfilled template is not an artifact:
+2. **If missing** (a `--no-scaffold` install) **or still `not-started`**, infer phase from artifacts (most-advanced match wins). The installer seeds this stack blank, so judge these on **content**, not existence — an unfilled template is not an artifact, and a file still carrying the `scaffold-seed: unwritten` marker near the top counts as absent (`.claude/docs/doc-stack.md` § *Seeded is not written*):
    - `src/` has 10+ source files → `production`
    - `production/epics/**/*.md` exists → `pre-production`
    - `docs/adr/[0-9]*.md` exists → `technical-setup` (`NNN-<slug>.md` only; the leading digit excludes the seeded `docs/adr/TEMPLATE.md`)
@@ -139,7 +141,7 @@ If step has no `artifact` field:
 
 ### Special case: production phase — read `sprint-status.yaml`
 
-When current phase is `production`, check `production/sprint-status.yaml` before glob-based story checks. If it exists, read it:
+When current phase is `production`, check `production/sprint-status.yaml` before glob-based story checks. The installer seeds it `status: none` with an empty `stories: []` — that is "no sprint has been planned yet", not a sprint with no stories. Once a sprint exists, read it:
 
 - Stories `status: in-progress` → "currently active"
 - `status: ready-for-dev` → "next up"

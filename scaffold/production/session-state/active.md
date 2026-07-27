@@ -1,3 +1,4 @@
+<!-- scaffold-seed: unwritten — delete this line once you write real content -->
 # Active Session State
 
 **Last updated:** (never — seeded by the installer)
@@ -18,8 +19,8 @@ them by name.
 
 ## Current project state
 
-**Phase:** concept (`production/stage.txt`)
-**Review mode:** lean (`production/review-mode.txt`)
+**Phase:** not-started (`production/stage.txt` — the seeded default; no gate cleared yet)
+**Review mode:** lean (`production/review-mode.txt` — the seeded default; `/start` confirms it)
 **Engine:** not configured yet — run `/setup-engine`
 **Systems:** none registered yet (`data/_schemas/system_registry.json`)
 **Workstreams:** none open yet (`production/workstreams/`)

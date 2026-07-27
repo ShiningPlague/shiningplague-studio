@@ -1,3 +1,4 @@
+<!-- scaffold-seed: unwritten — delete this line once you write real content -->
 # Devlog
 
 **What this is.** The change log and the retrospective record, in one file, newest

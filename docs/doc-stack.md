@@ -28,6 +28,50 @@ should complain about that.
 
 ---
 
+## Seeded is not written — the `scaffold-seed` marker
+
+Scaffolding bought coherence and sold a signal. Before the stack was seeded, "does the file
+exist?" was a usable proxy for "did somebody do this work?". Now every `scaffold` row above
+exists from minute one, so that proxy is a constant — and a tool that reads it reports work
+the user never did. It did: on a virgin install `tools/workflow_state_check.py` announced
+three `UNRECORDED` steps (`game-concept`, `art-bible`, `map-systems`) and told a brand-new
+user to log them. The "evidence" was the three blank skeletons the installer had written
+sixty seconds earlier.
+
+**The fix is one token.** Every seeded document carries a marker line near the top, and
+**you delete that line when you write real content**. Nothing else about the file matters.
+
+| The seed is… | The marker line |
+|---|---|
+| markdown / HTML | `<!-- scaffold-seed: unwritten — delete this line once you write real content -->` |
+| YAML / anything `#`-commented | `# scaffold-seed: unwritten — delete this line once you write real content` |
+
+The token is **`scaffold-seed: unwritten`**. It is defined in code exactly once —
+`SCAFFOLD_SEED_MARKER` in `tools/workflow_state_check.py` — and this table is its
+human-readable contract. Every other reader is prose: a skill that gates on an artifact
+says "treat a file carrying the `scaffold-seed` marker as absent", it does not re-declare
+the token.
+
+**What the marker buys, mechanically:** `tools/workflow_state_check.py` treats a file
+carrying it as **absent evidence** — for a `glob` with or without a `pattern`, for
+`min_count` arithmetic, for `BOOTSTRAP MODE` inference, and for a ledger's own `evidence:`
+paths (so `status: done` pointing at an untouched skeleton is a `CONFLICT`, which is what it
+is). A directory counts as evidence only if it holds a real file: `.gitkeep` and marked
+skeletons do not make `docs/adr/` an architecture decision.
+
+**Three seeds cannot carry a comment line, and are handled by value instead:**
+
+| Seed | Why no marker | The seeded-default signal |
+|---|---|---|
+| `production/stage.txt` | Read with `cat`; a comment line would corrupt every reader. | Seeded **`not-started`** — deliberately not a phase name. `/gate-check` writes a real phase on the first PASS. |
+| `data/_schemas/system_registry.json`, `dev_diary.json` | JSON has no comments. | Seeded structurally empty — `"systems": []`, `"entries": {}`. Emptiness is already machine-visible, which is exactly what a marker would have added. |
+| `production/review-mode.txt` | Must hold a value the gates can act on. | Seeded `lean`. `/start` confirms it out loud on a fresh project rather than assuming the designer chose it. |
+
+**When you add a new seed**, put the marker in it. A seed without one re-opens this defect
+for whichever tool reads it next.
+
+---
+
 ## Design layer — `docs/`
 
 | Path | What it is | Written by | Read by | Source |
@@ -54,15 +98,18 @@ should complain about that.
 > **Existence is not evidence — judge a scaffolded artifact on its content.** The
 > installer seeds this whole stack, so on a brand-new project every `scaffold` row
 > above already exists and is blank. "Does the file exist?" was a usable phase
-> signal when the installer created nothing; it is a constant now. Two rules follow
-> from that, and every shipped skill obeys them:
+> signal when the installer created nothing; it is a constant now. Three rules
+> follow from that, and every shipped skill obeys them:
 >
-> 1. **Glob ADRs as `docs/adr/[0-9]*.md`, never `docs/adr/*.md`.** A real ADR is
+> 1. **A file carrying the `scaffold-seed: unwritten` marker is absent.** That is
+>    the mechanical test, and it is the one to reach for first — see
+>    § *Seeded is not written* above.
+> 2. **Glob ADRs as `docs/adr/[0-9]*.md`, never `docs/adr/*.md`.** A real ADR is
 >    `NNN-<slug>.md`; the leading digit separates a decision from the scaffolded
 >    `TEMPLATE.md` beside it. A bare `*.md` glob counts the skeleton as a decision,
 >    which is how a fresh install starts reporting it has reached technical-setup.
 >    `.claude/docs/workflow-catalog.yaml` uses the digit form too.
-> 2. **Read the value, not the filename.** `stage.txt` is seeded `concept` and
+> 3. **Read the value, not the filename.** `stage.txt` is seeded `not-started` and
 >    `review-mode.txt` is seeded `lean` — those are defaults nobody chose. A
 >    template whose prompts are still in `[brackets]` has not been written. The
 >    strongest "this project is in flight" signal is a non-empty `systems[]` in
@@ -95,8 +142,8 @@ should complain about that.
 |---|---|---|---|---|
 | `production/session-state/active.md` | Last session, next steps, carry-forward. | `/session-close`, `/update` | every session open, `/help` | scaffold |
 | `production/session-logs/` | One log per closed session; playtest notes land here too. | `/session-close`, `/qa-plan` | `/retrospective`, `/gate-check` | scaffold |
-| `production/stage.txt` | The current project phase. Authoritative. | `/gate-check` | `/help`, `/project-stage-detect` | scaffold |
-| `production/review-mode.txt` | `full` \| `lean` \| `solo` — how strict reviews are right now. | `/start`, you | `/gate-check`, the director gates | scaffold |
+| `production/stage.txt` | The current project phase. Authoritative. Seeded `not-started`, which is **not** a phase — it means no gate has been cleared. | `/gate-check` | `/help`, `/project-stage-detect` | scaffold |
+| `production/review-mode.txt` | `full` \| `lean` \| `solo` — how strict reviews are right now. Seeded `lean`, a default nobody chose. | `/start`, you | `/gate-check`, the director gates | scaffold |
 | `production/flow-ledger.yaml` | Mechanical workflow state. | `tools/workflow_state_check.py`, `/update` | the session-start hook, `/help` | scaffold |
 | `production/sprint-status.yaml` | Machine-readable sprint state. | `/sprint-plan`, `/retrospective` | `/help`, `/gate-check` | scaffold |
 | `production/workstreams/<domain>.md` | Per-domain progress + open questions. One file per domain, created when that domain opens. | the `/team-*` skills | `/help`, `/sprint-plan` | on use |

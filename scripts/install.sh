@@ -43,10 +43,12 @@ Usage:
   install.sh [TARGET_DIR] [--engine unity|unreal|godot-extras|multiplayer]...
              [--no-scaffold]
 
-  TARGET_DIR   The game project to install into. If omitted, the current
-               directory is used when it looks like a project root (contains
-               .git, .claude, CLAUDE.md, project.godot, package.json, a
-               *.uproject, or Unity's Assets/+ProjectSettings/) OR when it is
+  TARGET_DIR   The game project to install into. It does NOT have to exist —
+               an absent target is created (with a printed note), so
+               `install.sh ./my-new-game` is a valid first command. If omitted,
+               the current directory is used when it looks like a project root
+               (contains .git, .claude, CLAUDE.md, project.godot, package.json,
+               a *.uproject, or Unity's Assets/+ProjectSettings/) OR when it is
                an empty/new folder. Otherwise the argument is required.
                Guard: the installer refuses to install into the studio repo
                itself (a folder with manifest.yaml + skills/).
@@ -154,9 +156,21 @@ if [ -z "${TARGET_DIR}" ]; then
   fi
 fi
 
+# A stranger pastes the quick-start into a folder that does not exist yet -- that
+# is the NORMAL first move ("install the studio into ./my-game"), and refusing it
+# made the studio's very first command an error message. Create it and say so.
 if [ ! -d "${TARGET_DIR}" ]; then
-  echo "ERROR: target directory does not exist: ${TARGET_DIR}" >&2
-  exit 1
+  if [ -e "${TARGET_DIR}" ]; then
+    echo "ERROR: target exists but is not a directory: ${TARGET_DIR}" >&2
+    exit 1
+  fi
+  if ! mkdir -p "${TARGET_DIR}" 2>/dev/null; then
+    echo "ERROR: target directory does not exist and could not be created: ${TARGET_DIR}" >&2
+    echo "       Create it yourself, then re-run the installer:" >&2
+    echo "         mkdir -p \"${TARGET_DIR}\"" >&2
+    exit 1
+  fi
+  step "Target directory did not exist — created it: ${TARGET_DIR}"
 fi
 TARGET_DIR="$(cd "${TARGET_DIR}" && pwd)"
 

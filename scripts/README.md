@@ -20,6 +20,11 @@ project — nothing is ever written to `~/.claude` or any other user-level path.
 ./install.ps1 C:\path\to\your\game
 ```
 
+**The target does not have to exist.** Both installers create an absent target
+directory (parents included) and print a note saying so — installing into a folder
+you have not made yet is the normal first move, and refusing it made the studio's
+very first command an error message.
+
 The target argument is optional. With no target, the current directory is used
 when it looks like a project root (contains `.git`, `.claude`, `CLAUDE.md`,
 `project.godot`, `package.json`, a `*.uproject`, or Unity's `Assets/` +
@@ -54,12 +59,17 @@ paths exist on day one, so a first session that follows the reading map does not
 hit a missing file.
 
 It seeds **36 paths** — real starter files, never zero-byte placeholders, each
-carrying a header saying what it is, who writes it and which skill reads it:
+carrying a header saying what it is, who writes it and which skill reads it, plus
+a `scaffold-seed: unwritten` marker line you delete when you write real content.
+That marker is what lets the tools tell a blank seed from your work: without it
+`tools/workflow_state_check.py` read three untouched skeletons as evidence and told
+a brand-new user to log three steps they had never taken (contract:
+`docs/doc-stack.md` § *Seeded is not written*).
 
 | Group | What lands |
 |---|---|
 | Built state | `data/_schemas/system_registry.json` (valid, empty, documented schema), `data/_schemas/dev_diary.json` |
-| Session state | `production/session-state/active.md` (the handover file), `production/stage.txt` (`concept`), `production/review-mode.txt` (`lean`), `production/flow-ledger.yaml`, `production/sprint-status.yaml` |
+| Session state | `production/session-state/active.md` (the handover file), `production/stage.txt` (`not-started` — not a phase name; no gate cleared yet), `production/review-mode.txt` (`lean`), `production/flow-ledger.yaml`, `production/sprint-status.yaml` |
 | Doc stack | `docs/devlog.md`, `docs/implementation-status.md`, `docs/open-flags.md` |
 | Templates in place | `docs/adr/TEMPLATE.md`, `production/workstreams/TEMPLATE.md`, `docs/GDD.md`, `docs/gdd/{game-concept,game-pillars,systems-index}.md`, `docs/art-bible.md` |
 | Working directories | `docs/{specs,plans,gdd,architecture,z-old/specs,z-old/plans}/`, `production/{session-logs,workstreams,sprints,epics,qa/bugs,qa/evidence}/` |

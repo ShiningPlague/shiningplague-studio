@@ -76,8 +76,17 @@ if [ -d "$WORKSTREAM_DIR" ]; then
 fi
 
 # --- Active session state recovery ---
+# The installer SEEDS this file, so "-f" alone announced "a previous session left
+# state" at a project whose first session had not started yet. The seed carries the
+# scaffold-seed marker (see .claude/docs/doc-stack.md); a file still carrying it is
+# the untouched skeleton, not a handover.
 STATE_FILE="production/session-state/active.md"
-if [ -f "$STATE_FILE" ]; then
+if [ -f "$STATE_FILE" ] && grep -q "scaffold-seed: unwritten" "$STATE_FILE" 2>/dev/null; then
+    echo ""
+    echo "=== NO PRIOR SESSION ==="
+    echo "$STATE_FILE is still the seeded skeleton — nothing has been handed over yet."
+    echo "This is a fresh install. Say \"start\" for guided onboarding."
+elif [ -f "$STATE_FILE" ]; then
     echo ""
     echo "=== ACTIVE SESSION STATE DETECTED ==="
     echo "A previous session left state at: $STATE_FILE"

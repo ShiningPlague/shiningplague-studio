@@ -1,3 +1,4 @@
+<!-- scaffold-seed: unwritten — delete this line once you write real content -->
 # Game Concept: [Working Title]
 
 *Created: [Date]*

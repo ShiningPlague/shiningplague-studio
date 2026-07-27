@@ -1,3 +1,4 @@
+<!-- scaffold-seed: unwritten — delete this line once you write real content -->
 # Workstream: [Name]
 
 > **What this file is.** One domain's running state — combat, narrative, art,

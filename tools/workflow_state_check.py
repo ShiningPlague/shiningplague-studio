@@ -15,6 +15,17 @@ PORTABILITY (the "anyone downloads this from git" story)
   from artifact existence alone, write production/flow-ledger.draft.yaml, and tell the
   user to review + rename it. That is all a downstream framework user has to do.
 
+WHAT COUNTS AS EVIDENCE
+  A file that EXISTS is not evidence that WORK HAPPENED. The installer seeds the
+  whole document stack, so on a virgin install docs/gdd/game-concept.md,
+  docs/art-bible.md and docs/gdd/systems-index.md all exist and are all blank
+  skeletons -- and this tool used to report three UNRECORDED steps to a user who
+  had not yet typed a word. A seeded skeleton must be distinguishable from
+  authored work, so every seeded document carries the SCAFFOLD_SEED_MARKER below
+  and a file carrying it is treated as ABSENT. Deleting the marker line is what
+  turns a skeleton into evidence. Contract: .claude/docs/doc-stack.md
+  section "Seeded is not written".
+
 CROSS-CHECK VERDICTS (per step)
   OK              ledger status matches evidence on disk
   CONFLICT        ledger=done but evidence missing/empty     -> exit 1
@@ -37,6 +48,7 @@ USAGE
 """
 import glob
 import os
+import re
 import sys
 
 # ---------------------------------------------------------------------------
@@ -54,6 +66,35 @@ DRAFT_PATH = os.path.join(REPO_ROOT, "production", "flow-ledger.draft.yaml")
 DONE_STATES = {"done", "leapfrogged", "skipped", "n-a"}
 # Statuses whose skip must carry a reason or they are illegitimate.
 SKIP_STATES = {"skipped", "leapfrogged"}
+
+# ---------------------------------------------------------------------------
+# THE SCAFFOLD-SEED MARKER — defined HERE and nowhere else in code.
+#
+# The installer seeds the project's document stack so the paths the skills
+# command exist on day one. The cost of that is that "the file exists" stopped
+# being a signal: a blank seeded skeleton looks exactly like a written document
+# to any tool that only stats the path. Every seeded document therefore carries
+# one marker line near the top, and the author deletes that line when they write
+# real content. Line forms (comment syntax varies, the TOKEN does not):
+#
+#   markdown / html   <!-- scaffold-seed: unwritten - delete this line once you write real content -->
+#   yaml / shell      #   scaffold-seed: unwritten - delete this line once you write real content
+#
+# Two seeds cannot carry a comment and are handled by VALUE instead, which is
+# documented in .claude/docs/doc-stack.md: production/stage.txt is seeded
+# `not-started` (no phase in the catalog is called that), and the two JSON seeds
+# are seeded structurally empty (`systems: []`, `entries: {}`), which is already
+# machine-visible without a marker.
+# ---------------------------------------------------------------------------
+SCAFFOLD_SEED_MARKER = "scaffold-seed: unwritten"
+
+# The marker must live near the top of the file, so a document that merely
+# QUOTES the token deep in its prose (doc-stack.md documents it) is not silently
+# erased from the evidence pool.
+SEED_MARKER_SCAN_BYTES = 4096
+
+# Directory entries that are scaffolding, never content.
+SEED_DIR_NOISE = {".gitkeep", ".gitignore", ".DS_Store", "Thumbs.db", "desktop.ini"}
 
 
 # ---------------------------------------------------------------------------
@@ -211,7 +252,72 @@ def _split_inline_list(inner):
 # ---------------------------------------------------------------------------
 # Evidence checking
 # ---------------------------------------------------------------------------
-def evidence_exists(patterns, min_count=1):
+def carries_seed_marker(path):
+    """
+    True if `path` is a scaffold seed nobody has written yet.
+
+    Cheap and total: read the head of the file and look for the one token. Any
+    read failure answers False -- an unreadable file is not proof of a seed, and
+    the caller's other gates (size, pattern) still apply.
+    """
+    try:
+        with open(path, "r", encoding="utf-8", errors="replace") as f:
+            head = f.read(SEED_MARKER_SCAN_BYTES)
+    except OSError:
+        return False
+    return SCAFFOLD_SEED_MARKER in head
+
+
+def _file_is_evidence(path, text_pattern=None):
+    """A real, written, non-empty file — optionally one matching the catalog's
+    declared `pattern`."""
+    try:
+        if os.path.getsize(path) <= 0:
+            return False
+    except OSError:
+        return False
+    if carries_seed_marker(path):
+        return False
+    if not text_pattern:
+        return True
+    try:
+        with open(path, "r", encoding="utf-8", errors="replace") as f:
+            body = f.read()
+    except OSError:
+        return False
+    try:
+        return re.search(text_pattern, body) is not None
+    except re.error:
+        # A malformed catalog pattern must not crash the session-start hook.
+        # Fall back to substring containment and let the catalog author see it.
+        return text_pattern in body
+
+
+def _dir_is_evidence(path, text_pattern=None, _depth=0):
+    """
+    A directory counts only if it holds at least one real file. `.gitkeep` is
+    scaffolding, and so is a seeded skeleton — a scaffold step that creates
+    docs/adr/ with a .gitkeep and a blank TEMPLATE.md has not produced an ADR.
+    """
+    if _depth > 4:
+        return False
+    try:
+        entries = os.listdir(path)
+    except OSError:
+        return False
+    for name in entries:
+        if name in SEED_DIR_NOISE:
+            continue
+        child = os.path.join(path, name)
+        if os.path.isdir(child):
+            if _dir_is_evidence(child, text_pattern, _depth + 1):
+                return True
+        elif _file_is_evidence(child, text_pattern):
+            return True
+    return False
+
+
+def evidence_exists(patterns, min_count=1, text_pattern=None):
     """
     True if at least `min_count` paths (glob OK) match an existing non-empty
     file OR a non-empty directory. Returns (found_bool, matched_paths).
@@ -221,6 +327,15 @@ def evidence_exists(patterns, min_count=1):
     ADRs" gate) and read by NOTHING — so the header comment promised a count
     gate while the tool enforced >=1, and a phase could clear a 3-artifact gate
     on one file. Threading it through here is what makes the declaration real.
+
+    text_pattern is the catalog's `artifact.pattern`, which had the SAME defect:
+    the catalog header documents it as "text pattern that must appear in the
+    file (checked after glob)" and nothing read it either.
+
+    And the marker gate above both of them: a file that still carries
+    SCAFFOLD_SEED_MARKER is a seeded skeleton, not work. Without it a virgin
+    install reported three UNRECORDED steps at a user who had done nothing —
+    which is the same lie in the other direction as a `done` with no artifact.
     """
     matched = []
     for pat in patterns or []:
@@ -228,9 +343,9 @@ def evidence_exists(patterns, min_count=1):
         hits = glob.glob(abspat, recursive=True)
         for h in hits:
             if os.path.isdir(h):
-                if os.listdir(h):
+                if _dir_is_evidence(h, text_pattern):
                     matched.append(h)
-            elif os.path.isfile(h) and os.path.getsize(h) > 0:
+            elif os.path.isfile(h) and _file_is_evidence(h, text_pattern):
                 matched.append(h)
     # De-duplicate: two patterns may resolve to the same file, and a count gate
     # that double-counts one artifact is not a count gate.
@@ -339,7 +454,7 @@ def crosscheck(catalog, ledger):
             # ANY evidence means unlogged work, even below the count gate --
             # calling 2-of-3 ADRs "no evidence" would be a lie. The count gate
             # sharpens the NOTE here; it gates for real on a `done` claim below.
-            found, matched = evidence_exists(pats, 1)
+            found, matched = evidence_exists(pats, 1, _artifact_text_pattern(art))
             status = "(unlogged)"
             if found:
                 verdict = "UNRECORDED"
@@ -433,6 +548,17 @@ def _artifact_patterns(art):
 def _artifact_min_count(art):
     """The catalog step's declared min_count (default 1)."""
     return _as_min_count((art or {}).get("min_count", 1))
+
+
+def _artifact_text_pattern(art):
+    """
+    The catalog step's declared `pattern` — text that must appear in the matched
+    file. Applied to CATALOG artifact globs only, never to a ledger's own
+    evidence paths: those are author-chosen and may legitimately point at a
+    different document than the catalog's canonical one.
+    """
+    p = (art or {}).get("pattern")
+    return p if isinstance(p, str) and p.strip() else None
 
 
 def _rel(paths):
@@ -547,8 +673,12 @@ def bootstrap(catalog):
         art = st.get("artifact", {}) or {}
         pats = _artifact_patterns(art)
         # Honour the count gate: a draft that infers "done" for a 3-artifact
-        # step off one file hands the user a ledger that lies on day one.
-        found, matched = evidence_exists(pats, _artifact_min_count(art))
+        # step off one file hands the user a ledger that lies on day one. Same
+        # for the seed marker — a bootstrap that infers "done" from the blank
+        # skeletons the installer just wrote is a ledger that lies on day ZERO.
+        found, matched = evidence_exists(
+            pats, _artifact_min_count(art), _artifact_text_pattern(art)
+        )
         status = "done" if found else "not-started"
         lines.append("  - id: %s" % st["id"])
         lines.append("    status: %s" % status)

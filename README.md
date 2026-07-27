@@ -43,7 +43,7 @@ git clone https://github.com/ShiningPlague/shiningplague-studio.git
 bash shiningplague-studio/scripts/install.sh /path/to/your/game
 ```
 
-Windows PowerShell: `./shiningplague-studio/scripts/install.ps1 C:\path\to\your\game`. Run with no argument from inside your game folder (empty/new folders work too) and it installs there; it refuses to install into the studio repo itself. Optional engine agent packs: `--engine unity|unreal|godot-extras|multiplayer` (bash) / `-Engine unity` (PowerShell). Full copy map + no-script hand-copy steps: [scripts/README.md](scripts/README.md).
+Windows PowerShell: `./shiningplague-studio/scripts/install.ps1 C:\path\to\your\game`. **The target does not have to exist** — both installers create it (and say so) when it is absent, so `install.sh ./my-new-game` is a valid first command. Run with no argument from inside your game folder (empty/new folders work too) and it installs there; it refuses to install into the studio repo itself. Optional engine agent packs: `--engine unity|unreal|godot-extras|multiplayer` (bash) / `-Engine unity` (PowerShell). Full copy map + no-script hand-copy steps: [scripts/README.md](scripts/README.md).
 
 </details>
 
@@ -92,11 +92,12 @@ your-game/
 │
 ├── docs/                          # ── seeded, never overwritten ──
 │   ├── GDD.md                     # master game design document
-│   ├── gdd/                       # per-system GDDs + systems-index, game-concept, game-pillars
+│   ├── gdd/                       # systems-index, game-concept, game-pillars (+ per-system GDDs ✎)
 │   ├── art-bible.md
-│   ├── adr/                       # NNN-<slug>.md decision records + TEMPLATE.md
-│   ├── architecture/              # architecture.md · control-manifest.md · tr-registry.yaml
-│   ├── specs/ · plans/            # in-flight design specs and implementation plans
+│   ├── adr/                       # TEMPLATE.md — the NNN-<slug>.md records themselves are ✎
+│   ├── architecture/              # ✎ empty dir; /create-architecture, /create-control-manifest
+│   │                              #   and /architecture-review write into it
+│   ├── specs/ · plans/            # ✎ empty dirs; /brainstorming and /writing-plans fill them
 │   ├── z-old/{specs,plans}/       # where they retire to
 │   └── devlog.md · implementation-status.md · open-flags.md
 ├── data/
@@ -109,6 +110,10 @@ your-game/
     ├── qa/{bugs,evidence}/
     └── stage.txt · review-mode.txt · sprint-status.yaml · flow-ledger.yaml
 ```
+
+**✎ = created on use, not seeded.** A fresh install has the *directory*, not the file: `docs/architecture/architecture.md` does not exist until you run `/create-architecture`, and that is the correct day-one state. Everything else in the tree above is a real file the moment the installer finishes. `CLAUDE.md`'s reading map holds the same line — rows for on-use artifacts point at the directory and name the skill that fills it, so no session ever hunts for a file that was never written.
+
+The seeded files are skeletons, and each one carries a `scaffold-seed: unwritten` marker line that you delete when you write real content. That is what lets `tools/workflow_state_check.py` tell a blank seed from your work instead of reporting steps you never took ([docs/doc-stack.md](docs/doc-stack.md) § *Seeded is not written*).
 
 Already have your own document stack? `--no-scaffold` (bash) / `-NoScaffold` (PowerShell) installs the `.claude/` layer alone.
 

@@ -30,15 +30,22 @@ Routes the designer to the right onboarding path based on what exists — fresh 
 > registry and `docs/adr/TEMPLATE.md` all *exist* and are all still empty. Judge
 > every signal below on **content**, never on the file being present — otherwise a
 > stranger's first `/start` reports "already onboarded" at an untouched install.
+>
+> **The mechanical test is one grep.** Every seeded document carries
+> `scaffold-seed: unwritten` on a line near the top, and the author deletes that
+> line when they write real content. A file still carrying it is **absent** for
+> every judgement below. Contract: `.claude/docs/doc-stack.md` §
+> *Seeded is not written*.
 
 Read silently:
-1. `production/stage.txt` — read the value. Anything past `concept` means real
-   work has happened. `concept` is the seeded day-one value and proves nothing.
+1. `production/stage.txt` — read the value. It is seeded **`not-started`**, which
+   is not a phase name: no gate has been cleared. Any real phase word (`concept`,
+   `systems-design`, …) means `/gate-check` passed and real work has happened.
 2. `data/_schemas/system_registry.json` — the built-state authority. A non-empty
    `systems[]` is the strongest "this project is already in flight" signal there is.
-3. `docs/gdd/game-concept.md` — concept **written**? The seeded copy is the blank
-   template; if the elevator pitch is still the bracketed `[…]` prompt text, treat
-   it as absent.
+3. `docs/gdd/game-concept.md` — concept **written**? Still carrying the
+   `scaffold-seed` marker, or with the elevator pitch still in bracketed `[…]`
+   prompt text, means it is the blank seed — treat it as absent.
 4. `.claude/docs/technical-preferences.md` — engine configured? (Not scaffolded —
    presence here is a real signal.)
 5. Glob `src/**/*` for engine source files — source code exists?
@@ -88,9 +95,10 @@ Based on findings, present the appropriate path. Frame it as a friendly roadmap,
 
 ## Phase 3: Confirm Review Mode
 
-`production/review-mode.txt` is seeded by the installer as `lean`, so it always
-exists — its presence is not a sign the designer ever chose. On a fresh project
-(Phase 1 found no content), confirm the default rather than assuming it:
+`production/review-mode.txt` is seeded by the installer as `lean` (it has to hold
+a value the gates can act on, so it carries no `scaffold-seed` marker), so it
+always exists — its presence is not a sign the designer ever chose. On a fresh
+project (Phase 1 found no content), confirm the default rather than assuming it:
 
 "You're set to **lean** review — director specialists weigh in at phase gates
 only. Want to change that?"
@@ -106,5 +114,5 @@ the open question instead and write the answer.
 
 ## Re-invocation Note
 
-- If `/start` is invoked on an already-onboarded project — Phase 1 found **content**, not merely files: `stage.txt` past `concept`, a non-empty `systems[]`, a written concept, or a real `docs/adr/[0-9]*.md` — report: "Project already onboarded. Current phase: [stage]. Run `/adopt` to re-audit, `/gate-check` to validate readiness, or `/help` for what to do next."
-- Never report "already onboarded" because the seeded document stack exists. A fresh install has every one of those files and an empty project; that is the day-one state, not prior work.
+- If `/start` is invoked on an already-onboarded project — Phase 1 found **content**, not merely files: `stage.txt` holding a real phase name rather than the seeded `not-started`, a non-empty `systems[]`, a written concept, or a real `docs/adr/[0-9]*.md` — report: "Project already onboarded. Current phase: [stage]. Run `/adopt` to re-audit, `/gate-check` to validate readiness, or `/help` for what to do next."
+- Never report "already onboarded" because the seeded document stack exists. A fresh install has every one of those files and an empty project; that is the day-one state, not prior work. If the only evidence you can point at is a file that still carries the `scaffold-seed` marker, you have no evidence.

@@ -1,3 +1,4 @@
+<!-- scaffold-seed: unwritten — delete this line once you write real content -->
 # Art Bible: [Game Title]
 
 ## Document Status

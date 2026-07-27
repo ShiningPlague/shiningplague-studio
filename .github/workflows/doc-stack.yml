@@ -41,11 +41,17 @@ jobs:
       # 2. The user journey. A checker that only ever reads the source can pass
       #    while the installer fails to deliver any of it, so CI installs the
       #    studio the way a stranger would and checks the result.
+      # No mkdir here on purpose: the installer creates a missing target itself,
+      # which is what a stranger pasting the quick-start into a new folder does.
+      # If that regresses, this step fails before anything else runs.
       - name: install into a throwaway project
         run: |
           set -euo pipefail
-          mkdir -p "${RUNNER_TEMP}/fresh-project"
-          bash scripts/install.sh "${RUNNER_TEMP}/fresh-project"
+          rm -rf "${RUNNER_TEMP}/fresh-project"
+          bash scripts/install.sh "${RUNNER_TEMP}/fresh-project" \
+            | tee "${RUNNER_TEMP}/install.log"
+          test -d "${RUNNER_TEMP}/fresh-project" \
+            || { echo "FAIL: installer did not create the missing target directory." >&2; exit 1; }
 
       - name: doc_stack_check — the installed project
         run: python tools/doc_stack_check.py --project "${RUNNER_TEMP}/fresh-project"
@@ -119,7 +125,7 @@ jobs:
       - name: manifest counts match disk
         run: |
           python - <<'PY'
-          import pathlib, re, sys
+          import os, pathlib, re, sys
 
           root = pathlib.Path(".")
           text = (root / "manifest.yaml").read_text(encoding="utf-8")
@@ -142,6 +148,17 @@ jobs:
               "scaffold_files":      len([p for p in (root / "scaffold").rglob("*")
                                           if p.is_file() and p.name != "README.md"]),
           }
+
+          # install_files is the one count no disk glob can reproduce: it is what
+          # the INSTALLER lands, which depends on the copy map, the exclusions and
+          # the seeded CLAUDE.md + settings.json. It sat unguarded while the nine
+          # counts above were checked, so it was the count free to rot. The
+          # installer prints it; the install step above saved the log; read it.
+          log = pathlib.Path(os.environ["RUNNER_TEMP"]) / "install.log"
+          m = re.search(r"new files:\s*(\d+)", log.read_text(encoding="utf-8"))
+          if not m:
+              sys.exit(f"FAIL: could not find the 'new files' line in {log}")
+          actual["install_files"] = int(m.group(1))
 
           bad = [(k, declared(k), v) for k, v in actual.items() if declared(k) != v]
           for key, says, is_ in bad:

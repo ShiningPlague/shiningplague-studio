@@ -36,6 +36,10 @@ Concept → Systems Design → Technical Setup → Pre-Production → Production
 
 **If no argument:** read `production/stage.txt` for current phase, then propose next phase from sequence. Confirm with designer.
 
+`stage.txt` is seeded **`not-started`** — that is not a phase, it means no gate has ever
+passed here. Read it as "current phase: none" and propose `concept` as the target. This
+skill's PASS is what writes the first real phase word into the file.
+
 ---
 
 ## Phase 2: Collect Artifacts

@@ -42,7 +42,8 @@ Read:
 - `production/sprints/` most recent — understand what shipped
 - `production/security/security-audit-*.md` most recent — check for any open security items
 
-If `production/stage.txt` is not `Release` or `Polish`:
+If `production/stage.txt` is not `Release` or `Polish` (the seeded `not-started` is
+neither — it means no gate has ever passed here):
 > "Day-one patch prep is for Release-stage projects. Current stage: [stage]. This skill is not appropriate until you are approaching launch."
 
 ---

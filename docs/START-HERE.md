@@ -21,7 +21,7 @@ python tools/doc_stack_check.py       # did the install land completely?
 
 On a brand-new project the first one reports `4 PASS, 0 FAIL` with 8 checks saying they have nothing to look at yet. That is the correct day-one result, not a problem to fix.
 
-**One consequence worth knowing:** because the stack is seeded, *every* one of those files exists from minute one, and they are all empty. A blank `game-concept.md` is not a written concept, and a `stage.txt` reading `concept` is the seeded default, not progress. The skills judge these on content — so "start" on a fresh install correctly says "let's begin", not "already onboarded".
+**One consequence worth knowing:** because the stack is seeded, *every* one of those files exists from minute one, and they are all empty. A blank `game-concept.md` is not a written concept, and `stage.txt` reads `not-started`, which is not a phase at all. So that the tools can tell the difference and not just the humans, every seeded document carries one marker line — `scaffold-seed: unwritten` — which you delete when you write real content into it. The skills and the checkers judge these files on content, never on existence — so "start" on a fresh install correctly says "let's begin", not "already onboarded". Full contract: [docs/doc-stack.md](doc-stack.md) § *Seeded is not written*.
 
 ## The one idea that matters
 

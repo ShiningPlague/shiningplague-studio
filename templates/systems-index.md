@@ -1,3 +1,4 @@
+<!-- scaffold-seed: unwritten — delete this line once you write real content -->
 # Systems Index: [Game Title]
 
 > **Status**: [Draft / Under Review / Approved]

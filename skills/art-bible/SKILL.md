@@ -29,7 +29,11 @@ Extract from game-concept.md:
 - **Visual Identity Anchor** section if present (from brainstorm Phase 4 art-director output)
 - Target platform (if noted)
 
-**Retrofit mode detection**: Glob `docs/art-bible.md`. If the file exists:
+**Retrofit mode detection**: Glob `docs/art-bible.md`. The installer seeds this path
+from the shipped template, so its mere existence proves nothing — if the file still
+carries the `scaffold-seed: unwritten` marker near the top, it is the blank seed:
+treat it as a fresh authoring run (and delete that marker line when you write the
+first real section). If the marker is gone and the file has content:
 - Read it in full
 - For each of the 9 sections, check whether the body contains real content (more than a `[To be designed]` placeholder or similar) vs. is empty/placeholder
 - Build a section status table:
@@ -216,7 +220,7 @@ Before presenting next steps, check project state:
 Use `AskUserQuestion` for next steps. Only include options that are genuinely next based on the state check above:
 
 **Option pool — include only if not already done:**
-- `[_] Run /map-systems — decompose the concept into systems before writing GDDs` (skip if systems-index.md exists)
+- `[_] Run /map-systems — decompose the concept into systems before writing GDDs` (skip only if systems-index.md is *written* — the installer seeds it, so a copy still carrying the `scaffold-seed` marker means the step is still owed)
 - `[_] Run /setup-engine — configure the engine (asset standards may need revisiting after engine is set)` (skip if engine configured)
 - `[_] Run /design-system — start the first GDD` (skip if any GDDs exist)
 - `[_] Run /review-all-gdds — cross-GDD consistency check (required before Technical Setup gate)` (skip if gdd-cross-review-*.md exists)

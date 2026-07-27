@@ -45,24 +45,32 @@ skill is running during the silent read phase.
 
 Then read silently before presenting anything else.
 
-### Existence check
-- `production/stage.txt` — if present, read it (authoritative phase)
-- `docs/gdd/game-concept.md` — concept exists?
-- `docs/gdd/systems-index.md` — systems index exists?
-- Count GDD files: `docs/gdd/*.md` (excluding game-concept.md and systems-index.md)
+### Content check (not an existence check)
+
+> The installer seeds this whole stack, so every path below already exists on a
+> brand-new project. Judge each on **content**: a file still carrying the
+> `scaffold-seed: unwritten` marker near the top is a blank seed and counts as
+> **absent** here. Contract: `.claude/docs/doc-stack.md` § *Seeded is not written*.
+
+- `production/stage.txt` — read the **value**. Seeded `not-started` (not a phase
+  name) means no gate has been cleared; any real phase word is authoritative.
+- `docs/gdd/game-concept.md` — concept **written** (marker deleted)?
+- `docs/gdd/systems-index.md` — systems index **written** (marker deleted)?
+- Count GDD files: `docs/gdd/*.md` (excluding game-concept.md, systems-index.md, and any file still carrying the marker)
 - Count ADR files: `docs/adr/[0-9]*.md` (NNN-<slug>.md; TEMPLATE.md is not a decision)
 - Count story files: `production/epics/**/*.md` (excluding EPIC.md)
 - `.claude/docs/technical-preferences.md` — engine configured?
 - `docs/engine-reference/` — engine reference docs present?
 - Glob `docs/adoption-plan-*.md` — note the filename of the most recent prior plan if any exist
 
-### Infer phase (if no stage.txt)
-Use the same heuristic as `/project-stage-detect`:
+### Infer phase (if stage.txt is absent, or still the seeded `not-started`)
+Use the same heuristic as `/project-stage-detect` — "exists" below always means
+"exists **and** is written; marker deleted":
 - 10+ source files in `src/` → Production
 - Stories in `production/epics/` → Pre-Production
-- ADRs exist → Technical Setup
-- systems-index.md exists → Systems Design
-- game-concept.md exists → Concept
+- ADRs exist (`docs/adr/[0-9]*.md`) → Technical Setup
+- systems-index.md written → Systems Design
+- game-concept.md written → Concept
 - Nothing → Fresh (not a brownfield project — suggest `/start`)
 
 If the project appears fresh (no artifacts at all), use `AskUserQuestion`:
@@ -125,7 +133,8 @@ if the Status section exists.
 
 ### 2c: systems-index.md Format Audit
 
-If `docs/gdd/systems-index.md` exists:
+If `docs/gdd/systems-index.md` is written (marker deleted — a still-marked seed has
+nothing to audit, so say so in one line and skip to 2d):
 
 1. **Parenthetical status values** — Grep for any Status cell containing
    parentheses: `"Needs Revision ("`, `"In Progress ("`, etc.

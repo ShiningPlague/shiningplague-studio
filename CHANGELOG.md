@@ -6,6 +6,67 @@ The format follows [Keep a Changelog](https://keepachangelog.com/); versions fol
 
 ## [Unreleased]
 
+### Fixed — the fresh-install journey, walked as a stranger
+
+Four defects found by re-walking the install as somebody who had never seen the
+repo. Each one is something the *first* command a new user runs gets wrong.
+
+- **The reading map named three files a fresh install does not have.** `CLAUDE.md`'s
+  architecture row named `docs/architecture/architecture.md`, `control-manifest.md`
+  and `tr-registry.yaml` in the present tense, and README's "What you get" tree
+  listed them under the *seeded, never overwritten* banner. All three are written on
+  first use; the installer seeds the empty directory and nothing else. Since
+  `CLAUDE.md` is the one file every session reads cold, a promise there sends the
+  session hunting for a file that was never written. The row now points at
+  `docs/architecture/` and names the skill that writes each file — the pattern
+  `docs/adr/` and `docs/specs/` already used — and the README tree marks on-use
+  artifacts explicitly. Every backticked path in the reading map now resolves in a
+  virgin install; a rule in the template's guidance block says it must stay that way.
+- **The scaffold fooled the tools that read it.** On a virgin install
+  `tools/workflow_state_check.py` reported `game-concept`, `art-bible` and
+  `map-systems` as `UNRECORDED — evidence present but NOT in ledger`, telling a
+  brand-new user to log three steps they had never performed. The "evidence" was the
+  three blank skeletons the installer had written seconds earlier. Root cause: since
+  0.5.0 seeded the document stack, a seeded skeleton became indistinguishable from
+  authored work, and *every* existence test in the bundle inherited the bug.
+  One mechanism fixes all of it: every seeded document now carries a
+  **`scaffold-seed: unwritten`** marker line that the author deletes when they write
+  real content. `workflow_state_check.py` treats a marked file as **absent
+  evidence** — for globs with or without a `pattern`, for `min_count`, for bootstrap
+  inference, and for a ledger's own `evidence:` paths, so `status: done` pointing at
+  an untouched skeleton is now the `CONFLICT` it always was. Directories count only
+  if they hold a real file, so `.gitkeep` no longer makes `docs/adr/` a decision.
+  The token is defined once (`SCAFFOLD_SEED_MARKER`) and documented once
+  (`docs/doc-stack.md` § *Seeded is not written*).
+- **`production/stage.txt` is seeded `not-started`, which is not a phase name.** It
+  used to be seeded `concept` — a real phase — so anything testing "has the project
+  reached concept?" answered yes at an empty install, and `/start` could report
+  "Project already onboarded" to somebody who had just finished installing.
+  `/start`, `/help`, `/adopt`, `/project-stage-detect`, `/gate-check` and
+  `/day-one-patch` now read the seeded default as "no gate has been cleared" and
+  fall through to content-based inference. The registry's mirrored `phase` matches.
+  Two hooks had the same defect and are fixed the same way: `session-start.sh`
+  announced *"a previous session left state"* on a project whose first session had
+  not started, and `post-compact.sh` told Claude to restore working context from a
+  blank skeleton.
+- **`artifact.pattern` was declared in the catalog and read by nothing.** The
+  workflow-catalog header documents it as "text pattern that must appear in the file
+  (checked after glob)", and one step (`engine-setup`) declares one. It is now
+  enforced — the same defect `min_count` had, in the same file. Enforcing it showed
+  the declaration was also wrong: `Engine: [^[]` never matched the markdown-bold
+  shape the doc is actually written in (`- **Engine:** Godot 4.6`). Widened, and it
+  now does the job it was written for — a `[placeholder]` engine field no longer
+  counts as a configured engine.
+- **Both installers create the target directory when it is absent.** They errored
+  with *"target directory does not exist"*, and the README quick-start never said it
+  had to pre-exist, so a user installing into a new folder hit an error on their
+  very first command. `install.sh` and `install.ps1` now `mkdir -p` the target and
+  print a note, identically. CI installs into a non-existent path to keep it that way.
+- **`manifest.yaml`'s `install_files` count is now guarded.** Nine directory counts
+  were checked against disk on every push and this one was not, because no `find`
+  reproduces it — it is what the *installer* lands. CI now tees the install log and
+  asserts the printed "new files" equals the manifest number.
+
 ## [0.5.0] - 2026-07-28 — the install is now what the skills describe
 
 **What was wrong.** Every version up to 0.4.0 shipped a `.claude/` layer and
@@ -200,8 +261,11 @@ not asserted.
   `docs/adr/*.md` matched the seeded `docs/adr/TEMPLATE.md`, so "ADRs exist?" was
   true on day one. **Existence stopped being evidence the moment the installer
   started creating things**, and every affected reader now judges *content*:
-  `stage.txt` past `concept`, a non-empty `systems[]`, an elevator pitch that is no
-  longer bracketed prompt text. ADR globs across five skills narrowed from
+  `stage.txt` past its seeded default, a non-empty `systems[]`, an elevator pitch
+  that is no longer bracketed prompt text. (The *mechanical* version of that rule —
+  the `scaffold-seed` marker, and `stage.txt` seeded `not-started` rather than
+  `concept` — arrived in Unreleased above, after this release's prose rule turned
+  out not to bind the tools.) ADR globs across five skills narrowed from
   `docs/adr/*.md` to `docs/adr/[0-9]*.md` — the leading digit is what separates a
   decision from the skeleton beside it, which is the form
   `.claude/docs/workflow-catalog.yaml` already used. The rule is now stated once,

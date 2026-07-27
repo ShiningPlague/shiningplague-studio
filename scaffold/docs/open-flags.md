@@ -1,3 +1,4 @@
+<!-- scaffold-seed: unwritten — delete this line once you write real content -->
 # Open Flags
 
 **What this is.** The ledger of contradictions and unresolved questions that the

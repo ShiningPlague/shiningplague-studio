@@ -66,7 +66,7 @@ Present classification, confirm before proceeding. If no argument, ask user to d
 Before drafting:
 
 - Search `docs/gdd/` and `{{GDD_PATH}}` for the GDD section relevant to this change. Read affected sections.
-- Check `docs/gdd/systems-index.md` (if exists) to understand where this system sits in dependency graph.
+- Check `docs/gdd/systems-index.md` (if written — a copy still carrying the `scaffold-seed` marker is the blank seed, so skip it) to understand where this system sits in dependency graph.
 - Check prior `docs/specs/*-quick-design.md` files for any that touched this system.
 - For Tuning changes, check `data/` for the data file holding relevant values.
 

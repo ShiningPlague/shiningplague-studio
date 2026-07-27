@@ -29,8 +29,10 @@
     devlog and session state survive any number of re-runs.
 
 .PARAMETER Target
-    The game project directory to install into. If omitted, the current
-    directory is used when it looks like a project root (contains .git,
+    The game project directory to install into. It does NOT have to exist — an
+    absent target is created (with a printed note), so
+    ./install.ps1 .\my-new-game is a valid first command. If omitted, the
+    current directory is used when it looks like a project root (contains .git,
     .claude, CLAUDE.md, project.godot, package.json, a *.uproject, or Unity's
     Assets\ + ProjectSettings\) OR when it is an empty/new folder. Otherwise
     the parameter is required. Guard: the installer refuses to install into
@@ -137,9 +139,23 @@ if (-not $Target) {
     }
 }
 
+# A stranger pastes the quick-start into a folder that does not exist yet -- that
+# is the NORMAL first move ("install the studio into .\my-game"), and refusing it
+# made the studio's very first command an error message. Create it and say so.
+# Behaviourally identical to install.sh's mkdir -p.
 if (-not (Test-Path -LiteralPath $Target -PathType Container)) {
-    Write-Error "Target directory does not exist: $Target"
-    exit 1
+    if (Test-Path -LiteralPath $Target) {
+        Write-Error "Target exists but is not a directory: $Target"
+        exit 1
+    }
+    try {
+        New-Item -ItemType Directory -Force -Path $Target -ErrorAction Stop | Out-Null
+    } catch {
+        Write-Error ("Target directory does not exist and could not be created: $Target. " +
+            "Create it yourself, then re-run the installer: New-Item -ItemType Directory -Force -Path '$Target'")
+        exit 1
+    }
+    Write-Step "Target directory did not exist -- created it: $Target"
 }
 $TargetDir = (Resolve-Path -LiteralPath $Target).Path
 

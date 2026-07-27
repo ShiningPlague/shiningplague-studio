@@ -23,8 +23,18 @@ Auto-detect current development phase and report gap analysis.
 
 ## Procedure
 
+> **Existence is not evidence.** The installer seeds the whole document stack, so
+> every artifact this skill globs already exists on a virgin project. A file still
+> carrying the `scaffold-seed: unwritten` marker near the top is a blank seed and
+> counts as **absent** everywhere below. The mechanical version of this whole
+> procedure is `python tools/workflow_state_check.py`, which already applies the
+> rule — prefer running it over re-deriving it by hand. Contract:
+> `.claude/docs/doc-stack.md` § *Seeded is not written*.
+
 ### 1. Read Authoritative Phase
 Read `production/stage.txt`. Map to workflow-catalog phase key:
+- "not-started" → **the seeded default, not a phase.** No gate has been cleared —
+  report the project as pre-concept and infer readiness from artifacts below.
 - "Concept" → concept
 - "Systems Design" → systems-design
 - "Technical Setup" → technical-setup
@@ -34,7 +44,7 @@ Read `production/stage.txt`. Map to workflow-catalog phase key:
 - "Release" → release
 
 ### 2. Read Workflow Catalog
-Read `.claude/docs/workflow-catalog.yaml`. For each phase up to and including current, check each step's `artifact.glob` for existence.
+Read `.claude/docs/workflow-catalog.yaml`. For each phase up to and including current, check each step's `artifact.glob` — and where the step declares one, its `artifact.pattern` too. A match only counts if the file is non-empty **and** no longer carries the `scaffold-seed` marker.
 
 ### 3. Check Per-Phase Artifacts
 

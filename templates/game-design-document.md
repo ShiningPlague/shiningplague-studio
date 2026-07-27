@@ -1,3 +1,4 @@
+<!-- scaffold-seed: unwritten — delete this line once you write real content -->
 # [Mechanic/System Name]
 
 > **Status**: Draft | In Review | Approved | Implemented

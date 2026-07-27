@@ -1,3 +1,4 @@
+<!-- scaffold-seed: unwritten — delete this line once you write real content -->
 # Implementation Status
 
 **What this is.** The per-system view of what is built, and the map from each

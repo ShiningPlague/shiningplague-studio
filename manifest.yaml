@@ -53,6 +53,12 @@ counts:
                       # CLAUDE.md. Matches the installer's own "new files" line. Build
                       # artefacts (__pycache__/, *.pyc) are excluded by both installers,
                       # so this number does not depend on whether the clone was ever run.
+                      # GUARDED since 0.5.0: no `find` reproduces it — it is what the
+                      # INSTALLER lands — so CI installs into a throwaway project, tees
+                      # the log, and asserts the printed "new files" equals this number
+                      # (.github/workflows/doc-stack.yml, step 6). It was the only count
+                      # here with no mechanical check, which made it the only one free
+                      # to rot.
 
 # What the installer seeds OUTSIDE .claude/ — the project's own document stack.
 # The .claude/ layer is instructions; those instructions command paths outside it

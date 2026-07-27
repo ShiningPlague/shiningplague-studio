@@ -2,8 +2,16 @@
 # Used by /help to determine where a user is and what comes next.
 #
 # Artifact checks:
-#   glob: file glob pattern — complete when at least min_count files match
-#   pattern: text pattern that must appear in the file (checked after glob)
+#   glob: file glob pattern — complete when at least min_count files match.
+#              A match must also be non-empty AND no longer carry the
+#              `scaffold-seed: unwritten` marker — the installer seeds most of
+#              these paths, so existence alone proves nothing. See
+#              .claude/docs/doc-stack.md § "Seeded is not written".
+#   pattern: regex that must appear in the matched file (checked after glob).
+#              ENFORCED by tools/workflow_state_check.py. Use it to reject a
+#              template whose value is still a [bracketed] prompt. Quote it in
+#              SINGLE quotes so backslashes survive both PyYAML and the tool's
+#              built-in fallback parser.
 #   min_count: minimum distinct matching files required (default: 1).
 #              ENFORCED by tools/workflow_state_check.py: a ledger step claiming
 #              status=done with fewer matches reports CONFLICT (exit 1), and
@@ -36,7 +44,10 @@ phases:
         required: true
         artifact:
           glob: ".claude/docs/technical-preferences.md"
-          pattern: "Engine: [^[]"
+          # An engine is named, and the name is not still a [placeholder].
+          # Tolerates the markdown-bold shape the doc is usually written in
+          # ("- **Engine:** Godot 4.6") as well as a bare "Engine: Godot 4.6".
+          pattern: 'Engine:\**\s+[^\[\s]'
         description: "Configure engine, pin version, set naming conventions and performance budgets"
 
       - id: game-concept

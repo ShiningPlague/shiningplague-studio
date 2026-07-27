@@ -20,7 +20,7 @@
     "              has to guess."
   ],
   "_schema_notes": {
-    "phase": "Mirror of production/stage.txt, kept here so a single JSON read answers 'where are we?'. stage.txt stays AUTHORITATIVE — /gate-check writes it. If the two ever disagree, believe stage.txt and fix this.",
+    "phase": "Mirror of production/stage.txt, kept here so a single JSON read answers 'where are we?'. stage.txt stays AUTHORITATIVE — /gate-check writes it. If the two ever disagree, believe stage.txt and fix this. Seeded 'not-started', which is not a phase name: no gate has been cleared yet. The first /gate-check PASS writes a real phase into both.",
     "systems": "One object per system. Required: id, name, status, layer. Optional: priority, features[], dependencies[], decisions[] (ADR ids), gdd (path), notes. Example entry: {\"id\": \"your-system\", \"name\": \"Your System\", \"status\": \"planned\", \"layer\": \"gameplay\", \"dependencies\": [], \"decisions\": [], \"gdd\": \"docs/gdd/your-system.md\"}",
     "tools": "One object per runnable tool the project owns: {\"path\": \"tools/your_check.py\", \"purpose\": \"...\", \"run\": \"python tools/your_check.py\"}. /consistency-check verifies every tool it finds on disk has an entry.",
     "data": "One object per editable data category: {\"dir\": \"data/your-category/\", \"schema\": \"data/_schemas/your_category_schema.json\", \"count\": 0, \"purpose\": \"...\"}. Architecture principle 1 — content lives in data, never in scripts — is audited from here.",
@@ -43,7 +43,7 @@
     "for_review": "Built, but its behaviour needs a designer verdict."
   },
   "_edit_policy": "Skills update this file as part of their normal run — no permission prompt for status/index changes. ASK before deleting a system entry or rewriting next_session_priorities wholesale; those are designer-owned decisions.",
-  "phase": "concept",
+  "phase": "not-started",
   "last_full_audit": null,
   "audit_scope": null,
   "documentation_stack": {

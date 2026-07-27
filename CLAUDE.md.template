@@ -40,7 +40,7 @@ You do not need to read every doc before acting. Match the question to ONE row, 
 | **One system's design in depth** | `docs/gdd/<system>.md`; the decomposition + status table is `docs/gdd/systems-index.md`. |
 | **Visual identity** — palette, shape language, asset standards | `docs/art-bible.md` |
 | **Architecture decisions** — locked technical/design choices | `docs/adr/` — one ADR per decision, permanent. |
-| **System blueprint + programmer rules** | `docs/architecture/architecture.md`, `docs/architecture/control-manifest.md`, `docs/architecture/tr-registry.yaml` |
+| **System blueprint + programmer rules** | `docs/architecture/` — written on first use, like `docs/adr/` above: `/create-architecture` writes the blueprint, `/create-control-manifest` the programmer rules sheet, `/architecture-review` the requirement registry. Empty until then. |
 | **In-progress feature design** — "where's the spec for X?" | `docs/specs/` — check BEFORE restarting a brainstorm. |
 | **The plan for work in flight** | `docs/plans/` — the archive lifecycle is in § Project conventions below. |
 | **Data / pipeline reference** — formulas, tables, tuning | `docs/implementation-status.md` (points at the data files; numbers live in the data, not here) |
@@ -63,7 +63,16 @@ You do not need to read every doc before acting. Match the question to ONE row, 
      pointing at ONE authoritative doc per question — never two that can disagree,
      and never two rows naming the same location. This map is the contract the
      skills align to: if you move a doc, move it here first, then update
-     .claude/docs/doc-stack.md so the two never disagree. -->
+     .claude/docs/doc-stack.md so the two never disagree.
+
+     ONE HARD RULE: every path this table names must EXIST in a fresh install.
+     A row that names a file a skill has not written yet is a lie the very first
+     session reads, and the session then hunts for a file that was never there.
+     So: artifacts written on first use get a row pointing at their DIRECTORY,
+     naming the skill that fills it (see the docs/adr/, docs/specs/, docs/plans/
+     and docs/architecture/ rows). Never at the not-yet-written filename. -->
+
+<!-- Everything above resolves on a virgin install. Nothing here is aspirational. -->
 
 ---
 

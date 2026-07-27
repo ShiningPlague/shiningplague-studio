@@ -89,7 +89,7 @@ Run `/consistency-check` after this review to populate the registry."
 Full-read the in-scope documents:
 
 1. `docs/gdd/game-concept.md` — game vision, core loop, MVP definition
-2. `docs/gdd/game-pillars.md` if it exists — design pillars and anti-pillars
+2. `docs/gdd/game-pillars.md` if it is written — design pillars and anti-pillars. The installer seeds this path from the shipped template, so a copy still carrying the `scaffold-seed` marker has no pillars in it: say so in one line and review without them.
 3. `docs/gdd/systems-index.md` — authoritative system list, layers, dependencies, status
 4. **Every in-scope system GDD in `docs/gdd/`** — read completely (skip
    game-concept.md and systems-index.md — those are read above)
