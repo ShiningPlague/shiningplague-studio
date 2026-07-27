@@ -19,8 +19,10 @@ counts:
   hooks: 13
   rules: 11
   templates: 39       # includes settings.template.json (hook wiring, new in 0.3.0)
-  tools: 2            # workflow_state_check.py (flow-state detection) + doc_stack_check.py
-                      # (doc-stack regression guard), plus its doc_stack.manifest.json data file
+  tools: 3            # workflow_state_check.py (flow-state detection), doc_stack_check.py
+                      # (doc-stack regression guard, plus its doc_stack.manifest.json data
+                      # file) and consistency_check.py (the 12-check doc-stack gate that
+                      # /consistency-check, /update, /red-flag-scan and /session-close run)
   scaffold_files: 23  # seed artifacts in scaffold/ copied 1:1 into a fresh project
                       # (24 files on disk; scaffold/README.md documents the folder and is
                       #  never installed)

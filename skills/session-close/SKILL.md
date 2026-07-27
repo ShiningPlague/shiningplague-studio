@@ -84,10 +84,10 @@ Compose unified reflection from all 3 director outputs:
 ### Step 3: Close Gate Sequence
 
 Before update ritual:
-1. Run `tools/consistency_check.py` (17 checks + registry coverage)
+1. Run `python tools/consistency_check.py` (12 checks — registry, doc stack, ADRs, specs, links, hooks). Exit 0 = no FAILs; WARNs are advisory and never block.
 2. If any design doc changed this session → propose `/review-all-gdds`
 3. Check routine outcomes (architecture-review drift, code-review findings)
-4. **If failures → update proceeds but git push blocked until resolved**
+4. **If the runner exits non-zero → update proceeds but git push blocked until the named FAILs are resolved**
 
 ### Step 4: Unified Update Ritual
 

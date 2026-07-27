@@ -54,7 +54,7 @@ metadata:
 - `.claude/hooks/` — session lifecycle hooks (session-start, skill-trigger-detect, pre/post-compact, validate-commit, etc.)
 - `.claude/rules/` — path-scoped rules
 - `.claude/skills/` — the studio skill set (repo-canonical)
-- `tools/` — Python automation (consistency_check.py, check_registry_coverage.py, generate_systems_index.py, show_flags.py)
+- `tools/` — Python automation shipped with the studio (consistency_check.py — the doc-stack gate; doc_stack_check.py — the path-promise guard; workflow_state_check.py — the flow-ledger check) plus whatever runners this project adds
 - `addons/` — engine editor docks/plugins, if the project uses them (e.g. a project dashboard, data-editor docks)
 - `server/` — MCP server, if the project has one (rebuild when `server/src/` changes)
 - The framework lives at `.claude/docs/`, `.claude/agents/`, `.claude/skills/` (all project-local, repo-canonical). Two-home rule: studio skills live in the repo's `.claude/skills/`; user level holds only personal skills — never create a user-level twin of a project skill (precedence would silently shadow it).

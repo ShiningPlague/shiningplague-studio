@@ -62,11 +62,11 @@ git status --short
 
 ### Step 2: Doc stack drift scan
 
-- Run `python tools/consistency_check.py` (if not already this session)
-- 49+ cross-doc checks
-- Flag: any WARN/FAIL not from prior known-acceptable list
-- Flag: registry coverage failures (autoloads/addons/data dirs without entries)
-- Flag: stale `last_full_audit` date (>7 days)
+- Run `python tools/consistency_check.py --quiet` (if not already this session)
+- 12 mechanical checks: registry shape + references, the doc stack CLAUDE.md promises, the registry's doc ledger, spec/plan lifecycle, ADR hygiene, cross-doc drift, broken links, session-state freshness, hook + skill integrity
+- Flag: any FAIL (the runner exits non-zero and names each one)
+- Flag: any WARN not on the prior known-acceptable list — registry coverage gaps (data dirs / autoloads / addons / tools with no entry) live here
+- Flag: stale `last_full_audit` date in the registry (>7 days)
 
 ### Step 3: Complexity drift scan
 

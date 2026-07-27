@@ -7,6 +7,25 @@ The format follows [Keep a Changelog](https://keepachangelog.com/); versions fol
 ## [Unreleased]
 
 ### Added
+- **`tools/consistency_check.py` — the runner four skills already commanded.**
+  `consistency-check` advertised it in its own description ("Runner at
+  tools/consistency_check.py"), and `/update`, `/red-flag-scan` and
+  `/session-close` executed it as a gate — but it had never shipped, so on a real
+  project the close ritual crashed on a missing file. It exists now: pure Python
+  3 stdlib, cross-platform, 12 checks. The registry parses and carries the keys
+  the skills read; entries have the required keys, a status from the vocabulary
+  and unique ids; every registry path and id reference resolves; what is on disk
+  (data dirs, autoloads, addons, project tools) is in the registry; every path
+  `CLAUDE.md`'s reading map promises exists; the registry's own doc ledger
+  resolves; specs and plans sit where their status says; ADR numbering, Status
+  lines and `ADR-NNN` references hold up; the registry, `implementation-status.md`
+  and `stage.txt` agree; no relative markdown link is broken; `active.md` is not
+  lagging the newest commit; and every wired hook plus every `SKILL.md`
+  frontmatter is intact. FAIL fails the run, WARN never does, and a check with
+  nothing to look at yet says "not applicable" and keeps going — so a
+  brand-new install exits 0 with a clean report instead of a traceback.
+  Flags: `--quiet`, `--no-bump`, `--fix-safe` (creates absent empty directories
+  and nothing else — never touches prose or data), `--stale-days N`, `--root DIR`.
 - **`scaffold/` — the project document stack the skills read.** The installer used to
   create the `.claude/` layer and nothing else, so every instruction that pointed
   outside it ("open `data/_schemas/system_registry.json` first", "check

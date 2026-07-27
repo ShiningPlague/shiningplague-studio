@@ -73,6 +73,7 @@ After installing, open Claude Code in your project and try any of these:
 
 - **[docs/START-HERE.md](docs/START-HERE.md)** — the 15-minute orientation: how skills fire, how agents get dispatched, when to use the pipeline and when to skip it. **Read this one first.**
 - [docs/flow-ledger.md](docs/flow-ledger.md) — the mechanical workflow-state checker (`tools/workflow_state_check.py`): a small zero-LLM script that cross-checks claimed progress against the files that actually exist.
+- `tools/consistency_check.py` — the doc-stack gate the close ritual runs (`python tools/consistency_check.py`). 12 mechanical checks: the registry parses and its references resolve, every path `CLAUDE.md` promises exists, ADRs are numbered and statused, specs sit where their status says, no markdown link is broken, every wired hook is on disk. A brand-new install passes it clean — checks that have nothing to look at yet say so and move on.
 - [docs/skills-protocol-extended.md](docs/skills-protocol-extended.md) — advanced: the full-discipline skills protocol.
 - [docs/agent-coordination-map.md](docs/agent-coordination-map.md) — advanced: the complete org chart, delegation rules, and escalation paths.
 - [docs/director-gates.md](docs/director-gates.md) — advanced: the phase-gate review reference.

@@ -63,9 +63,11 @@ For each:
 python tools/consistency_check.py
 ```
 
-Cross-doc checks + registry coverage check + auto-bumps `last_full_audit` to today on PASS.
+12 checks — registry shape + references, registry coverage, the doc stack `CLAUDE.md` promises, the registry's doc ledger, spec/plan lifecycle, ADR hygiene, cross-doc drift, broken links, session-state freshness, hook + skill integrity. On a run with no FAILs it bumps `last_full_audit` to today (pass `--no-bump` for a read-only spot check).
 
-**On WARN:** fix the drift before continuing. That's the gate that prevents shipping without registry updates — a proven failure mode. If a step shipped a new autoload / addon / data category and the runner fails, you MUST add the matching `systems[] / tools[] / data[]` entry — runner won't pass otherwise.
+**On FAIL (exit 1):** fix what it names before continuing. Every FAIL is a path, id or claim a session would trip over.
+
+**On WARN (exit 0):** advisory, but read them — registry coverage lives here, and this is the gate that catches shipping without a registry update, a proven failure mode. If this session added a data category / autoload / addon / tool, add the matching `systems[] / tools[] / data[]` entry now rather than letting the warning age.
 
 ### 5. Append changelog entry
 

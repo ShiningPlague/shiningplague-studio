@@ -1,6 +1,6 @@
 ---
 name: consistency-check
-description: "Scan project docs / GDDs / registries against each other to detect cross-document inconsistencies — same entity with different stats, same item with different values, same formula with different variables, stale wording, broken paths, untraceable commits. Grep-first approach. ShiningPlague-adopted: adapts to the studio doc stack (system_registry.json + active.md + dev_diary.json) instead of Donchitos's design/registry/entities.yaml. Runner at tools/consistency_check.py."
+description: "Scan the project's docs / GDDs / registry against each other to detect cross-document inconsistencies — a doc promising a file that is not there, a registry entry pointing at a deleted path, an ADR referenced but never written, a system the registry calls built that implementation-status has never heard of, a spec marked archived that never moved. Runner-first: `python tools/consistency_check.py` runs 12 mechanical checks (exit 0 on PASS, non-zero on FAIL); the skill adds the judgement calls a script cannot make — same entity with different stats, same formula with different variables, stale wording. ShiningPlague-adopted: adapts to the studio doc stack (system_registry.json + active.md + implementation-status.md + ADRs + specs)."
 argument-hint: "[full | since-last-review | entity:<name> | item:<name>]"
 user-invocable: true
 allowed-tools: Read, Glob, Grep, Write, Edit, Bash
@@ -9,23 +9,32 @@ metadata:
   origin_url: https://github.com/Donchitos/Claude-Code-Game-Studios
   adopted_by: ShiningPlague
   enhancements:
-    - Studio doc stack (system_registry.json + active.md + dev_diary.json + devlog.md + ADRs + specs)
+    - Studio doc stack (system_registry.json + active.md + implementation-status.md + devlog.md + ADRs + specs)
     - Cross-doc value/path/date agreement checks
-    - Commit traceability (resolved_in_commit hashes must resolve)
     - Stale wording sweep with classify ⚠️/ℹ️
-    - Registry structural coverage (autoloads / addons / data dirs)
+    - Registry structural coverage (data dirs / autoloads / addons / tools)
     - Reflexion log to docs/consistency-failures.md (append-only, don't auto-create)
-    - Runner cross-link: tools/consistency_check.py (44 checks, exits 0 on PASS)
-    - Scheduled task consistency-check (every 2 days at 6am)
+    - Runner: tools/consistency_check.py — 12 checks, exit 0 on PASS, non-zero on FAIL
 ---
 
 # Consistency Check
 
-> 🌱 **ShiningPlague-adopted.** Originally Donchitos; battle-tested on a shipped Godot project. Upstream skill expected `design/registry/entities.yaml` + `design/gdd/*.md`; this version adapts to the studio doc stack ({{REGISTRY}} = `data/_schemas/system_registry.json` + {{SESSION_STATE}} = `production/session-state/active.md` + `data/_schemas/dev_diary.json` + `docs/devlog.md`). Spirit preserved (cross-doc consistency, grep-first); paths + cross-checks adapted.
+> 🌱 **ShiningPlague-adopted.** Originally Donchitos; battle-tested on a shipped
+> game project. The upstream skill read a standalone entity registry; this
+> version reads the studio doc stack instead ({{REGISTRY}} =
+> `data/_schemas/system_registry.json`, {{SESSION_STATE}} =
+> `production/session-state/active.md`, `docs/implementation-status.md`,
+> `docs/devlog.md`, `docs/adr/`, `docs/specs/`). Spirit preserved (cross-doc
+> consistency, grep-first); paths and cross-checks adapted.
 
-**Core principle:** scan our doc stack for cross-document inconsistencies — claims that disagree, file paths that don't resolve, commit hashes that don't exist, stale wording that contradicts current state. The registry is the entity-level source of truth; cross-check everything against it.
+**Core principle:** scan the doc stack for claims that disagree — file paths
+that don't resolve, ADR numbers nothing carries, statuses two docs state
+differently, stale wording that contradicts the current state. The registry is
+the built-state source of truth; cross-check everything against it.
 
-**This skill is the write-time safety net.** It catches what `/design-system`'s per-section checks may have missed and what `/review-all-gdds`'s holistic review catches too late.
+**This skill is the write-time safety net.** It catches what `/design-system`'s
+per-section checks may have missed and what `/review-all-gdds`'s holistic review
+catches too late.
 
 ---
 
@@ -33,200 +42,200 @@ metadata:
 
 - User says "run a consistency check" / "verify the docs" / "audit the doc stack" / "check everything for drift" → PROPOSE first, fire on confirm
 - Before opening a fresh chat (end-of-session readiness check)
-- After a step ships end-to-end (post-T10-equivalent verification)
+- After a feature ships end-to-end
 - Before `/architecture-review` or `/review-all-gdds`
 - After writing each new GDD (before moving to the next system)
 - Before `/create-architecture` (inconsistencies poison downstream ADRs)
-- On demand for a specific entity: `/consistency-check entity:<name>`
+- On demand for one entity: `/consistency-check entity:<name>`
 
-The scheduled task `consistency-check` (every 2 days at 6am, cron `0 6 */2 * *`) runs an automated version. Schedule catches background drift; manual fire catches end-of-session readiness.
+Fired automatically as a gate by `/session-close`, `/update`, `/red-flag-scan`
+and `/verification-before-completion`.
 
 ---
 
-## Phase 1: Parse Arguments and Load Doc Stack
+## Phase 1: Run the runner
+
+**Always start here.** The runner is mechanical, fast, and does not hallucinate.
+
+```bash
+python tools/consistency_check.py
+```
+
+| Flag | Effect |
+|---|---|
+| *(none)* | full report; on a run with no FAILs, bumps `last_full_audit` in the registry to today |
+| `--quiet` | findings + verdict only — good for a gate inside another skill |
+| `--no-bump` | never writes to the registry (read-only spot check, pre-push hook) |
+| `--fix-safe` | creates absent **empty directories** the doc stack promises (with a `.gitkeep`). Never edits prose or data. |
+| `--stale-days N` | how many days of commits `active.md` may lag before check 11 warns (default 7) |
+| `--root DIR` | check a different project directory |
+
+**Exit codes:** `0` = no FAIL findings (WARNs may be present) · `1` = at least
+one FAIL, each named in the report · `2` = not run from a project root.
+
+**Severity contract:** **FAIL** fails the run — something a session would trip
+over. **WARN** never fails it — drift worth knowing about. **SKIP** means the
+project has not grown that artifact yet; a brand-new install is mostly SKIPs and
+exits 0, and that is the correct day-one state.
+
+### The 12 checks
+
+| # | Check | Fails on |
+|---|---|---|
+| 1 | registry parses and carries the keys the skills read | unparseable JSON, a key holding the wrong type |
+| 2 | registry entry shape | missing `id`/`name`/`status`, a status outside the vocabulary, a duplicate id, an entry that says nothing about where it lives |
+| 3 | registry references resolve | a `files[]`/`path`/`dir`/`gdd` that is not on disk, a `depends_on` id nothing defines |
+| 4 | registry coverage | *(WARN only)* a populated `data/<dir>/`, an autoload, an addon or a project tool with no registry entry |
+| 5 | doc stack | a path `CLAUDE.md`'s reading map promises that does not exist |
+| 6 | doc ledger | an `active_docs` / `spec_index` / `adr_index` path the registry claims and disk denies |
+| 7 | spec + plan lifecycle | a spec `state=archived` with no `archive_path`; *(WARN)* a doc marked ARCHIVED still sitting in `docs/specs/`, a spec absent from the index |
+| 8 | ADR hygiene | one number used by two files, an ADR with no Status line, an `ADR-NNN` referenced in prose that no file carries; *(WARN)* numbering gaps |
+| 9 | cross-doc drift | *(WARN only)* registry says built + `implementation-status.md` never mentions it, or the reverse; `stage.txt` and the registry's `phase` disagreeing |
+| 10 | doc links | a relative markdown link pointing at a file that does not exist |
+| 11 | session-state freshness | *(WARN only)* `active.md` lagging the newest commit by more than `--stale-days` |
+| 12 | hook + skill integrity | a hook wired in `.claude/settings.json` that is not on disk, a `SKILL.md` with no parseable frontmatter (`name` + `description`) |
+
+Two deliberate blind spots, so they are visible rather than silent:
+- **Archived trees are not link-scanned.** Any directory whose name is or
+  contains `z-old`, `old`, `archive(d)`, `backup(s)`, `snapshot(s)` is history;
+  a link that rotted after retirement is expected, not a defect.
+- **Illustrative rows are not drift.** A table row naming `your-system`,
+  `example-thing`, `sample-*`, `my-*` is template documentation, so check 9
+  skips it. Real systems must not be named that way.
+
+**If the runner is missing** (an old install), say so plainly and continue with
+Phase 2 by hand — do not silently skip the gate.
+
+---
+
+## Phase 2: The judgement calls the runner cannot make
+
+The runner proves paths, numbers, shapes and statuses. It cannot read meaning.
+Do these by hand, grep-first — target only the names in scope, no full reads
+unless a conflict needs investigating.
 
 **Modes:**
-- No argument / `full` — check all registered entries against all docs
-- `since-last-review` — check only docs modified since the last review report
-- `entity:<name>` — check one specific entity across all docs
-- `item:<name>` — check one specific item across all docs
+- No argument / `full` — every registered entry against every doc
+- `since-last-review` — only docs modified since the last review report
+- `entity:<name>` / `item:<name>` — one thing, across all docs
 
-**Load `data/_schemas/system_registry.json`** and extract canonical claims:
-- `documentation_stack.spec_index.specs[]` — every spec's state, file path, archive_path, ADR link
-- `documentation_stack.adr_index.adrs[]` — every ADR's number, status, date, file
-- `documentation_stack.active_docs[]` — every live doc's path + role
-- `next_session_priorities[]` — current and next steps
-- `flagged_for_designer_review[]` — open issues with severity + resolved_in_commit
-- `live_test_notes` — current_focus and recent change log
-- `systems[]` — system status per registry status lifecycle
+### 2a. Cross-doc value agreement
+- The same number stated in two docs must match
+- The same date stated in two docs must match
+- The same formula must use the same variables in every doc that states it
 
-**Locate doc-stack files for cross-check:**
-- `production/session-state/active.md` — compaction-anchor, must match registry header claims
-- `data/_schemas/dev_diary.json` — entries[YYYY-MM-DD] done_major / done_minor / next / thoughts
-- `docs/devlog.md` — top entry must match dev_diary done_major + registry current_focus
-- `docs/implementation-status.md` — per-architecture sections must match registry system status
-- `docs/adr/<NNN>-*.md` files referenced by adr_index
-- `docs/specs/*.md` and `docs/z-old/specs/*.md` files referenced by spec_index
-- `docs/plans/*.md` files referenced by spec_index `plan` fields
-
-For GDD review modes, also load:
-- `{{GDD_PATH}}` (master, e.g. `docs/GDD.md`) and `docs/gdd/*.md` (per-system, when split)
-
-If the registry is empty:
-> "Registry has no systems. Run `/design-system` or build systems first; the registry populates as systems land. Nothing to check yet."
-
----
-
-## Phase 2: Cross-Check (skill-spirit, project-paths)
-
-Run these checks (the runner at `tools/consistency_check.py` is the canonical implementation — refer to it for the exact logic):
-
-### 2a. File existence
-- Every `spec_index.file` and `archive_path` exists at the claimed path (state=archived → archive_path; otherwise → file)
-- Every `adr_index.file` exists
-- Every `active_docs.path` exists (file or directory as appropriate)
-- Every `plan` field in spec_index resolves to an actual file in `docs/plans/`
-- Every `report` field in flagged items resolves
-
-### 2b. State agreement
-- `priorities[0].title` matches the next planned step
-- `active.md` header matches `priorities[0]`'s framing
-- `active.md` "Phase chain status" section matches `priorities[0]`'s implied phase
-- `dev_diary.json[latest_date].done_major` mentions the same shipped milestones as `devlog.md`'s top entry
-- `implementation-status.md` per-architecture sections reflect the same status as `registry.systems[].status`
-
-### 2c. Commit traceability
-- Every `flagged_item.resolved_in_commit` hash resolves in `git log --oneline -50`
-- Every `commits` reference in scope_notes / kickoff_for_new_chat resolves
-- Recent commit chain is on master and pushed (no `ahead`/`behind` in `git status -sb`)
-
-### 2d. Stale wording sweep
-- Search live tree (`docs/*.md`, `data/_schemas/*.json`, `production/*.md`, `src/`, `tools/`) for terms that should have been deleted on prior cleanup commits.
-- For each match, classify: ⚠️ stale claim (live, contradicts current state) vs ℹ️ historical context (devlog narration, RESOLUTION note, z-old archive)
-
-### 2e. Cross-doc value agreement
-- Same numbers stated in two docs must match
-- Same paths referenced in two docs must agree
-- Same dates referenced in two docs must agree
-
-### 2f. Registry structural coverage
-- Verify every autoload in `project.godot`, every `addons/<name>/plugin.cfg`, and every populated `data/<dir>/` has a matching entry in `system_registry.json`
-- Verify all `files[]` paths resolve on disk
-- Verify all `depends_on` / `consumed_by` / `produced_by` ids resolve to real entries
-- Implemented as `tools/check_registry_coverage.py`; called as check [17] inside `tools/consistency_check.py`
-
-### 2g. Cross-GDD entity/item/formula consistency (if GDDs in scope)
-Adopted from Donchitos pattern. For each registered entity, item, formula, constant:
-- Grep every in-scope GDD for the name
+### 2b. Entity / item / formula consistency (upstream Donchitos pattern)
+For each entity, item, formula or constant in scope:
+- Grep every in-scope GDD ({{GDD_PATH}} + `docs/gdd/*.md`) for the name
 - Extract attribute values mentioned near the name
-- Compare against registry entry
-- **🔴 CONFLICT**: same name, different values across two docs
-- **⚠️ STALE REGISTRY**: source GDD updated, registry behind
-- **ℹ️ UNVERIFIABLE**: name mentioned but no comparable attribute
+- Compare against the registry entry and against the data file that owns the number
+- **🔴 CONFLICT** — same name, different values in two docs
+- **⚠️ STALE REGISTRY** — the source GDD moved on, the registry is behind
+- **ℹ️ UNVERIFIABLE** — the name appears with no comparable attribute
 
-This phase is the upstream Donchitos consistency-check spirit — grep-first, target only entity-name matches, no full reads unless conflict needs investigation.
+### 2c. Stale wording sweep
+Grep the live tree (`docs/*.md`, `data/_schemas/*.json`, `production/*.md`,
+source, `tools/`) for terms a prior cleanup was supposed to delete. Classify
+each hit: **⚠️ stale claim** (live text contradicting the current state) vs
+**ℹ️ historical context** (devlog narration, a RESOLUTION note, anything under
+an archive directory) — historical is not a finding.
+
+### 2d. Commit traceability
+- Every `resolved_in_commit` hash in `flagged_for_designer_review` resolves in `git log`
+- The branch is not silently ahead/behind its remote (`git status -sb`)
 
 ---
 
-## Phase 3: Output Report
+## Phase 3: Output report
 
 ```
 === CONSISTENCY CHECK — {{PROJECT_NAME}} ===
 Date: [today]
-Registry: [N systems, N specs, N ADRs, N flagged, N priorities]
-In-scope docs: [list]
+Runner: [N] checks — [N] PASS, [N] WARN, [N] FAIL, [N] not applicable
+Judgement pass: [in-scope docs]
 
-[N] checks passed
-[N] conflicts/warnings:
-  - [kind]: [detail]
+Findings:
+  🔴 CONFLICT  [detail]
+  ⚠️ STALE     [detail]
+  🟡 MISSING   [detail]
 
-VERDICT: PASS | WARN — [N] items to review
+VERDICT: PASS | WARN — [N] items to review | FAIL — [N] blocking
 ```
 
-Classify each finding:
-- 🔴 **CONFLICT** — same claim with different values across two docs; one is wrong
+Classify every finding:
+- 🔴 **CONFLICT** — the same claim with different values in two docs; one is wrong
 - ⚠️ **STALE** — wording in a live doc contradicts the current state
-- 🟡 **MISSING** — file path / commit hash claimed but doesn't resolve
-- ℹ️ **HISTORICAL** — match found but it's intentional historical narration — not a finding
+- 🟡 **MISSING** — a path or commit hash claimed but not resolving
+- ℹ️ **HISTORICAL** — intentional narration of a past state; not a finding
 
-For each non-historical finding, propose a fix:
-- Which doc is authoritative (default: the source GDD / registry source)
-- What to change in the contradicting doc
-- Whether a commit is needed
-
----
-
-## Phase 4: Optional — Fix Authoritative Drift
-
-If the user confirms, fix in this order:
-1. Stale wording in live docs (cleanup edits)
-2. Missing files (either restore the file OR fix the registry claim)
-3. Conflicting values (update the non-authoritative copy to match the source)
-
-Each fix is a discrete edit. Bundle into one `docs(consistency)` commit.
+For each non-historical finding, propose a fix: which doc is authoritative
+(default: the source GDD for design intent, the registry for built state, the
+data file for numbers), what changes in the contradicting doc, and whether a
+commit is needed.
 
 ---
 
-## Phase 5: Registry Corrections (Donchitos pattern, adapted)
+## Phase 4: Optional — fix the drift
 
-If stale registry entries found, ask:
+Only on confirmation, in this order:
+1. Stale wording in live docs
+2. Missing files — either restore the file OR fix the claim that names it
+3. Conflicting values — update the non-authoritative copy to match the source
+
+`--fix-safe` handles exactly one class on its own: an absent empty directory
+that the doc stack promises. Everything else is a human-reviewed edit. Bundle
+the fixes into one `docs(consistency)` commit and re-run the runner to confirm.
+
+---
+
+## Phase 5: Registry corrections
+
+If stale registry entries were found, ask:
 > "May I update `data/_schemas/system_registry.json` to fix the [N] stale entries?"
 
-For each stale entry:
-- Update the `value` / attribute field
-- Set `revised:` or `last_updated:` to today's date
-- Add a note in registry-entry `history` array
+For each: update the value, set `last_updated` to today, add a note to the
+entry's `history` if it has one.
 
-**Never delete registry entries.** Set `status: deprecated` if the entry no longer exists.
+**Never delete registry entries.** Set `status: deprecated` when a system is
+gone — a deleted entry takes its own history with it.
 
-After writing: Verdict: **COMPLETE** — consistency check finished.
-If conflicts remain unresolved: Verdict: **BLOCKED** — [N] conflicts need manual resolution.
+Verdict: **COMPLETE** when the re-run is clean; **BLOCKED** when conflicts need
+a human decision.
 
 ---
 
-## Phase 6: Reflexion Log
+## Phase 6: Reflexion log
 
-If 🔴 CONFLICTS found AND `docs/consistency-failures.md` exists, append a dated entry:
+If 🔴 CONFLICTS were found AND `docs/consistency-failures.md` already exists,
+append a dated entry:
 
 ```markdown
 ### YYYY-MM-DD — /consistency-check — [VERDICT]
 **Domain**: [systems involved]
-**Documents involved**: [source vs conflicting doc]
-**What happened**: [specific conflict — entity name, attribute, differing values]
-**Resolution**: [how fixed, or "Unresolved — manual action needed"]
-**Pattern**: [generalised lesson — what kind of drift was missed]
+**Documents involved**: [source vs contradicting doc]
+**What happened**: [entity, attribute, the two differing values]
+**Resolution**: [how it was fixed, or "Unresolved — manual action needed"]
+**Pattern**: [the generalised lesson — what kind of drift was missed]
 ```
 
-If the file doesn't exist, skip silently — do not create from this skill.
+If the file does not exist, skip silently — do not create it from this skill.
 
 ---
 
-## Implementation runner
+## Next steps (chain-propose)
 
-The canonical Python runner is `tools/consistency_check.py`. It does Phases 1-3 automatically. Run with:
-
-```
-python tools/consistency_check.py
-```
-
-Exits 0 on PASS, non-zero on warnings. Could be wired into a git pre-push hook. Findings printed to stdout.
-
-The runner is project-aware (knows our paths, claims, expected commit hashes). Update it when project conventions shift (new doc added to active_docs, new flagged-item field, etc.).
-
----
-
-## Next Steps (chain-propose)
-
-- **If PASS**: Run `/review-all-gdds` for holistic design-theory review, or `/create-architecture` if all MVP GDDs are complete.
-- **If CONFLICTS FOUND**: Fix the flagged docs, then re-run `/consistency-check` to confirm resolution.
-- **If STALE REGISTRY**: Update the registry (Phase 5), then re-run to verify.
-- Run `/consistency-check` after writing each new GDD to catch issues early, not at architecture time.
+- **PASS** → `/review-all-gdds` for the design-theory pass, or `/create-architecture` if the MVP GDDs are done.
+- **CONFLICTS** → fix the flagged docs, re-run the runner to confirm.
+- **STALE REGISTRY** → Phase 5, then re-run.
+- Run this after each new GDD, not at architecture time — early is cheap.
 
 ---
 
 ## What this skill does NOT do
 
-- Re-implement what the runner already does (re-running JSON parse, file existence) — defer to the runner
-- Fix conflicts without designer confirmation (Phase 4 is opt-in)
-- Append to `docs/consistency-failures.md` if it doesn't exist (don't auto-create)
-- Delete registry entries (deprecate, never delete)
+- Re-implement by hand what the runner already proves (path existence, JSON
+  shape, ADR numbering) — run it and read the report
+- Fix anything without confirmation (Phase 4 is opt-in; `--fix-safe` creates
+  empty directories and nothing else)
+- Create `docs/consistency-failures.md` if it does not exist
+- Delete registry entries — deprecate, never delete
