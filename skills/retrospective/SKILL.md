@@ -19,9 +19,13 @@ metadata:
 
 > 🌱 **ShiningPlague-adopted.** Originally Donchitos (barebones stub); battle-tested on a shipped Godot project. Upstream was a pointer-only file; the studio version is the full implementation that routes retrospective output INTO `docs/devlog.md` rather than creating separate files.
 
+> **If an artifact named here is absent:** say so plainly in one line, skip that step, and
+> continue. Never invent the file to satisfy a checklist, and never fail a close because an
+> optional artifact was never created.
+
 ## Devlog routing (studio rule)
 
-Retrospective output gets appended to `docs/devlog.md` under a dated section, NOT to a separate `production/retrospectives/` folder.
+Retrospective output gets appended to `docs/devlog.md` under a dated section, not to a separate retrospectives folder.
 
 **Why:** hard-won rule — `docs/devlog.md` is the single canonical change log. Retrospectives route INTO devlog so the doc stack stays consolidated: one canonical change-log + retro record per file. Avoids parallel docs.
 

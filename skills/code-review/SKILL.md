@@ -19,6 +19,10 @@ metadata:
 
 Architectural code review that validates implementation against design decisions, coding standards, and engine-specific patterns.
 
+> **If an artifact named here is absent:** say so plainly in one line, skip that step, and
+> continue. Never invent the file to satisfy a checklist, and never fail a close because an
+> optional artifact was never created.
+
 ## Inputs
 
 - **Changed files** — `git diff` or explicit file list
@@ -31,7 +35,7 @@ Architectural code review that validates implementation against design decisions
 - `git diff --stat` to identify scope of changes
 - Read the governing ADR (if known) or grep `docs/adr/` for related decisions
 - Read `docs/architecture/control-manifest.md` for applicable rules
-- Read `.claude/docs/godot-gotchas.md` for Godot-specific patterns
+- Read `.claude/docs/engine-notes/godot-gotchas.md` for engine-specific patterns
 
 ### 2. Dispatch Lead Programmer
 Spawn `lead-programmer` with gate **LP-CODE-REVIEW** from `.claude/docs/director-gates.md`.
@@ -75,5 +79,5 @@ After CONCERNS/REJECT → revise the code, then re-run `/code-review`.
 - Addons: `addons/`
 - ADRs: `docs/adr/`
 - Control manifest: `docs/architecture/control-manifest.md`
-- Godot gotchas: `.claude/docs/godot-gotchas.md`
+- Engine gotchas: `.claude/docs/engine-notes/godot-gotchas.md`
 - Director gates: `.claude/docs/director-gates.md`

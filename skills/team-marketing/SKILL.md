@@ -20,6 +20,10 @@ metadata:
 **Workstream state:** `production/workstreams/marketing.md`
 **Domain code:** MK
 
+> **If an artifact named here is absent:** say so plainly in one line, skip that step, and
+> continue. Never invent the file to satisfy a checklist, and never fail a close because an
+> optional artifact was never created.
+
 ## Step 0: Load State + Select Activity
 
 1. Read `production/workstreams/marketing.md` — what's done, in-progress, next
@@ -48,6 +52,6 @@ metadata:
 Fill in for your project (examples):
 
 - Team shape + channels (e.g. solo indie — storefront page, social media, devlogs)
-- Market research docs, if any (e.g. `docs/market-research/`)
+- Market research notes, if the project keeps any (name the location here)
 - Launch strategy constraint (e.g. launch a testable slice and iterate on market signal)
 - Asset production approach (e.g. designer generates promotional art with AI tools)

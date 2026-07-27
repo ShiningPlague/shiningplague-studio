@@ -283,5 +283,7 @@ If the session used `--project-dir`, mockup files persist in `.superpowers/brain
 
 ## Reference
 
-- Frame template (CSS reference): `scripts/frame-template.html`
-- Helper script (client-side): `scripts/helper.js`
+The frame template (CSS reference) and the client-side helper script are served by
+the optional superpowers brainstorm server itself — they are not files in your
+project, and this template never installs them. If the server is not installed,
+there is nothing to read here: say so and use the terminal-based brainstorm.

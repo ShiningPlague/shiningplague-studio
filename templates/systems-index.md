@@ -17,10 +17,18 @@ team member understand the "big picture" of what needs to be designed and built.
 
 ## Systems Enumeration
 
+<!-- SYSTEMS-TABLE:BEGIN -->
+<!-- The block between these markers is regenerated from
+     data/_schemas/system_registry.json by tools/generate_systems_index.py
+     (run by hooks/sync-systems-index.sh on every registry write).
+     Edits inside the markers are overwritten; everything outside them is yours. -->
+
 | # | System Name | Category | Priority | Status | Design Doc | Depends On |
 |---|-------------|----------|----------|--------|------------|------------|
 | 1 | [e.g., Player Controller] | Core | MVP | [Not Started / In Design / In Review / Approved / Implemented] | [docs/gdd/player-controller.md or "—"] | [e.g., Input System, Physics] |
 | 2 | [e.g., Camera System] | Core | MVP | Not Started | — | Player Controller |
+
+<!-- SYSTEMS-TABLE:END -->
 
 [Add a row for every identified system. Use the categories and priority tiers
 defined below. Mark systems that were inferred (not explicitly in the concept doc)

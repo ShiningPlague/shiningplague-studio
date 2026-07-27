@@ -26,6 +26,10 @@ metadata:
 
 Validates that the complete body of architectural decisions covers all game design requirements, is internally consistent, and correctly targets the project's pinned engine version. Quality gate between Technical Setup and Pre-Production.
 
+> **If an artifact named here is absent:** say so plainly in one line, skip that step, and
+> continue. Never invent the file to satisfy a checklist, and never fail a close because an
+> optional artifact was never created.
+
 ## Argument Modes
 
 - **No argument / `full`**: Full review — all phases
@@ -71,11 +75,11 @@ For `coverage` or `full` mode: proceed to full-read everything below.
 - `docs/architecture/architecture.md` (if exists)
 - `docs/architecture/control-manifest.md`
 
-**Engine Reference:**
-- `docs/engine-reference/godot/VERSION.md`
-- `docs/engine-reference/godot/breaking-changes.md` (if exists)
-- `docs/engine-reference/godot/deprecated-apis.md` (if exists)
-- All files in `docs/engine-reference/godot/modules/` (if exists)
+**Engine Reference** (project-owned and optional -- `/setup-engine` step 2 creates it):
+- `docs/engine-reference/<engine>/VERSION.md`
+- `docs/engine-reference/<engine>/breaking-changes.md`
+- `docs/engine-reference/<engine>/deprecated-apis.md`
+- All files in `docs/engine-reference/<engine>/modules/`
 
 **Project Standards:**
 - `.claude/docs/technical-preferences.md`

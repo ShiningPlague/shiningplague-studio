@@ -22,6 +22,10 @@ metadata:
 
 One-shot: scan git status, commit safe files, push to remote. Skips secrets, large binaries, gitignored files. Pre-disaster backup that gets the local work to GitHub before the machine can die.
 
+> **If an artifact named here is absent:** say so plainly in one line, skip that step, and
+> continue. Never invent the file to satisfy a checklist, and never fail a close because an
+> optional artifact was never created.
+
 ## When to fire
 
 - Designer says: "safety push", "back up", "commit and push everything", "in case my machine dies", "disaster", "what if I lose this"

@@ -1,6 +1,6 @@
 # Agents Index — dispatch table
 
-> Machine-readable roster for Claude: match the work against the descriptions below, then dispatch via the Agent tool (subagent_type = the agent name). Auto-generated from `agents/*.md` frontmatter.
+> Machine-readable roster for Claude: match the work against the descriptions below, then dispatch via the Agent tool (subagent_type = the agent name). Auto-generated from `.claude/agents/*.md` frontmatter.
 
 ## Active roster (loaded by default)
 

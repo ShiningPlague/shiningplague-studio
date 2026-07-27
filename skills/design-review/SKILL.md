@@ -19,6 +19,10 @@ metadata:
 
 Validates a design document against project pillars, MDA framework, and design theory. Chain-fires after `/brainstorming` (spec review) or `/design-system` (GDD review).
 
+> **If an artifact named here is absent:** say so plainly in one line, skip that step, and
+> continue. Never invent the file to satisfy a checklist, and never fail a close because an
+> optional artifact was never created.
+
 ## Inputs
 
 - **Document path** — the spec or GDD to review

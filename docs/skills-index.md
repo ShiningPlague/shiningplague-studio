@@ -1,6 +1,6 @@
 # Skills Index — routing table
 
-> Machine-readable catalogue for Claude: match the user's intent against the descriptions below, then invoke the skill by name via the Skill tool. Auto-generated from `skills/*/SKILL.md` frontmatter — regenerate rather than hand-edit when skills change.
+> Machine-readable catalogue for Claude: match the user's intent against the descriptions below, then invoke the skill by name via the Skill tool. Auto-generated from `.claude/skills/*/SKILL.md` frontmatter — regenerate rather than hand-edit when skills change.
 
 | Skill | When to use |
 |---|---|

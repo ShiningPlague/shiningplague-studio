@@ -7,7 +7,7 @@ metadata:
   adopted_by: ShiningPlague
   enhancements:
     - 5-mode framework with auto-detection (OPEN / CLOSED / FOCUSED / PERSPECTIVE / STRUCTURED)
-    - Project spec paths (docs/specs/ not docs/superpowers/specs/)
+    - Project spec paths (docs/specs/, not the upstream superpowers spec folder)
     - Per-Q outcome-first rule
     - Mandatory Expected Outcomes section in every spec
     - Spec lifecycle (in_progress → final → archived) with registry registration
@@ -28,6 +28,10 @@ Start by understanding the current project context, then ask questions one at a 
 <HARD-GATE>
 Do NOT invoke any implementation skill, write any code, scaffold any project, or take any implementation action until you have presented a design and the user has approved it. This applies to EVERY project regardless of perceived simplicity.
 </HARD-GATE>
+
+> **If an artifact named here is absent:** say so plainly in one line, skip that step, and
+> continue. Never invent the file to satisfy a checklist, and never fail a close because an
+> optional artifact was never created.
 
 ## Anti-Pattern: "This Is Too Simple To Need A Design"
 
@@ -114,7 +118,7 @@ You MUST create a task for each of these items and complete them in order:
 4. **Ask clarifying questions** — one at a time, understand purpose/constraints/success criteria. Follow per-mode Q format (CLOSED uses per-Q outcome-first rule below)
 5. **Propose 2-3 approaches** — with trade-offs and your recommendation
 6. **Present design** — in sections scaled to their complexity, get user approval after each section
-7. **Write design doc** — save to `docs/specs/YYYY-MM-DD-<topic>-design.md` (project path — NOT `docs/superpowers/specs/`) and commit
+7. **Write design doc** — save to `docs/specs/YYYY-MM-DD-<topic>-design.md` (project path — not the upstream superpowers spec folder) and commit
 8. **Spec self-review** — quick inline check for placeholders, contradictions, ambiguity, scope (see below)
 9. **User reviews written spec** — ask user to review the spec file before proceeding
 10. **Transition to implementation** — invoke writing-plans skill to create implementation plan
@@ -200,9 +204,9 @@ digraph brainstorming {
 
 ### Output location (hard override)
 
-Specs go to **`docs/specs/YYYY-MM-DD-<topic>-design.md`** — NOT `docs/superpowers/specs/`.
+Specs go to **`docs/specs/YYYY-MM-DD-<topic>-design.md`**.
 
-The `docs/superpowers/` branch has been deleted from this project. Do not recreate it.
+Upstream superpowers writes specs and plans under a `superpowers` doc branch. This studio does not: the spec/plan lifecycle in CLAUDE.md owns those paths. Do not recreate the upstream branch.
 
 ### Mandatory spec structure
 
@@ -270,9 +274,9 @@ The `spec_index` array in `system_registry.json → documentation_stack` is the 
 
 ### ADR batching rule
 
-One ADR covers 2–3 related decisions from one design phase. Don't write one ADR per decision. Example for an inventory system:
-- `001-inventory-schema-and-slots.md` covers unified item schema + slot-capacity model + stacking policy.
-- `002-loot-pipeline-and-effects.md` (later) covers drop-table resolution + item-effect architecture + InventorySystem autoload extraction.
+One ADR covers 2–3 related decisions from one design phase. Don't write one ADR per decision. Illustrative example — these filenames are not shipped, they show the shape:
+- `001-your-system-schema-and-slots.md` would cover the data schema + the capacity model + the stacking policy for one system.
+- `002-your-system-pipeline-and-effects.md` (later) would cover table resolution + effect architecture + the autoload extraction.
 
 ### Per-question outcome-first rule (hard-won rule from designer feedback)
 
@@ -304,7 +308,7 @@ When writing the spec at end of brainstorm, carry a **`## Per-question intended 
 - **Outcome we were aiming at:** <the plain-English framing used when the Q was asked>
 - **Decision:** <A / B / C + one-liner of what that means>
 - **Why:** <one-line rationale — designer's reasoning or Claude's vote that was accepted>
-- **Touches:** <files / systems / docs this answer affects — e.g. "InventorySystem autoload signature + data/_schemas/inventory_rules.json shape">
+- **Touches:** <files / systems / docs this answer affects — e.g. "the your-system autoload signature + the shape of its schema under data/_schemas/">
 ```
 
 This appendix becomes load-bearing the moment a designer revisits a spec post-lock or changes their mind later — it says which Qs are in play and what they were trying to achieve.
@@ -334,7 +338,7 @@ Announce explicitly to the designer: "Q<n> was previously locked as <old>; chang
 
 **Documentation:**
 
-- Write the validated design (spec) to `docs/specs/YYYY-MM-DD-<topic>-design.md` (project path — NOT `docs/superpowers/specs/`)
+- Write the validated design (spec) to `docs/specs/YYYY-MM-DD-<topic>-design.md` (project path — not the upstream superpowers spec folder)
 - Use elements-of-style:writing-clearly-and-concisely skill if available
 - Commit the design document to git
 
@@ -386,7 +390,7 @@ A browser-based companion for showing mockups, diagrams, and visual options duri
 A question about a UI topic is not automatically a visual question. "What does personality mean in this context?" is a conceptual question — use the terminal. "Which wizard layout works better?" is a visual question — use the browser.
 
 If they agree to the companion, read the detailed guide before proceeding:
-`skills/brainstorming/visual-companion.md`
+`.claude/skills/brainstorming/visual-companion.md`
 
 ---
 

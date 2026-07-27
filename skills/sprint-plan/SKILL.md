@@ -23,6 +23,10 @@ metadata:
 
 Creates new sprint plans from the story/spec backlog, tracks progress, and manages sprint lifecycle. Dispatches producer agent for feasibility review.
 
+> **If an artifact named here is absent:** say so plainly in one line, skip that step, and
+> continue. Never invent the file to satisfy a checklist, and never fail a close because an
+> optional artifact was never created.
+
 ## Modes
 
 **`new`**: Create a new sprint plan.

@@ -5,6 +5,10 @@ description: "Game story, dialogue systems, character arcs, lore architecture, a
 
 > 🌱 **ShiningPlague-adopted.** Origin: [coreymaypray/sloth-skill-tree](https://github.com/coreymaypray/sloth-skill-tree) (maycrest-automate pillar). Installed via `npx skillfish add`. Upstream craft content preserved verbatim below; project integration rules in the next block. Ignore the Maycrest/SlothFit brand framing — the dialogue, branching, lore-tier, and integration discipline is why this is here.
 
+> **If an artifact named here is absent:** say so plainly in one line, skip that step, and
+> continue. Never invent the file to satisfy a checklist, and never fail a close because an
+> optional artifact was never created.
+
 ## Project integration (read FIRST when working inside a game project)
 
 When working in a game project repo, this skill is **craft support, not a pipeline owner**. Project canon is the spine; this skill defers to it:

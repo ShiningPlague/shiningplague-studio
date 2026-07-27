@@ -17,6 +17,10 @@ what the GDD now says, and guides the user through resolution.
 
 ---
 
+> **If an artifact named here is absent:** say so plainly in one line, skip that step, and
+> continue. Never invent the file to satisfy a checklist, and never fail a close because an
+> optional artifact was never created.
+
 ## 1. Validate Argument
 
 A GDD path argument is **required**. If missing, fail with:

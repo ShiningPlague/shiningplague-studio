@@ -24,6 +24,10 @@ When this skill is invoked, parse the argument:
 - `[system-name]` → audit that single system only
 - `--summary` → summary table only, no file write
 
+> **If an artifact named here is absent:** say so plainly in one line, skip that step, and
+> continue. Never invent the file to satisfy a checklist, and never fail a close because an
+> optional artifact was never created.
+
 ## Project Paths
 
 | What | Canonical path |

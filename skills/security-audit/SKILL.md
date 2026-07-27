@@ -25,6 +25,10 @@ remediation plan.
 
 ---
 
+> **If an artifact named here is absent:** say so plainly in one line, skip that step, and
+> continue. Never invent the file to satisfy a checklist, and never fail a close because an
+> optional artifact was never created.
+
 ## Phase 1: Parse Arguments and Scope
 
 **Modes:**

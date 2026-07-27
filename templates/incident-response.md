@@ -131,5 +131,5 @@ prevent this? This is more important than the technical cause.]
 
 ---
 
-*This document is filed in `production/hotfixes/` and linked from the
-release notes for the fix version.*
+*This document is filed as `production/releases/incident-[date]-[slug].md`, alongside
+the patch record for the fix version, and linked from that version's release notes.*

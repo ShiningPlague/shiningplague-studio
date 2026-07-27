@@ -30,6 +30,10 @@ An epic is a named, bounded body of work that maps to one architectural module. 
 
 **When to run:** After `/create-control-manifest` and `/architecture-review` pass.
 
+> **If an artifact named here is absent:** say so plainly in one line, skip that step, and
+> continue. Never invent the file to satisfy a checklist, and never fail a close because an
+> optional artifact was never created.
+
 ## Project Paths
 
 | What | Canonical path |

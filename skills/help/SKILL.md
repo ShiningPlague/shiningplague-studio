@@ -13,7 +13,7 @@ metadata:
   adopted_by: ShiningPlague
   enhancements:
     - Workstream awareness (reads production/workstreams/*.md state)
-    - Adoption-TODO surfacing (active.md + docs/migration/adoption-plan-*.md)
+    - Adoption-TODO surfacing (active.md + docs/adoption-plan-*.md)
     - Paused-spec surfacing (in_progress specs)
     - Next-action priority (canonical-first, then workstream, then in-progress)
     - Cross-link to /project-stage-detect for deeper gap audit
@@ -26,6 +26,10 @@ metadata:
 This skill is read-only — it reports findings but writes no files.
 
 Figures out where you are in the game development pipeline and tells you what comes next. **Lightweight** — not a full audit. For full gap analysis, use `/project-stage-detect`.
+
+> **If an artifact named here is absent:** say so plainly in one line, skip that step, and
+> continue. Never invent the file to satisfy a checklist, and never fail a close because an
+> optional artifact was never created.
 
 ## When to fire
 
@@ -69,7 +73,7 @@ Show only if at least one uncataloged skill exists. Limit to the 10 most relevan
 
 2. **If missing**, infer phase from artifacts (most-advanced match wins):
    - `src/` has 10+ source files → `production`
-   - `production/stories/*.md` exists → `pre-production`
+   - `production/epics/**/*.md` exists → `pre-production`
    - `docs/adr/*.md` exists → `technical-setup`
    - `docs/gdd/systems-index.md` exists → `systems-design`
    - `docs/gdd/game-concept.md` exists → `concept`
@@ -104,7 +108,7 @@ Report per-workstream phase + what's in flight + blockers.
 
 Read `production/session-state/active.md`. Look for `🚨 OPEN ADOPTION PLAN TODOs` section. List unresolved items.
 
-Also check `docs/migration/adoption-plan-*.md` for any unchecked items not yet surfaced.
+Also check `docs/adoption-plan-*.md` for any unchecked items not yet surfaced.
 
 ---
 
@@ -247,8 +251,8 @@ Only show if input suggested confusion ("I don't know", "stuck", "lost", "not su
 - `production/workstreams/*.md` — per-workstream state
 - `production/session-state/active.md` — open TODOs + priorities
 - `docs/specs/*.md` — paused brainstorm specs
-- `docs/migration/adoption-plan-*.md` — historical adoption plans
-- `tools/generate_session_context.sh` — outputs PHASE ARTIFACT STATUS at session start
+- `docs/adoption-plan-*.md` — historical adoption plans written by `/adopt`
+- `tools/generate_session_context.sh` — OPTIONAL, project-owned. The template never ships it; `.claude/hooks/session-start.sh` runs it only if the project wrote one. Absent by default.
 
 ## Failure modes
 

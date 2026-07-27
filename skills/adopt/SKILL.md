@@ -34,6 +34,10 @@ wrong internal format.
 
 ---
 
+> **If an artifact named here is absent:** say so plainly in one line, skip that step, and
+> continue. Never invent the file to satisfy a checklist, and never fail a close because an
+> optional artifact was never created.
+
 ## Phase 1: Detect Project State
 
 Emit one line before reading: `"Scanning project artifacts..."` — this confirms the
@@ -259,7 +263,7 @@ Estimated remediation: [X blocking items × ~Y min each = roughly Z hours]
 Before asking to write, show a **Gap Preview**:
 - List every BLOCKING gap as a one-line bullet describing the actual problem
   (e.g. `systems-index.md: 3 rows have parenthetical status values`,
-  `adr-0002.md: missing ## Status section`). No counts — show the actual items.
+  `002-your-decision.md: missing ## Status section`). No counts — show the actual items.
 - Show HIGH / MEDIUM / LOW as counts only (e.g. `HIGH: 4, MEDIUM: 2, LOW: 1`).
 
 This gives the user enough context to judge scope before committing to writing the file.

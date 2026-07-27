@@ -20,6 +20,10 @@ metadata:
 
 Write a minor goal addition to `production/session-state/active-goals.json → minor_goals_added[]`. Prevents the scope-creep-in-chat-context failure mode where the assistant adds items verbally but they're never persisted.
 
+> **If an artifact named here is absent:** say so plainly in one line, skip that step, and
+> continue. Never invent the file to satisfy a checklist, and never fail a close because an
+> optional artifact was never created.
+
 ## When to fire
 
 - Designer says: "also do X", "let's add Y", "one more thing", "while we're at it Z"

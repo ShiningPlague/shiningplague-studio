@@ -121,7 +121,7 @@ You (support decision):
 1. Creating ADR: docs/adr/005-alpha-crafting-scope-reduction.md
 2. Updating docs/gdd/crafting-system.md with Alpha scope markers
 3. Notifying game-designer and lead-programmer to align on new 1.5-week plan
-4. Adding to production/milestones/alpha.md as success criteria: 'Crafting pillar demonstrated via core discovery mechanic'
+4. Adding to the Alpha sprint plan in production/sprints/ as success criteria: 'the crafting pillar is demonstrated via the core discovery mechanic'
 
 Validation criteria: We'll know this was right if:
  - Investor demo shows both Pillar 1 (combat) and Pillar 2 (discovery) in playable form

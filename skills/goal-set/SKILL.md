@@ -21,6 +21,10 @@ metadata:
 
 Write the session's primary goal to `production/session-state/active-goals.json`. This is the goal that `/goal-check` validates at session close. **Designer-invoked only** — the assistant doesn't pick this; designer declares it.
 
+> **If an artifact named here is absent:** say so plainly in one line, skip that step, and
+> continue. Never invent the file to satisfy a checklist, and never fail a close because an
+> optional artifact was never created.
+
 ## When to fire
 
 - Session start, after designer states clear intent ("today we're authoring game-concept.md", "this session is META framework hardening", "we're shipping the Combat GDD")
@@ -67,7 +71,7 @@ Update fields:
 
 ### Step 4: Update session-start hook awareness
 
-The hook (`tools/generate_session_context.sh`) already reads phase artifacts. It SHOULD also surface active primary goal at session start. If not yet wired, propose hook extension (small follow-on).
+If the project has written the optional `tools/generate_session_context.sh` (the template never ships it — `.claude/hooks/session-start.sh` runs it only when it exists), propose extending it to surface the active primary goal at session start. If there is no such script, skip this step — the goal still lives in `active-goals.json` and `/goal-check` reads it from there.
 
 ### Step 5: Confirm + chain-propose
 

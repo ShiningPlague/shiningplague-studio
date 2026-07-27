@@ -23,6 +23,10 @@ metadata:
 
 Author a per-system Game Design Document using the 8-section Donchitos template. One section at a time, with designer approval between sections. Dispatches game-designer agent for mechanical design and creative-director for pillar alignment review.
 
+> **If an artifact named here is absent:** say so plainly in one line, skip that step, and
+> continue. Never invent the file to satisfy a checklist, and never fail a close because an
+> optional artifact was never created.
+
 ## Phase 1: Identify the System
 
 **If argument provided:** use it as the system name.
@@ -117,7 +121,7 @@ If REJECT: surface blockers, do not mark GDD as Approved.
 ## Phase 5: Finalize
 
 1. Set GDD status to `Approved` (or `In Review` if director had CONCERNS that were accepted)
-2. Update `docs/gdd/systems-index.md` by running `python tools/generate_systems_index.py` (or the hook handles this if registry updated)
+2. Update `docs/gdd/systems-index.md` by running `python tools/generate_systems_index.py` (the sync hook already does this on any registry write; the tool rewrites only the `SYSTEMS-TABLE` region and exits 3 without touching anything if the index or the markers are absent)
 3. Update `data/_schemas/system_registry.json` — set the system's status to reflect GDD completion
 4. Propose chain follow-on: "GDD complete. Next: `/design-review` for validation, or `/architecture-decision` if this system needs a new ADR."
 

@@ -22,6 +22,10 @@ ensures no critical bug is lost between sprints.
 
 ---
 
+> **If an artifact named here is absent:** say so plainly in one line, skip that step, and
+> continue. Never invent the file to satisfy a checklist, and never fail a close because an
+> optional artifact was never created.
+
 ## 1. Parse Arguments
 
 **Modes:**
@@ -60,8 +64,8 @@ If no sprint file exists: note "No sprint plan found — assigning to backlog on
 
 ### Step 2c — Load severity reference
 
-Read `.claude/docs/coding-standards.md` for severity/priority definitions if they
-exist. If they do not exist, use the standard definitions in Step 3.
+Read `.claude/rules/` for any project severity/priority definitions. If none are
+defined there, use the standard definitions in Step 3.
 
 ---
 

@@ -57,11 +57,13 @@ You do not need to read every doc before acting. Match the question to ONE row, 
 | **Which agent do I dispatch?** | `.claude/docs/agents-index.md` — Intent → Agent table + roster. |
 | **Engine gotchas / coding standards** | `.claude/docs/engine-notes/godot-gotchas.md` <!-- bundled default; swap for your engine's notes --> |
 | **Project-local runnable checks** | `tools/` — run them, don't reimplement them. |
+| **"Where does X live?"** — the whole layout, who writes each file, what's optional | `.claude/docs/doc-stack.md` — the doc-stack contract. Read it when a path is not in this map. |
 
 <!-- GUIDANCE: Add project-specific rows as your doc stack grows. Keep the map
      pointing at ONE authoritative doc per question — never two that can disagree,
      and never two rows naming the same location. This map is the contract the
-     skills align to: if you move a doc, move it here first. -->
+     skills align to: if you move a doc, move it here first, then update
+     .claude/docs/doc-stack.md so the two never disagree. -->
 
 ---
 

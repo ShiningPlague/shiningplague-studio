@@ -4,16 +4,19 @@ description: Use when filing a bug found mid-session ('file a bug', 'log this bu
 metadata:
   origin: ShiningPlague-authored
   replaces: Donchitos pointer stub
-  format_source: tools/promote_findings_to_bugs.py output shape (must stay compatible)
 ---
 
 # Bug Report
 
-> 🌱 **ShiningPlague-authored.** Replaces the original Donchitos pointer stub — this is the real implementation, format-compatible with the auto-promotion pipeline (`tools/promote_findings_to_bugs.py`).
+> 🌱 **ShiningPlague-authored.** Replaces the original Donchitos pointer stub — this is the real implementation.
+
+> **If an artifact named here is absent:** say so plainly in one line, skip that step, and
+> continue. Never invent the file to satisfy a checklist, and never fail a close because an
+> optional artifact was never created.
 
 ## Overview
 
-Files, verifies, and closes formal bugs at `production/qa/bugs/BUG-NNN-<slug>.md`. One file per bug. Same format whether filed manually (this skill) or auto-promoted from routine findings (`tools/promote_findings_to_bugs.py`) — downstream tooling (`/bug-triage`, `/sprint-plan`) must not care which path created it.
+Files, verifies, and closes formal bugs at `production/qa/bugs/BUG-NNN-<slug>.md`. One file per bug. The file format below is the contract: keep it identical whether a bug is filed by hand through this skill or emitted by a project-side auto-promotion script, so `/bug-triage` and `/sprint-plan` never have to care which path created it.
 
 ## Mode 1 — File (default)
 

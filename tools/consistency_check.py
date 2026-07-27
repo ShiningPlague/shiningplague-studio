@@ -650,6 +650,59 @@ def check_registry_coverage(pj, res, opts):
 # CHECK 5 -- the doc stack CLAUDE.md's reading map promises
 # --------------------------------------------------------------------------
 
+def _glob_to_regex(pattern):
+    """Same semantics as tools/doc_stack_check.py: '*' stays inside one
+    segment, '**' crosses them."""
+    out, i, n = [], 0, len(pattern)
+    while i < n:
+        ch = pattern[i]
+        if ch == "*":
+            if pattern[i:i + 2] == "**":
+                out.append(".*")
+                i += 2
+                continue
+            out.append("[^/]*")
+        elif ch == "?":
+            out.append("[^/]")
+        else:
+            out.append(re.escape(ch))
+        i += 1
+    return re.compile("^" + "".join(out) + "$")
+
+
+def created_on_use_patterns(root):
+    """The paths the doc-stack manifest declares a skill writes WHILE IT RUNS.
+
+    Absent until that skill runs -- which is the correct state, not a defect.
+    Read from tools/doc_stack.manifest.json so there is exactly one list in the
+    repo; if the manifest is missing, return nothing and every promised path is
+    judged on existence alone (the old, stricter behaviour).
+    """
+    manifest = Path(root) / "tools" / "doc_stack.manifest.json"
+    if not manifest.is_file():
+        return []
+    try:
+        data = json.loads(read_text(manifest))
+    except (ValueError, OSError):
+        return []
+    return [str(e.get("pattern", "")) for e in data.get("created_on_use", [])
+            if isinstance(e, dict) and e.get("pattern")]
+
+
+def written_on_use(ref, patterns):
+    """True if `ref` is a path some skill writes later rather than one the
+    install owes you now."""
+    ref = ref.rstrip("/")
+    for pattern in patterns:
+        if pattern.endswith("/"):
+            body = _glob_to_regex(pattern.rstrip("/")).pattern
+            if re.match(body[:-1] + "(/.*)?$", ref):
+                return True
+        elif _glob_to_regex(pattern).match(ref):
+            return True
+    return False
+
+
 def reading_map_paths(text):
     """Paths promised by CLAUDE.md's reading-map table, in order."""
     out = []
@@ -674,13 +727,23 @@ def check_doc_stack(pj, res, opts):
         res.skip("%s has no reading-map rows with a path in them" % CLAUDE_MD)
         return
 
+    on_use = created_on_use_patterns(pj.root)
     seen = set()
     missing = []
+    pending = []
     for lineno, ref in promised:
         if ref in seen:
             continue
         seen.add(ref)
         if pj.exists(ref.rstrip("/")):
+            continue
+        # A map row may legitimately name a file a skill writes later --
+        # docs/architecture/architecture.md does not exist until
+        # /create-architecture runs. Naming it is the point of the map; its
+        # absence on day one is not a defect. Never fail a fresh install for
+        # an artifact nothing has had a reason to create yet.
+        if written_on_use(ref, on_use):
+            pending.append(ref)
             continue
         if opts.fix_safe and ref.endswith("/"):
             target = pj.root / ref
@@ -694,8 +757,12 @@ def check_doc_stack(pj, res, opts):
         missing.append((lineno, ref))
 
     for lineno, ref in missing:
-        res.fail("%s:%d promises `%s` -- it does not exist. A session that "
-                 "follows the map opens nothing." % (CLAUDE_MD, lineno, ref))
+        res.fail("%s:%d promises `%s` -- it does not exist, and nothing in the "
+                 "doc stack creates it. A session that follows the map opens "
+                 "nothing." % (CLAUDE_MD, lineno, ref))
+    if pending:
+        res.note("%d promised path(s) not written yet (a skill creates each on "
+                 "its first run): %s" % (len(pending), ", ".join(sorted(pending))))
     res.note("%d promised path(s) checked" % len(seen))
 
 

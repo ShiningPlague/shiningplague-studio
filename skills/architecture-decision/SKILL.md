@@ -20,6 +20,10 @@ metadata:
 
 Guided ADR authoring using the studio + Donchitos merged template at `docs/adr/TEMPLATE.md`.
 
+> **If an artifact named here is absent:** say so plainly in one line, skip that step, and
+> continue. Never invent the file to satisfy a checklist, and never fail a close because an
+> optional artifact was never created.
+
 ## When to Fire
 
 - After a brainstorm spec reaches FINAL with decisions that constrain implementation
@@ -73,9 +77,9 @@ After Accept → propose `/verification-before-completion` before any "ADR shipp
 
 ## Batch rule
 
-One ADR covers 2–3 related decisions from one design phase. Don't write one ADR per decision. Example for an inventory system:
-- `001-inventory-schema-and-slots.md` covers unified item schema + slot-capacity model + stacking policy.
-- `002-loot-pipeline-and-effects.md` (later) covers drop-table resolution + item-effect architecture + InventorySystem autoload extraction.
+One ADR covers 2–3 related decisions from one design phase. Don't write one ADR per decision. Illustrative example — these filenames are not shipped, they show the shape:
+- `001-your-system-schema-and-slots.md` would cover the data schema + the capacity model + the stacking policy for one system.
+- `002-your-system-pipeline-and-effects.md` (later) would cover table resolution + effect architecture + the autoload extraction.
 
 ## Project Paths
 - ADRs: `docs/adr/NNN-<slug>.md` (`docs/architecture/` holds the blueprint + manifest, never ADRs)

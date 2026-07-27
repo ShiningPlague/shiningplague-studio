@@ -35,6 +35,10 @@ This skill bridges planning and code. It reads a story file in full, assembles a
 
 **Output:** Source code + test file in the project's `src/` and `tests/` directories.
 
+> **If an artifact named here is absent:** say so plainly in one line, skip that step, and
+> continue. Never invent the file to satisfy a checklist, and never fail a close because an
+> optional artifact was never created.
+
 ## Project Paths
 
 | What | Canonical path |

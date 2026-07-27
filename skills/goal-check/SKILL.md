@@ -21,6 +21,10 @@ metadata:
 
 Verify session goals (primary + minors) against actual outcomes. **Gates `/session-close`** — if critical fails, close pauses for designer remediation. Closes the "shipped but didn't actually achieve goal" failure mode.
 
+> **If an artifact named here is absent:** say so plainly in one line, skip that step, and
+> continue. Never invent the file to satisfy a checklist, and never fail a close because an
+> optional artifact was never created.
+
 ## When to fire
 
 - Auto-fire as Step 0 of `/session-close` (mandatory pre-close gate)

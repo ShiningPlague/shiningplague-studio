@@ -23,6 +23,10 @@ metadata:
 
 ---
 
+> **If an artifact named here is absent:** say so plainly in one line, skip that step, and
+> continue. Never invent the file to satisfy a checklist, and never fail a close because an
+> optional artifact was never created.
+
 ## When to fire
 
 - Designer says: "update", "update docs", "/update", "log what we did", "let's update the project state", "log this session"

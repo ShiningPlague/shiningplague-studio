@@ -7,6 +7,41 @@ The format follows [Keep a Changelog](https://keepachangelog.com/); versions fol
 ## [Unreleased]
 
 ### Added
+- **`docs/doc-stack.md` — the doc-stack contract, in one page.** Installed to
+  `.claude/docs/doc-stack.md` and linked from `CLAUDE.md`'s reading map. Every
+  artifact in the canonical layout as a table: path, what it is, who writes it,
+  who reads it, and whether it is shipped, scaffolded or written on first use.
+  The three-lifecycle vocabulary is stated once at the top, so "optional" has a
+  precise meaning instead of being a shrug. This is the page a contributor or a
+  future session opens to answer "where does X live?" without reading the
+  manifest.
+- **A graceful-degradation clause in every read-gate skill.** 57 skills and 10
+  agents now carry the same sentence, byte for byte, before their first
+  procedural step:
+  *"If an artifact named here is absent: say so plainly in one line, skip that
+  step, and continue. Never invent the file to satisfy a checklist, and never
+  fail a close because an optional artifact was never created."*
+  Ten pure-technique skills that read no project artifact are deliberately
+  excluded. Because the wording is identical everywhere, coverage is one grep:
+  `grep -rl "If an artifact named here is absent:" .claude/skills .claude/agents`.
+  This is what lets a project run a deliberately lean stack — the skills adapt
+  to a missing file instead of commanding it into existence.
+- **`tools/generate_systems_index.py` — the runner the sync hook already
+  executed.** `hooks/sync-systems-index.sh` ran it on every registry write and
+  `/design-system` told the session to run it, but it had never shipped, so the
+  hook's one branch could only ever fail silently. It exists now: it regenerates
+  the systems table in `docs/gdd/systems-index.md` from
+  `data/_schemas/system_registry.json`, touching only the text between
+  `<!-- SYSTEMS-TABLE:BEGIN -->` and `<!-- SYSTEMS-TABLE:END -->` (markers now in
+  `templates/systems-index.md`). Everything else in that file is hand-authored
+  and is never rewritten. Absent registry, absent index or absent markers all
+  exit 3 with a plain line and change nothing — it will not guess where a table
+  belongs, and it will not overwrite prose.
+- **`/setup-engine` step 2 creates the engine reference library.** `docs/engine-reference/<engine>/`
+  was cited by five agents, four skills and two templates and shipped by nothing —
+  it cannot ship, because it records what one *pinned* engine version does. The
+  skill now offers to create it (`VERSION.md` plus three companion notes and a
+  `modules/` folder), and every reader is labelled optional.
 - **`tools/consistency_check.py` — the runner four skills already commanded.**
   `consistency-check` advertised it in its own description ("Runner at
   tools/consistency_check.py"), and `/update`, `/red-flag-scan` and
@@ -92,6 +127,41 @@ The format follows [Keep a Changelog](https://keepachangelog.com/); versions fol
   `--engine unity|unreal|godot-extras|multiplayer` installs an agent engine pack.
 
 ### Fixed
+- **46 phantom paths — the artifacts this bundle was extracted from, still cited
+  as if they ship.** `tools/doc_stack_check.py` now reports zero. The repairs, by
+  kind: upstream `superpowers` spec/plan folders repointed to `docs/specs/` and
+  `docs/plans/`; `production/stories/` repointed to `production/epics/`;
+  `production/playtests/` repointed to `production/session-logs/playtest-*.md`,
+  which is where `/qa-plan` actually writes; `production/gate-checks/` and
+  `production/retrospectives/` replaced with the artifacts those skills really
+  produce; `docs/migration/adoption-plan-*.md` repointed to the
+  `docs/adoption-plan-*.md` that `/adopt` writes; `.claude/docs/godot-gotchas.md`
+  corrected to `.claude/docs/engine-notes/godot-gotchas.md`;
+  `.claude/docs/coding-standards.md` and a non-existent changelog template
+  dropped for the files that do ship; the `agents/*.md` and `skills/*/SKILL.md`
+  self-references in the two indexes corrected to their installed `.claude/`
+  paths; a project-specific bug auto-promotion script and two brainstorm server
+  helper files removed as references; and `production/security/`,
+  `production/releases/`, `production/community/` and `production/milestones/`
+  declared in the manifest with the skill or agent that writes each one named.
+- **Example content named after the projects this framework was extracted from.**
+  ADR batching examples, a headless harness filename, a concrete autoload and its
+  data file, and a `docs/market-research/` folder are now generic or explicitly
+  labelled illustrative. A stranger reading any sentence is no longer sent to a
+  file that will not be there.
+- **The consistency gate failed a brand-new install.** `CLAUDE.md`'s reading map
+  names `docs/architecture/architecture.md`, `control-manifest.md` and
+  `tr-registry.yaml` — three files `/create-architecture` and
+  `/create-control-manifest` write later. Check 5 counted all three as broken
+  promises, so the first `/session-close` in a fresh project failed on artifacts
+  nothing had had a reason to create yet. It now reads the `created_on_use` list
+  out of `tools/doc_stack.manifest.json` (one list, not two) and reports those as
+  "not written yet". A path that genuinely nothing creates still fails.
+- **`/create-architecture` hard-stopped on an optional artifact.** It told the
+  session to read the engine reference library "completely" and then to stop if
+  it was missing. It now says so in one line, records that engine claims are
+  unverified against a pinned version, and continues; the stop is reserved for
+  a project with no engine configured at all.
 - **Manifest version sync** — the 0.2.0 changelog entry existed but `manifest.yaml`
   still said 0.1.0; the manifest version now tracks the changelog (0.3.0).
 

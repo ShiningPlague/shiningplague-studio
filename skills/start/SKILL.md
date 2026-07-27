@@ -19,6 +19,10 @@ metadata:
 
 Routes the designer to the right onboarding path based on what exists — fresh projects take Path A/B/C; existing projects take Path D, which hands off to `/adopt`.
 
+> **If an artifact named here is absent:** say so plainly in one line, skip that step, and
+> continue. Never invent the file to satisfy a checklist, and never fail a close because an
+> optional artifact was never created.
+
 ## Phase 1: Detect Project State
 
 Read silently:
@@ -27,7 +31,7 @@ Read silently:
 3. `.claude/docs/technical-preferences.md` — engine configured?
 4. Glob `src/**/*.gd` — source code exists?
 5. Glob `docs/adr/*.md` — ADRs exist?
-6. `docs/migration/adoption-plan-*.md` — prior adoption plan?
+6. `docs/adoption-plan-*.md` — prior adoption plan?
 
 ---
 

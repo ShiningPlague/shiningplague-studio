@@ -1,5 +1,9 @@
 # Milestone: [Name]
 
+> Filled-in copies live at `production/milestones/<milestone>.md` — one file per
+> milestone. The session-start hook surfaces the most recent one as the active
+> milestone. A project that plans in sprints alone may never create this folder.
+
 ## Overview
 
 - **Target Date**: [Date]

@@ -39,6 +39,10 @@ See `.claude/docs/director-gates.md` for the full check pattern.
 - **`api-boundaries`**: Focus on API boundary definitions only
 - **`adr-audit`**: Audit existing ADRs for engine compatibility gaps only
 
+> **If an artifact named here is absent:** say so plainly in one line, skip that step, and
+> continue. Never invent the file to satisfy a checklist, and never fail a close because an
+> optional artifact was never created.
+
 ## Project Paths
 
 | What | Canonical path |
@@ -66,15 +70,19 @@ See `.claude/docs/director-gates.md` for the full check pattern.
 
 ### 0a. Engine Context (Critical)
 
-Read the engine reference library completely:
+Read the engine reference library completely, if the project has one. It is
+project-owned and optional -- `/setup-engine` step 2 creates it. If it is absent,
+say so in one line, note in the architecture doc that engine claims are unverified
+against a pinned version, and continue:
 
-1. `docs/engine-reference/godot/VERSION.md` → engine name, version, LLM cutoff, post-cutoff risk levels
-2. `docs/engine-reference/godot/breaking-changes.md` → HIGH and MEDIUM risk changes
-3. `docs/engine-reference/godot/deprecated-apis.md` → APIs to avoid
-4. `docs/engine-reference/godot/current-best-practices.md` → post-cutoff best practices
-5. All files in `docs/engine-reference/godot/modules/` → current API patterns per domain
+1. `docs/engine-reference/<engine>/VERSION.md` → engine name, version, LLM cutoff, post-cutoff risk levels
+2. `docs/engine-reference/<engine>/breaking-changes.md` → HIGH and MEDIUM risk changes
+3. `docs/engine-reference/<engine>/deprecated-apis.md` → APIs to avoid
+4. `docs/engine-reference/<engine>/current-best-practices.md` → post-cutoff best practices
+5. All files in `docs/engine-reference/<engine>/modules/` → current API patterns per domain
 
-If no engine is configured, stop:
+If no engine is configured at all (no `.claude/docs/technical-preferences.md` engine
+field), stop -- that is a real gate, not a missing optional file:
 > "No engine is configured. Run `/setup-engine` first."
 
 ### 0b. Design Context + Technical Requirements Extraction

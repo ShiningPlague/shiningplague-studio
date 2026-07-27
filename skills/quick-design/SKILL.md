@@ -25,6 +25,10 @@ This is the **lightweight design path** for changes that don't need a full GDD. 
 
 **When to run:** Anytime a change is too small for `/design-system` but too meaningful to implement without a written rationale.
 
+> **If an artifact named here is absent:** say so plainly in one line, skip that step, and
+> continue. Never invent the file to satisfy a checklist, and never fail a close because an
+> optional artifact was never created.
+
 ## Project Paths
 
 | What | Canonical path |

@@ -18,13 +18,17 @@ metadata:
 
 Detect scope deviation by comparing current work against the governing spec, plan, or story.
 
+> **If an artifact named here is absent:** say so plainly in one line, skip that step, and
+> continue. Never invent the file to satisfy a checklist, and never fail a close because an
+> optional artifact was never created.
+
 ## Procedure
 
 ### 1. Identify Governing Scope Document
 Find the active scope document (in priority order):
 - Active plan: `docs/plans/YYYY-MM-DD-*-plan.md` with status 🚧 ACTIVE
 - Active spec: `docs/specs/YYYY-MM-DD-*-design.md` with status 🚧 IN PROGRESS
-- Active story: `production/stories/*.md` with status in-progress
+- Active story: `production/epics/<epic-slug>/*.md` with status in-progress
 - Active workstream state: `production/workstreams/<name>.md` → "In Progress" section
 
 ### 2. Extract Stated Scope

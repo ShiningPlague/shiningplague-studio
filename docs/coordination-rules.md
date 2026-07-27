@@ -68,7 +68,8 @@ full mapping.
 
 - An orchestrator may only modify files in its domain (e.g. team-combat writes
   to `src/systems/combat*`, its own `data/<content-type>/` folders, and
-  `production/workstreams/combat.md`)
+  `production/workstreams/<domain>.md`, e.g. `production/workstreams/combat.md` --
+  one file per domain, created when that domain's work begins)
 - Cross-domain file changes require explicit delegation from the other domain's
   orchestrator or a director-level decision
 - Workstream state files are owned by their orchestrator — other agents may READ

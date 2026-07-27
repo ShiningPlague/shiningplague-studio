@@ -20,6 +20,10 @@ metadata:
 
 **🔒 MUST-USE — auto-fire on trigger match, no announce-and-wait.**
 
+> **If an artifact named here is absent:** say so plainly in one line, skip that step, and
+> continue. Never invent the file to satisfy a checklist, and never fail a close because an
+> optional artifact was never created.
+
 ## Overview
 
 Claiming work is complete without verification is dishonesty, not efficiency.
@@ -188,7 +192,7 @@ Any of those without a concrete command-output reference = failure.
 
 **Project harness (Godot example):**
 ```
-✅ godot --headless --script tools/step3_inventory_check.gd → "SUMMARY: 8/8 PASS" → "step shipped"
+✅ godot --headless --script tools/step3_your_system_check.gd → "SUMMARY: 8/8 PASS" → "step shipped"
 ❌ "Headless looked clean" (where's the SUMMARY line?)
 ```
 
@@ -200,7 +204,7 @@ Any of those without a concrete command-output reference = failure.
 2. **Match it to a verification kind** above.
 3. **Run the verification command(s).** Do NOT skip and do NOT substitute "I checked" for an actual command.
 4. **Read the output.** If the verification fails, the work is not done — go back to the implementation phase.
-5. **Only then make the claim.** Reference the verification in the claim: *"Step shipped — `tools/step3_inventory_check.gd` reports 8/8 PASS, headless entry scene loads with no SCRIPT ERROR."*
+5. **Only then make the claim.** Reference the verification in the claim: *"Step shipped — the step's headless harness (e.g. `tools/step3_your_system_check.gd`) reports 8/8 PASS, headless entry scene loads with no SCRIPT ERROR."*
 
 ---
 

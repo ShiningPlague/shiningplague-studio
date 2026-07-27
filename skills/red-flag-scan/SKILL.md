@@ -21,6 +21,10 @@ metadata:
 
 **This is an ORCHESTRATOR.** It does NOT duplicate logic from existing canonical skills — it dispatches them based on what changed in the session, then aggregates results. Existing canonical skills do the deep work; this skill is the conductor.
 
+> **If an artifact named here is absent:** say so plainly in one line, skip that step, and
+> continue. Never invent the file to satisfy a checklist, and never fail a close because an
+> optional artifact was never created.
+
 ## Orchestration logic
 
 Based on what changed in the session (detected via `git diff`), dispatch the right canonical skill:

@@ -29,11 +29,15 @@ ships. It is a mini-sprint — not a hotfix, not a full sprint.
 
 ---
 
+> **If an artifact named here is absent:** say so plainly in one line, skip that step, and
+> continue. Never invent the file to satisfy a checklist, and never fail a close because an
+> optional artifact was never created.
+
 ## Phase 1: Load Release Context
 
 Read:
 - `production/stage.txt` — confirm project is in Release stage
-- The most recent file in `production/gate-checks/` — read the release gate verdict
+- The most recent release-gate verdict from `/gate-check release` — recorded in `docs/devlog.md` and the newest `production/session-logs/` entry
 - `production/qa/bugs/*.md` — load all bugs with Status: Open or Fixed — Pending Verification
 - `production/sprints/` most recent — understand what shipped
 - `production/security/security-audit-*.md` most recent — check for any open security items

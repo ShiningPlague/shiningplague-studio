@@ -13,7 +13,7 @@ metadata:
     - Project path adaptations (docs/adr/, {{GDD_PATH}}, system_registry.json)
     - Review-mode integration (full/lean/solo behaviour)
     - Composite verdict escalation rules
-    - Stage.txt write on PASS
+    - production/stage.txt write on PASS
 ---
 
 # Gate Check — Phase Transition Validation
@@ -21,6 +21,10 @@ metadata:
 > 🌱 **ShiningPlague-adopted.** Originally Donchitos (barebones stub); battle-tested on a shipped Godot project. Upstream was a pointer-only file; the studio version is the full implementation — parallel director dispatch, artifact completeness check, composite verdict, stage.txt write.
 
 Validates project readiness to advance from one phase to the next by spawning 4 director agents in parallel, each reviewing from their domain. Produces a composite PASS / CONCERNS / FAIL verdict.
+
+> **If an artifact named here is absent:** say so plainly in one line, skip that step, and
+> continue. Never invent the file to satisfy a checklist, and never fail a close because an
+> optional artifact was never created.
 
 ## Phases (from workflow-catalog.yaml)
 
@@ -47,7 +51,7 @@ Read silently before presenting anything:
 7. Glob `docs/adr/*.md` — all ADRs and statuses
 8. Glob `docs/gdd/*.md` + `{{GDD_PATH}}` — all GDD artifacts
 9. Glob `production/sprints/sprint-*.md` — sprint artifacts (if any)
-10. Glob `production/playtests/*.md` — playtest artifacts (if any)
+10. Glob `production/session-logs/playtest-*.md` — playtest notes written by `/qa-plan` (if any)
 
 **Project path adaptations:**
 - ADRs at `docs/adr/` (`docs/architecture/` holds the blueprint + manifest, never ADRs)

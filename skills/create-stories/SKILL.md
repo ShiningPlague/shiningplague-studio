@@ -29,6 +29,10 @@ A story is a single implementable behaviour — small enough to complete in one 
 **Previous step:** `/create-epics [system]`
 **Next step:** `/story-readiness [story-path]` then `/dev-story [story-path]`
 
+> **If an artifact named here is absent:** say so plainly in one line, skip that step, and
+> continue. Never invent the file to satisfy a checklist, and never fail a close because an
+> optional artifact was never created.
+
 ## Project Paths
 
 | What | Canonical path |

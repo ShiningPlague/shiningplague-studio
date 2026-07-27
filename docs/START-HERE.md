@@ -60,6 +60,7 @@ The studio also ships a full-discipline layer — enforcement rules, phase-gate 
 - [director-gates.md](director-gates.md) — formal director reviews between project phases, with `full` / `lean` / `solo` intensity modes.
 - [agent-coordination-map.md](agent-coordination-map.md) — the complete org chart, delegation rules, and escalation paths.
 - [flow-ledger.md](flow-ledger.md) — the zero-LLM checker that cross-checks claimed progress against the files that actually exist.
+- [doc-stack.md](doc-stack.md) — the doc-stack contract: every artifact, who writes it, who reads it, and whether it is core or optional. The page to open when the answer is "where does X live?".
 
 Your project's `CLAUDE.md` (seeded from the template at install) is the light default. Adopt the deeper layers when — and only when — they'd help.
 

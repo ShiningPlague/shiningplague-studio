@@ -27,6 +27,10 @@ metadata:
 
 ---
 
+> **If an artifact named here is absent:** say so plainly in one line, skip that step, and
+> continue. Never invent the file to satisfy a checklist, and never fail a close because an
+> optional artifact was never created.
+
 ## When to fire
 
 - 🟢 **After every bug fix lands** — capture-as-test pattern. The bug becomes a test that would have caught it pre-fix.
@@ -51,7 +55,7 @@ metadata:
 
 | Type | Where it lives | Example |
 |---|---|---|
-| Headless script harness | `{{TEST_HARNESS}}` (e.g. `tools/<step>_<feature>_check.gd`) | `tools/step3_inventory_check.gd` |
+| Headless script harness | `{{TEST_HARNESS}}` (e.g. `tools/<step>_<feature>_check.gd`) | e.g. `tools/step3_your_system_check.gd` |
 | Headless data validation | Python script in `tools/` | `tools/consistency_check.py` (cross-doc checks) |
 | Scene parse-check | `godot --headless scene.tscn` parse output | entry scene loads with no SCRIPT ERROR |
 | Cross-step regression runner | `tools/regression_check.gd` (if built — check registry) | runs all step harnesses in sequence |

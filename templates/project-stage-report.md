@@ -54,7 +54,7 @@
 - **Status**: [X%] complete
 - **Found**:
   - Sprint plans: [N] in `production/sprints/`
-  - Milestones: [N] in `production/milestones/`
+  - Milestones: [N] in `production/milestones/` (optional — a sprint-only project has none)
   - Roadmap: [Exists | Missing]
 - **Key Gaps**:
   - [ ] [Missing production artifact + impact]

@@ -19,6 +19,10 @@ metadata:
 
 Effort breakdown and estimation for planning.
 
+> **If an artifact named here is absent:** say so plainly in one line, skip that step, and
+> continue. Never invent the file to satisfy a checklist, and never fail a close because an
+> optional artifact was never created.
+
 ## Procedure
 
 ### 1. Understand the Work

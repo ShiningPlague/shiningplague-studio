@@ -10,7 +10,7 @@
 > `.claude/docs/workflow-catalog.yaml` (e.g. `combat.md`, `narrative.md`).
 >
 > **Written by** the `/team-*` skills and whoever is working the domain.
-> **Read by** `hooks/session-start.sh` (prints every workstream's phase at session
+> **Read by** `.claude/hooks/session-start.sh` (prints every workstream's phase at session
 > open — it skips this TEMPLATE.md by name), `/help` (step 4), `/update`.
 >
 > **Do not rename the two bold fields below.** The session-start hook greps for

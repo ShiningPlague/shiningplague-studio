@@ -13,7 +13,7 @@ paths:
 - Changes to public interfaces require a deprecation period and migration guide
 - Use RAII / deterministic cleanup for all resources
 - All engine systems must support graceful degradation
-- Before writing engine API code, consult `docs/engine-reference/` for the current engine version and verify APIs against the reference docs
+- Before writing engine API code, consult `docs/engine-reference/` for the current engine version and verify APIs against the reference docs. That library is project-owned and optional (`/setup-engine` step 2 creates it) -- if it is absent, say so in one line, flag every version-sensitive API you used as unverified, and continue
 
 ## Examples
 
