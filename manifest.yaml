@@ -19,7 +19,8 @@ counts:
   hooks: 13
   rules: 11
   templates: 39       # includes settings.template.json (hook wiring, new in 0.3.0)
-  tools: 1            # workflow_state_check.py — mechanical flow-state detection
+  tools: 2            # workflow_state_check.py (flow-state detection) + doc_stack_check.py
+                      # (doc-stack regression guard), plus its doc_stack.manifest.json data file
 
 skills_new_in_0_3_0:
   - godot-engine              # bundled engine skill — replaces the anthropic-skills:godot plugin dependency

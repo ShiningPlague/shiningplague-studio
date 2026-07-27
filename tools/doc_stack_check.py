@@ -33,6 +33,18 @@ TWO MODES
                          This is the check a user runs to prove their install is
                          coherent.
 
+WHAT COUNTS AS A REFERENCE
+    Backtick spans, markdown links and quoted YAML strings -- and, because a
+    backtick span is very often a COMMAND rather than a bare path, the tokens
+    INSIDE such a span too. `python tools/generate_systems_index.py` is a
+    command at a reader exactly as much as `tools/generate_systems_index.py`
+    is, and an extractor that only reads whole spans cannot see it. A skill's
+    YAML frontmatter is read the same way, because a `description:` is where a
+    skill advertises its runner to the router.
+    Deliberately NOT judged, and counted out loud in the report so the omission
+    is visible rather than silent: bare filenames with no directory component,
+    engine/binary assets, and path mentions inside fenced code blocks.
+
 HOW TO ADD A LEGITIMATE NEW PATH
     Never edit this file. Edit tools/doc_stack.manifest.json, which is the single
     machine-readable source of truth, and add ONE entry to the block that says
@@ -40,9 +52,12 @@ HOW TO ADD A LEGITIMATE NEW PATH
         install_map    - the installer copies it out of this bundle
         scaffold       - the installer's scaffold step must create it in a project
         created_on_use - a skill writes it while it runs (absent until then)
-        ignore         - the user's own game code/assets; not ours to create
+        ignore         - the project owns it; the template never creates it
     Every entry carries a one-line "why". An entry without a "why" is a smell:
-    if you cannot say what creates the path, it is a phantom.
+    if you cannot say what creates the path, it is a phantom. A "why" that does
+    not name what creates THAT path is worse than a smell -- it is laundering,
+    and a wildcard "why" that covers a whole directory ("docs/*.md -- top-level
+    docs the skills produce") will absolve real drift. Enumerate instead.
 
 EXIT CODES
     0  PASS   no phantom, no killed convention, no unscaffolded promise
@@ -84,8 +99,8 @@ CLASS_BLURB = {
     SHIPPED: "installed by scripts/install.sh out of this bundle",
     SCAFFOLDED: "created in a fresh project by the installer's scaffold step",
     CREATED_ON_USE: "written by a skill while it runs; absent until then",
-    TEMPLATED: "carries a placeholder; not a literal path",
-    IGNORED: "the user's own game code/assets; not ours to create",
+    TEMPLATED: "carries a placeholder or wildcard; a pattern, not a literal path",
+    IGNORED: "the project owns it; the template never creates it",
     KILLED: "a retired convention this repair removes",
     PHANTOM: "nothing in this bundle creates it",
 }
@@ -105,6 +120,14 @@ SPAN_PATTERNS = [
     re.compile(r'"([^"\n]{2,160})"'),          # glob: "docs/x.md"  YAML / JSON string
     re.compile(r"'([^'\n]{2,160})'"),          # glob: 'docs/x.md'  YAML string
 ]
+
+# Splits a span into tokens so a path embedded in a COMMAND or a list is seen.
+# NOT split on: '$' (so '$VAR/docs/x.md' stays rejectable as a shell expansion)
+# and '<' '>' (so the '<engine>' placeholder segment survives intact).
+TOKEN_SPLIT_RE = re.compile(r"[\s|,;()\"']+")
+
+# A fenced code block opener/closer. Contents are counted, never judged.
+FENCE_RE = re.compile(r"^\s{0,3}(```|~~~)")
 
 # Prose punctuation that clings to a reference. Bracket stripping is balance
 # aware: '[path/to/x.md' loses its bracket, '[epic-slug]/story.md' keeps both --
@@ -126,7 +149,12 @@ def load_manifest(repo_root):
     if not os.path.isfile(path):
         raise SystemExit("ERROR: cannot find tools/%s (looked from %s)" % (MANIFEST_NAME, repo_root))
     with open(path, "r", encoding="utf-8") as fh:
-        return json.load(fh), path
+        manifest = json.load(fh)
+    # Entries carrying neither a 'pattern' nor a 'path' are block-level comments
+    # ('_why_block'), so a contributor can explain a block in place.
+    for block in ("scaffold", "created_on_use", "ignore", "killed_conventions", "project_contract"):
+        manifest[block] = [e for e in manifest.get(block, []) if "pattern" in e or "path" in e]
+    return manifest, path
 
 
 # --------------------------------------------------------------------------
@@ -212,6 +240,13 @@ class Extractor(object):
         self.reject_prefixes = tuple(ex["reject_prefixes"].keys())
         self.skipped_bare = set()
         self.skipped_asset = set()
+        self.skipped_fenced = set()
+        # Built from the manifest's own extension list so the fenced-code
+        # counter cannot drift away from what the judged extractor accepts.
+        self.fenced_re = re.compile(
+            r"(?:[\w.@{}<>\[\]*-]+/)+[\w.@{}<>\[\]*-]+\.(?:%s)\b"
+            % "|".join(re.escape(e) for e in sorted(self.exts))
+        )
 
     def candidate(self, raw):
         """Return a cleaned project-relative path, or None if not path-like."""
@@ -266,14 +301,47 @@ class Extractor(object):
             return cand
         return None
 
-    def from_line(self, line):
+    def harvest(self, text, sink):
+        """Take the whole span if it is a path; otherwise mine its tokens.
+
+        A backtick span is as often a command or a list as it is a bare path.
+        `python tools/generate_systems_index.py` names a runner just as loudly
+        as `tools/generate_systems_index.py` does -- reading only whole spans
+        let a shipped hook execute a runner nothing ships, unseen.
+        """
+        got = self.candidate(text)
+        if got:
+            sink.append(got)
+            return
+        if not TOKEN_SPLIT_RE.search(text):
+            return
+        for tok in TOKEN_SPLIT_RE.split(text):
+            if tok:
+                hit = self.candidate(tok)
+                if hit:
+                    sink.append(hit)
+
+    def from_line(self, line, frontmatter=False):
         seen = []
         for pat in SPAN_PATTERNS:
             for m in pat.finditer(line):
-                got = self.candidate(m.group(1))
-                if got:
-                    seen.append(got)
+                self.harvest(m.group(1), seen)
+        if frontmatter:
+            # A skill's `description:` is where it advertises its runner to the
+            # router; it is a long unquoted-or-overlong YAML scalar, so no span
+            # pattern reaches it. Mine the whole line.
+            self.harvest(line.strip(), seen)
         return seen
+
+    def note_fenced(self, line):
+        """Record -- never judge -- paths inside fenced code blocks.
+
+        Fenced blocks mix real commands with illustrative snippets, so judging
+        them would invent failures. Counting them keeps the omission visible
+        instead of silent, which is the whole point of this script.
+        """
+        for m in self.fenced_re.finditer(line):
+            self.skipped_fenced.add(m.group(0))
 
 
 def scan_files(root, manifest):
@@ -334,6 +402,41 @@ def resolve_ref(cand, installed_src):
     return (joined + trailing) if joined else cand
 
 
+def references_in_file(path, extractor):
+    """[(lineno, ref)] for one file, tracking YAML frontmatter and code fences.
+
+    Frontmatter (a .md file whose first line is '---') is mined token-wise;
+    fenced blocks are counted and skipped.
+    """
+    with open(path, "r", encoding="utf-8", errors="replace") as fh:
+        lines = fh.read().splitlines()
+    out = []
+    # Frontmatter only counts when it CLOSES. An unterminated leading '---'
+    # would otherwise turn a whole document into token soup.
+    front_end = 0
+    if path.lower().endswith(".md") and lines and lines[0].strip() == "---":
+        for idx in range(1, len(lines)):
+            if lines[idx].strip() == "---":
+                front_end = idx + 1
+                break
+    in_fence = False
+    for lineno, line in enumerate(lines, 1):
+        if lineno <= front_end:
+            if lineno > 1 and lineno < front_end:
+                for cand in extractor.from_line(line, frontmatter=True):
+                    out.append((lineno, cand))
+            continue
+        if FENCE_RE.match(line):
+            in_fence = not in_fence
+            continue
+        if in_fence:
+            extractor.note_fenced(line)
+            continue
+        for cand in extractor.from_line(line):
+            out.append((lineno, cand))
+    return out
+
+
 def collect_references(root, manifest, extractor):
     """path -> set of (file, line) citations, keyed by project-relative path."""
     refs = defaultdict(set)
@@ -343,10 +446,8 @@ def collect_references(root, manifest, extractor):
         rel = os.path.relpath(path, root).replace(os.sep, "/")
         installed_src = installed_location(rel, imap)
         try:
-            with open(path, "r", encoding="utf-8", errors="replace") as fh:
-                for lineno, line in enumerate(fh, 1):
-                    for cand in extractor.from_line(line):
-                        refs[resolve_ref(cand, installed_src)].add((rel, lineno))
+            for lineno, cand in references_in_file(path, extractor):
+                refs[resolve_ref(cand, installed_src)].add((rel, lineno))
         except OSError as exc:
             print("WARN: could not read %s (%s)" % (rel, exc), file=sys.stderr)
     return refs, files
@@ -432,17 +533,32 @@ class Classifier(object):
             if pattern_matches(entry["pattern"], norm):
                 return CREATED_ON_USE, entry["why"]
 
+        # A reference carrying a placeholder ({{X}}, <x>, [x]) or a literal
+        # wildcard is a PATTERN, not an addressable path: there is no single
+        # file to open, so there is no single file to verify. What CAN be
+        # verified is its root -- 'docs/*.md' is honest because docs/ is real,
+        # 'agents/*.md' is not, because in an installed project the agents live
+        # at .claude/agents/. Judging the root is deliberately narrower than the
+        # 'docs/*.md' created-on-use catch-all this replaces: that entry
+        # absolved every literal filename directly under docs/, and so quietly
+        # excused two real installed-path drifts (docs/director-gates.md,
+        # docs/agents-index.md). A pattern excuses only other patterns.
         hole = PLACEHOLDER_RE.search(ref)
-        if hole:
-            literal = ref[:hole.start()]
-            if "/" not in literal.rstrip("/"):
+        star = ref.find("*")
+        cuts = [c for c in (hole.start() if hole else None,
+                            star if star >= 0 else None) if c is not None]
+        if cuts:
+            cut = min(cuts)
+            kind = "placeholder" if (hole and hole.start() == cut) else "wildcard"
+            literal = ref[:cut]
+            stem = literal.rsplit("/", 1)[0] if "/" in literal else ""
+            if not stem:
                 # The whole root is the variable ('{{DATA_DIR}}/enemies/') --
                 # the project supplies it, so there is nothing to verify here.
-                return TEMPLATED, "placeholder root; the project resolves it"
-            stem = literal.rsplit("/", 1)[0]
+                return TEMPLATED, "%s root; the project resolves it" % kind
             if self.rooted(stem):
-                return TEMPLATED, "placeholder under the known root '%s/'" % stem
-            return PHANTOM, "placeholder path rooted at '%s/', which nothing creates" % stem
+                return TEMPLATED, "%s under the known root '%s/'" % (kind, stem)
+            return PHANTOM, "%s path rooted at '%s/', which nothing creates" % (kind, stem)
 
         return PHANTOM, "no install_map / scaffold / created_on_use entry covers it"
 
@@ -561,13 +677,24 @@ def run_bundle_mode(repo_root, manifest, manifest_path, args):
         flag = "  <-- FAIL" if (cls in FAILING_CLASSES and n) else ""
         print("    %-16s %5d   %s%s" % (cls, n, CLASS_BLURB[cls], flag))
 
-    if extractor.skipped_bare or extractor.skipped_asset:
+    fenced_only = sorted(extractor.skipped_fenced - set(refs))
+    if extractor.skipped_bare or extractor.skipped_asset or extractor.skipped_fenced:
         print("")
-        print("  NOT JUDGED (declared out of scope, for transparency)")
+        print("  NOT JUDGED (declared out of scope -- counted so the gap is visible)")
         print("    %-16s %5d   bare filenames with no directory component"
               % ("bare-name", len(extractor.skipped_bare)))
         print("    %-16s %5d   engine/source/binary assets (the user's game content)"
               % ("engine-asset", len(extractor.skipped_asset)))
+        print("    %-16s %5d   paths inside fenced code blocks -- real commands and "
+              "illustrative" % ("fenced-code", len(extractor.skipped_fenced)))
+        print("    %-16s         snippets ('exact/path/to/file.py') are indistinguishable "
+              "there," % "")
+        print("    %-16s         so judging them would invent failures" % "")
+        print("    %-16s %5d   of those appear ONLY inside a fence -- no judged reference "
+              "covers" % ("fence-only", len(fenced_only)))
+        print("    %-16s         them, so this is the size of the blind spot, stated out loud"
+              % "")
+        print("    see any of these with --list BARE-NAME | ENGINE-ASSET | FENCED | FENCE-ONLY")
 
     covered, uncovered, sources, no_region = installer_coverage(repo_root, manifest)
     region = manifest["installer"]["scaffold_region"]
@@ -610,12 +737,22 @@ def run_bundle_mode(repo_root, manifest, manifest_path, args):
 
     if args.list_class:
         want = args.list_class.upper()
+        unjudged = {
+            "BARE-NAME": extractor.skipped_bare,
+            "ENGINE-ASSET": extractor.skipped_asset,
+            "FENCED": extractor.skipped_fenced,
+            "FENCE-ONLY": set(fenced_only),
+        }
         print("")
         print(THIN)
         print(" LISTING CLASS: %s" % want)
         print(THIN)
-        for ref, reason, _ in buckets.get(want, []):
-            print("  %-52s %s" % (ref, reason))
+        if want in unjudged:
+            for ref in sorted(unjudged[want]):
+                print("  %s" % ref)
+        else:
+            for ref, reason, _ in buckets.get(want, []):
+                print("  %-52s %s" % (ref, reason))
 
     n_phantom = len(buckets.get(PHANTOM, []))
     n_killed = len(buckets.get(KILLED, []))
@@ -759,7 +896,9 @@ def main(argv=None):
     parser.add_argument("--repo", metavar="DIR", default=None,
                         help="template repo root (default: the parent of tools/)")
     parser.add_argument("--list", dest="list_class", metavar="CLASS", default=None,
-                        help="also list every reference in CLASS (e.g. SHIPPED, TEMPLATED)")
+                        help="also list every reference in CLASS (SHIPPED, SCAFFOLDED, "
+                             "CREATED-ON-USE, TEMPLATED, IGNORED, KILLED, PHANTOM, or the "
+                             "not-judged buckets BARE-NAME, ENGINE-ASSET, FENCED, FENCE-ONLY)")
     parser.add_argument("--cite-limit", type=int, default=4, metavar="N",
                         help="max citing files shown per failure (0 = all; default 4)")
     args = parser.parse_args(argv)
