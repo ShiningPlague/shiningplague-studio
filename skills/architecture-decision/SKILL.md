@@ -7,7 +7,7 @@ metadata:
   adopted_by: ShiningPlague
   enhancements:
     - Studio + Donchitos merged ADR template at docs/adr/TEMPLATE.md with Live Sources table
-    - Project paths (docs/adr/NNN-<slug>.md not docs/architecture/adr-*)
+    - Canonical ADR path (docs/adr/NNN-<slug>.md)
     - technical-director dispatch with TD-ADR gate
     - Batch rule (2-3 related decisions per ADR)
     - Pipeline: ADR Accept → control-manifest update → registry sync → tr-registry mark
@@ -78,7 +78,7 @@ One ADR covers 2–3 related decisions from one design phase. Don't write one AD
 - `002-loot-pipeline-and-effects.md` (later) covers drop-table resolution + item-effect architecture + InventorySystem autoload extraction.
 
 ## Project Paths
-- ADRs: `docs/adr/NNN-<slug>.md` (NOT `docs/architecture/adr-*`)
+- ADRs: `docs/adr/NNN-<slug>.md` (`docs/architecture/` holds the blueprint + manifest, never ADRs)
 - Template: `docs/adr/TEMPLATE.md`
 - Control manifest: `docs/architecture/control-manifest.md`
 - TR registry: `docs/architecture/tr-registry.md`

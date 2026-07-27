@@ -35,13 +35,13 @@ Read `.claude/docs/workflow-catalog.yaml`. For each phase up to and including cu
 ### 3. Check Per-Phase Artifacts
 
 **Concept phase:**
-- Game concept doc: `design/gdd/game-concept.md` or `{{GDD_PATH}}`
-- Game pillars: `design/gdd/game-pillars.md`
+- Game concept doc: `docs/gdd/game-concept.md` or `{{GDD_PATH}}`
+- Game pillars: `docs/gdd/game-pillars.md`
 - Art bible: check for art-bible artifact
 
 **Systems Design phase:**
-- Systems index: `design/gdd/systems-index.md`
-- Per-system GDDs: `design/gdd/*.md` or `docs/gdd/*.md`
+- Systems index: `docs/gdd/systems-index.md`
+- Per-system GDDs: `docs/gdd/*.md`
 - Cross-GDD review: review-all-gdds artifact
 
 **Technical Setup phase:**

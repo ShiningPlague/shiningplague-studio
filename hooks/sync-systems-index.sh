@@ -1,16 +1,19 @@
 #!/bin/bash
 # Claude Code PostToolUse hook: Auto-regenerate derived artifacts on source edits.
 #
-# Three-branch sync handler:
+# One-branch sync handler:
 #   1. data/_schemas/system_registry.json edited
-#      -> regenerate design/gdd/systems-index.md (Donchitos systems-index format)
-#   2. docs/quick-specs/*.md edited
-#      -> regenerate docs/quick-specs/INDEX.md + update registry.quick_spec_index[]
-#   3. data/<type>/*.json edited (except _schemas/)
-#      -> regenerate design/registry/entities.yaml (Donchitos entities manifest)
+#      -> regenerate docs/gdd/systems-index.md (the human-readable view)
 #
-# All registries / manifests stay derived artifacts. The hook keeps them in
-# sync automatically so they never diverge from the source JSONs.
+# The registry is the SOURCE; the systems index is a derived VIEW. The hook
+# keeps the view in sync so it never diverges from the registry.
+#
+# Two upstream branches were removed with the layout unification: an entity-
+# manifest regenerator (this studio's entity authority IS the system registry,
+# so the manifest had no source) and a separate quick-spec indexer (quick specs
+# are ordinary specs and live in docs/specs/ with the rest of the spec
+# lifecycle). Both called runners that do not exist, so both could only ever
+# print a misleading success line.
 #
 # Exit behavior: exit 0 always (advisory only, never blocks).
 
@@ -44,25 +47,7 @@ fi
 if echo "$FILE_PATH" | grep -qE 'system_registry\.json$'; then
     "$PYTHON_CMD" tools/generate_systems_index.py >/dev/null 2>&1
     if [ $? -eq 0 ]; then
-        echo "[sync-systems-index] Auto-regenerated design/gdd/systems-index.md from registry" >&2
-    fi
-fi
-
-# Branch 2: docs/quick-specs/*.md (excluding INDEX.md + README.md) -> regenerate INDEX
-if echo "$FILE_PATH" | grep -qE 'docs/quick-specs/.+\.md$' \
-   && ! echo "$FILE_PATH" | grep -qE 'docs/quick-specs/(INDEX|README)\.md$'; then
-    "$PYTHON_CMD" tools/generate_quick_specs_index.py >/dev/null 2>&1
-    if [ $? -eq 0 ]; then
-        echo "[sync-quick-specs] Auto-regenerated docs/quick-specs/INDEX.md + registry" >&2
-    fi
-fi
-
-# Branch 3: data/<type>/*.json (excluding _schemas/) -> regenerate entities.yaml
-if echo "$FILE_PATH" | grep -qE 'data/[^/]+/[^/]+\.json$' \
-   && ! echo "$FILE_PATH" | grep -qE 'data/_schemas/'; then
-    "$PYTHON_CMD" tools/generate_entities_yaml.py >/dev/null 2>&1
-    if [ $? -eq 0 ]; then
-        echo "[sync-entities] Auto-regenerated design/registry/entities.yaml" >&2
+        echo "[sync-systems-index] Auto-regenerated docs/gdd/systems-index.md from registry" >&2
     fi
 fi
 

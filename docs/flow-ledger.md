@@ -74,13 +74,13 @@ leapfrogs, skips, or custom steps — so you:
 4. Re-run the checker to get the real state report.
 
 Prefer to start from a worked example instead of the auto-draft? Copy
-[`templates/flow-ledger.TEMPLATE.yaml`](../templates/flow-ledger.TEMPLATE.yaml) — it carries
+[`.claude/docs/templates/flow-ledger.TEMPLATE.yaml`](templates/flow-ledger.TEMPLATE.yaml) — it carries
 the full schema header plus a done-with-evidence, a leapfrogged-with-reason, and a custom
 example step to edit down.
 
 ## How it powers the session hook
 
-`hooks/session-start.sh` calls `tools/workflow_state_check.py --brief` and prints the result
+`.claude/hooks/session-start.sh` calls `tools/workflow_state_check.py --brief` and prints the result
 under **CANONICAL-RECOMMENDED NEXT ACTION**. That gives every session a mechanical,
 drift-proof answer to "what's next" — posture, any rule-pending blockers, the recommended
 next step, and a conflict count — before any agent reasoning happens. If Python or the tool

@@ -1,6 +1,6 @@
 ---
 name: create-architecture
-description: "Guided, section-by-section authoring of the master architecture document for the game. Reads all GDDs, the systems index, existing ADRs, and the engine reference library to produce a complete architecture blueprint before any code is written. Engine-version-aware: flags knowledge gaps and validates decisions against the pinned engine version. ShiningPlague-adopted: project path corrections throughout (docs/adr/ not docs/architecture/adr-*, master GDD at {{GDD_PATH}}, data/ not assets/data/)."
+description: "Guided, section-by-section authoring of the master architecture document for the game. Reads all GDDs, the systems index, existing ADRs, and the engine reference library to produce a complete architecture blueprint before any code is written. Engine-version-aware: flags knowledge gaps and validates decisions against the pinned engine version. ShiningPlague-adopted: canonical project paths throughout (ADRs at docs/adr/, master GDD at {{GDD_PATH}}, editable game data under data/)."
 argument-hint: "[focus-area: full | layers | data-flow | api-boundaries | adr-audit] [--review full|lean|solo]"
 user-invocable: true
 allowed-tools: Read, Glob, Grep, Write, Bash, AskUserQuestion, Task
@@ -10,9 +10,9 @@ metadata:
   origin_url: https://github.com/Donchitos/Claude-Code-Game-Studios
   adopted_by: ShiningPlague
   enhancements:
-    - Project ADR path (docs/adr/NNN-*.md not docs/architecture/adr-*)
+    - Canonical ADR path (docs/adr/NNN-<slug>.md)
     - Master GDD support ({{GDD_PATH}} + per-system docs/gdd/*.md when split)
-    - Data root corrected (data/ not assets/data/)
+    - Canonical data root (data/)
     - Project context block (existing ADRs, TR registry, control manifest)
     - Engine reference at docs/engine-reference/<engine>/VERSION.md
 ---
@@ -41,13 +41,13 @@ See `.claude/docs/director-gates.md` for the full check pattern.
 
 ## Project Paths
 
-| Donchitos vanilla path | Project path |
+| What | Canonical path |
 |---|---|
-| `design/gdd/game-concept.md` | `design/gdd/game-concept.md` (correct) |
-| `design/gdd/systems-index.md` | `design/gdd/systems-index.md` (correct — auto-generated) |
-| `design/gdd/*.md` (per-system GDDs) | `docs/gdd/*.md` (when split) + `{{GDD_PATH}}` (master, e.g. `docs/GDD.md`) |
-| `docs/architecture/adr-*.md` | `docs/adr/NNN-*.md` (project ADR path) |
-| `assets/data/` | `data/` |
+| Game concept | `docs/gdd/game-concept.md` |
+| Systems index | `docs/gdd/systems-index.md` (auto-generated from the registry) |
+| Per-system GDDs | `docs/gdd/*.md` (when split) + `{{GDD_PATH}}` (master, e.g. `docs/GDD.md`) |
+| ADRs | `docs/adr/NNN-*.md` |
+| Editable game data | `data/` |
 | Architecture output | `docs/architecture/architecture.md` |
 | TR registry | `docs/architecture/tr-registry.md` |
 | Control manifest | `docs/architecture/control-manifest.md` |
@@ -81,8 +81,8 @@ If no engine is configured, stop:
 
 Read all approved design documents:
 
-1. `design/gdd/game-concept.md` — game pillars, genre, core loop
-2. `design/gdd/systems-index.md` — all systems, dependencies, priority tiers
+1. `docs/gdd/game-concept.md` — game pillars, genre, core loop
+2. `docs/gdd/systems-index.md` — all systems, dependencies, priority tiers
 3. `.claude/docs/technical-preferences.md`
 4. **Every per-system GDD in `docs/gdd/` (when split)** + master GDD `{{GDD_PATH}}`
 

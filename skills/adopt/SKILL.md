@@ -43,10 +43,10 @@ Then read silently before presenting anything else.
 
 ### Existence check
 - `production/stage.txt` — if present, read it (authoritative phase)
-- `design/gdd/game-concept.md` — concept exists?
-- `design/gdd/systems-index.md` — systems index exists?
-- Count GDD files: `design/gdd/*.md` (excluding game-concept.md and systems-index.md)
-- Count ADR files: `docs/architecture/adr-*.md`
+- `docs/gdd/game-concept.md` — concept exists?
+- `docs/gdd/systems-index.md` — systems index exists?
+- Count GDD files: `docs/gdd/*.md` (excluding game-concept.md and systems-index.md)
+- Count ADR files: `docs/adr/[0-9]*.md` (NNN-<slug>.md; TEMPLATE.md is not a decision)
 - Count story files: `production/epics/**/*.md` (excluding EPIC.md)
 - `.claude/docs/technical-preferences.md` — engine configured?
 - `docs/engine-reference/` — engine reference docs present?
@@ -121,7 +121,7 @@ if the Status section exists.
 
 ### 2c: systems-index.md Format Audit
 
-If `design/gdd/systems-index.md` exists:
+If `docs/gdd/systems-index.md` exists:
 
 1. **Parenthetical status values** — Grep for any Status cell containing
    parentheses: `"Needs Revision ("`, `"In Progress ("`, etc.
@@ -213,12 +213,12 @@ and the exact replacement text. Offer to fix this immediately before writing the
 
 **Special case — ADRs missing Status field:**
 For each affected ADR, the fix is:
-`/architecture-decision retrofit docs/architecture/adr-[NNNN]-[slug].md`
+`/architecture-decision retrofit docs/adr/[NNN]-[slug].md`
 List each ADR as a separate checkable item.
 
 **Special case — GDDs missing sections:**
 For each affected GDD, list which sections are missing and the fix:
-`/design-system retrofit design/gdd/[filename].md`
+`/design-system retrofit docs/gdd/[filename].md`
 
 **Infrastructure bootstrap ordering** — always present in this sequence:
 1. Fix ADR formats first (registry depends on reading ADR Status fields)

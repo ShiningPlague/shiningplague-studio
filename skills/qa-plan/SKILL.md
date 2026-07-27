@@ -66,7 +66,7 @@ For each in-scope story file, read the full file and extract:
 
 After reading stories, load supporting context once (not per story):
 
-- `design/gdd/systems-index.md` — to understand system priorities and which
+- `docs/gdd/systems-index.md` — to understand system priorities and which
   GDDs are approved
 - For each unique GDD referenced across all stories: read only the
   **Acceptance Criteria** and **Formulas** sections. Do not load full GDD text —

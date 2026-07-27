@@ -35,22 +35,33 @@ You do not need to read every doc before acting. Match the question to ONE row, 
 
 | The question is about… | Open this |
 |---|---|
-| **Current state — what's built, what's next, status** | `data/_schemas/system_registry.json` — the authoritative built-state source. Open first. |
-| "Something's wrong with my test / nothing happens when I X" | `data/_schemas/system_registry.json` → live test notes / known-working state, before grepping code. |
+| **Current state** — what's built, what's next, why a test does nothing | `data/_schemas/system_registry.json` — the authoritative built-state source, including live test notes. Open first. |
 | **Design** — mechanics, pillars, systems intent | `docs/GDD.md` <!-- default path — adjust if your GDD lives elsewhere --> |
-| **Data / pipeline reference** — formulas, tables, tuning | `docs/implementation-status.md` (points at the data files; numbers live in the data, not here) |
+| **One system's design in depth** | `docs/gdd/<system>.md`; the decomposition + status table is `docs/gdd/systems-index.md`. |
+| **Visual identity** — palette, shape language, asset standards | `docs/art-bible.md` |
 | **Architecture decisions** — locked technical/design choices | `docs/adr/` — one ADR per decision, permanent. |
+| **System blueprint + programmer rules** | `docs/architecture/` — `architecture.md`, `control-manifest.md`, `tr-registry.yaml`. |
 | **In-progress feature design** — "where's the spec for X?" | `docs/specs/` — check BEFORE restarting a brainstorm. |
+| **The plan for work in flight** | `docs/plans/` — the archive lifecycle is in § Project conventions below. |
+| **Data / pipeline reference** — formulas, tables, tuning | `docs/implementation-status.md` (points at the data files; numbers live in the data, not here) |
+| **Editable game content** — enemies, items, curves | `data/` — one file per thing, schemas in `data/_schemas/`. |
+| **Unresolved designer questions** | `docs/open-flags.md` |
+| **What changed recently** | `docs/devlog.md` + `git log --oneline` |
+| **Last session / next steps / carry-forward** | `production/session-state/active.md` |
+| **Project phase** | `production/stage.txt` (mechanical flow state: `production/flow-ledger.yaml`) |
+| **Workstream states** — per-domain progress + open questions | `production/workstreams/<name>.md` |
+| **Sprint + story state** | `production/sprint-status.yaml`, `production/sprints/`, `production/epics/` |
+| **Bugs and test evidence** | `production/qa/` |
+| **How strict are reviews right now?** | `production/review-mode.txt` (full / lean / solo) |
 | **Which skill do I invoke?** | `.claude/docs/skills-index.md` — skill catalogue + triggers. |
 | **Which agent do I dispatch?** | `.claude/docs/agents-index.md` — Intent → Agent table + roster. |
-| **Workstream states** — per-domain progress + open questions | `production/workstreams/<name>.md` |
-| **Last session / next steps / carry-forward** | `production/session-state/active.md` |
-| **What changed recently** | `docs/devlog.md` + `git log --oneline` |
-| **Project phase** | `production/stage.txt` |
 | **Engine gotchas / coding standards** | `.claude/docs/engine-notes/godot-gotchas.md` <!-- bundled default; swap for your engine's notes --> |
+| **Project-local runnable checks** | `tools/` — run them, don't reimplement them. |
 
 <!-- GUIDANCE: Add project-specific rows as your doc stack grows. Keep the map
-     pointing at ONE authoritative doc per question — never two that can disagree. -->
+     pointing at ONE authoritative doc per question — never two that can disagree,
+     and never two rows naming the same location. This map is the contract the
+     skills align to: if you move a doc, move it here first. -->
 
 ---
 
@@ -109,7 +120,7 @@ brainstorming → design-system (GDD) → map-systems (decompose)
   → qa-plan → test-driven-development → gate-check
   → finishing-a-development-branch
 ```
-Director gates apply between phases (see `docs/director-gates.md`). Needed for large, cross-cutting feature areas.
+Director gates apply between phases (see `.claude/docs/director-gates.md`). Needed for large, cross-cutting feature areas.
 
 ---
 

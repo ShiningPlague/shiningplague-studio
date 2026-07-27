@@ -71,8 +71,8 @@ Show only if at least one uncataloged skill exists. Limit to the 10 most relevan
    - `src/` has 10+ source files → `production`
    - `production/stories/*.md` exists → `pre-production`
    - `docs/adr/*.md` exists → `technical-setup`
-   - `design/gdd/systems-index.md` exists → `systems-design`
-   - `design/gdd/game-concept.md` exists → `concept`
+   - `docs/gdd/systems-index.md` exists → `systems-design`
+   - `docs/gdd/game-concept.md` exists → `concept`
    - Nothing → `concept` (fresh project)
 
 ---

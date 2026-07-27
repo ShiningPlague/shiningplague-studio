@@ -60,7 +60,7 @@ steps:
   # If the evidence is missing/empty the check flags CONFLICT (ledger lies).
   - id: game-concept
     status: done
-    evidence: [design/gdd/game-concept.md, design/gdd/game-pillars.md]
+    evidence: [docs/gdd/game-concept.md, docs/gdd/game-pillars.md]
     reason: "Concept document + pillars authored and signed off."
     date: "YYYY-MM-DD"
 
@@ -79,7 +79,7 @@ steps:
   - id: vision-doc
     custom: true
     status: done
-    evidence: [design/VISION.md]
+    evidence: [docs/vision.md]
     reason: "One-page vision contract — the yardstick every feature is measured against. Non-canonical: sits above the catalog as this project's compressed concept anchor."
     date: "YYYY-MM-DD"
 

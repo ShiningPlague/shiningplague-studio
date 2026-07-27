@@ -163,7 +163,7 @@ workflow that produces a GDD)
 
 **Context to pass**:
 - GDD file path
-- Game pillars (from `design/gdd/game-concept.md` or `design/gdd/game-pillars.md`)
+- Game pillars (from `docs/gdd/game-concept.md` or `docs/gdd/game-pillars.md`)
 - MDA aesthetics target for this game
 - System's stated Player Fantasy section
 
@@ -184,8 +184,8 @@ workflow that produces a GDD)
 complete system set before GDD authoring begins
 
 **Context to pass**:
-- Systems index path (`design/gdd/systems-index.md`)
-- Game pillars and core fantasy (from `design/gdd/game-concept.md`)
+- Systems index path (`docs/gdd/systems-index.md`)
+- Game pillars and core fantasy (from `docs/gdd/game-concept.md`)
 - Priority tier assignments (MVP / Vertical Slice / Alpha / Full Vision)
 - Any high-risk or bottleneck systems identified in the dependency map
 
@@ -213,7 +213,7 @@ deliverables)
 **Context to pass**:
 - Document file path(s)
 - Game pillars
-- Narrative direction brief or tone guide (if exists at `design/narrative/`)
+- Narrative direction brief or tone guide (if exists at `docs/narrative/`)
 - Any existing lore that the new document references
 
 **Prompt**:
@@ -576,10 +576,10 @@ Agent: `art-director` | Model tier: Sonnet | Domain: Visual identity, art bible,
 **Trigger**: After the art bible is drafted (`/art-bible`), before asset production begins
 
 **Context to pass**:
-- Art bible path (`design/art/art-bible.md`)
+- Art bible path (`docs/art-bible.md`)
 - Game pillars and core fantasy
 - Platform and performance constraints (from `.claude/docs/technical-preferences.md` if configured)
-- Visual identity anchor chosen during brainstorm (from `design/gdd/game-concept.md`)
+- Visual identity anchor chosen during brainstorm (from `docs/gdd/game-concept.md`)
 
 **Prompt**:
 > "Review this art bible for completeness and internal consistency. Does the color
@@ -603,8 +603,8 @@ Agent: `art-director` | Model tier: Sonnet | Domain: Visual identity, art bible,
 **Context to pass**:
 - Target phase name
 - List of all art/visual artifacts present (file paths)
-- Visual identity anchor from `design/gdd/game-concept.md` (if present)
-- Art bible path if it exists (`design/art/art-bible.md`)
+- Visual identity anchor from `docs/gdd/game-concept.md` (if present)
+- Art bible path if it exists (`docs/art-bible.md`)
 
 **Prompt**:
 > "Review the current project state for [target phase] gate readiness from a visual
@@ -749,7 +749,7 @@ authored, or when a design decision has narrative implications
 introduced, or when a tech art decision affects visual style
 
 **Context to pass**:
-- Art bible path (if exists at `design/art-bible.md`)
+- Art bible path (if exists at `docs/art-bible.md`)
 - The specific asset type, style decision, or visual direction being reviewed
 - Reference images or style descriptions
 - Platform and performance constraints

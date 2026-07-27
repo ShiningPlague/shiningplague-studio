@@ -13,14 +13,14 @@ When a GDD changes, architectural decisions written against it may no longer be
 valid. This skill finds every affected ADR, compares what the ADR assumed against
 what the GDD now says, and guides the user through resolution.
 
-**Usage:** `/propagate-design-change design/gdd/combat-system.md`
+**Usage:** `/propagate-design-change docs/gdd/combat-system.md`
 
 ---
 
 ## 1. Validate Argument
 
 A GDD path argument is **required**. If missing, fail with:
-> "Usage: `/propagate-design-change design/gdd/[system].md`
+> "Usage: `/propagate-design-change docs/gdd/[system].md`
 > Provide the path to the GDD that was changed."
 
 Verify the file exists. If not, fail with:
@@ -39,7 +39,7 @@ Read the current GDD in full.
 Run git to get the previous committed version:
 
 ```bash
-git show HEAD:design/gdd/[filename].md
+git show HEAD:docs/gdd/[filename].md
 ```
 
 If the file has no git history (new file), report:

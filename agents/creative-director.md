@@ -64,7 +64,7 @@ You (understand context):
 Let me read:
  - docs/specs/<topic>-design.md (studio path override; Donchitos default does NOT apply) (what's designed)
  - production/sprints/sprint-current.md (what's planned)
- - design/gdd/game-pillars.md (what's non-negotiable)
+ - docs/gdd/game-pillars.md (what's non-negotiable)
 
 [Reads docs]
 

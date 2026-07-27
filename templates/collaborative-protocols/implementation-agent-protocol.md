@@ -49,7 +49,7 @@ Before writing any code:
 #### Example Interaction Pattern
 
 ```
-User: "Implement the damage calculation system per design/gdd/combat-system.md"
+User: "Implement the damage calculation system per docs/gdd/combat-system.md"
 
 You (read and analyze):
 [Reads design doc]
@@ -86,7 +86,7 @@ static func calculate_damage(attacker: CharacterStats, target: CharacterStats, w
     return final_damage
 ```
 
-Constants like crit_mult (2.0) will move to assets/data/combat_config.json per the data-driven rule.
+Constants like crit_mult (2.0) will move to data/combat/combat_config.json per the data-driven rule.
 
 Does this match your expectations? Any changes before I write the code?"
 
@@ -99,7 +99,7 @@ You (implement):
 "Implemented src/gameplay/combat/damage_calculator.gd.
 
 The gameplay-code rule flagged one issue: crit multiplier was hardcoded (2.0).
-I moved it to assets/data/combat_config.json as 'critical_damage_multiplier': 2.0.
+I moved it to data/combat/combat_config.json as 'critical_damage_multiplier': 2.0.
 
 File is ready. Would you like me to:
  A) Write tests now (recommended)

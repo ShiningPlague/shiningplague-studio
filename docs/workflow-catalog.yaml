@@ -41,7 +41,7 @@ phases:
         command: /brainstorming
         required: true
         artifact:
-          glob: "design/gdd/game-concept.md"
+          glob: "docs/gdd/game-concept.md"
         description: "Formalize concept with pillars, MDA analysis, and scope tiers"
 
       - id: design-review-concept
@@ -55,7 +55,7 @@ phases:
         command: /art-bible
         required: true
         artifact:
-          glob: "design/art/art-bible.md"
+          glob: "docs/art-bible.md"
         description: "Author the visual identity specification (9 sections). Uses the Visual Identity Anchor produced by /brainstorming. Run after game concept is formed, before systems design."
 
       - id: map-systems
@@ -63,7 +63,7 @@ phases:
         command: /map-systems
         required: true
         artifact:
-          glob: "design/gdd/systems-index.md"
+          glob: "docs/gdd/systems-index.md"
         description: "Decompose concept into systems with dependency ordering and priority tiers"
 
   systems-design:
@@ -77,7 +77,7 @@ phases:
         required: true
         repeatable: true
         artifact:
-          note: "Check design/gdd/systems-index.md — each MVP system needs Status: Approved"
+          note: "Check docs/gdd/systems-index.md — each MVP system needs Status: Approved"
         description: "Author per-system GDDs (guided, section-by-section). Run once per system."
 
       - id: design-review
@@ -92,7 +92,7 @@ phases:
         command: /review-all-gdds
         required: true
         artifact:
-          glob: "design/gdd/gdd-cross-review-*.md"
+          glob: "docs/gdd/gdd-cross-review-*.md"
         description: "Holistic consistency check + design theory review across all GDDs simultaneously"
 
       - id: consistency-check
@@ -121,7 +121,9 @@ phases:
         required: true
         repeatable: true
         artifact:
-          glob: "docs/architecture/adr-*.md"
+          # NNN-<slug>.md only — the leading digit excludes the scaffolded
+          # docs/adr/TEMPLATE.md, which is a skeleton, not a decision.
+          glob: "docs/adr/[0-9]*.md"
           min_count: 3
         description: "Document key technical decisions as ADRs. Minimum 3 Foundation-layer ADRs required."
 
@@ -145,7 +147,7 @@ phases:
         name: "Accessibility Requirements"
         required: true
         artifact:
-          glob: "design/accessibility-requirements.md"
+          glob: "docs/accessibility-requirements.md"
         description: "Commit accessibility tier (Basic/Standard/Comprehensive/Exemplary) and feature matrix. UX specs (Phase 4) reference this tier."
 
   pre-production:
@@ -159,7 +161,7 @@ phases:
         required: false
         repeatable: true
         artifact:
-          glob: "design/assets/asset-manifest.md"
+          glob: "docs/assets/asset-manifest.md"
         description: "Generate per-asset visual specifications and AI generation prompts from approved GDDs and level docs. Run once per system/level/character."
 
       - id: ux-design
@@ -168,7 +170,7 @@ phases:
         required: true
         repeatable: true
         artifact:
-          glob: "design/ux/*.md"
+          glob: "docs/ux/*.md"
           min_count: 1
         description: "Author UX specs for main menu, core gameplay HUD, and interaction patterns. Reads input method and platform from technical-preferences.md."
 

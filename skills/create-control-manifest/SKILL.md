@@ -24,7 +24,7 @@ status. Re-run whenever new ADRs are accepted or existing ADRs are revised.
 ## 1. Load All Inputs
 
 ### ADRs
-- Glob `docs/architecture/adr-*.md` and read every file
+- Glob `docs/adr/[0-9]*.md` and read every file (TEMPLATE.md is a skeleton, not a decision)
 - Filter to only Accepted ADRs (Status: Accepted) — skip Proposed, Deprecated,
   Superseded
 - Note the ADR number and title for every rule sourced

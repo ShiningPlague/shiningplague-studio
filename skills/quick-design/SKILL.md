@@ -1,6 +1,6 @@
 ---
 name: quick-design
-description: "Lightweight design spec for small changes — tuning adjustments, minor mechanics, balance tweaks. Skips full GDD authoring when a system GDD already exists or the change is too small to warrant one. Produces a Quick Design Spec that embeds directly into story files. ShiningPlague-adopted: project paths (data/ not assets/data/, docs/gdd/+master GDD, output to docs/specs/)."
+description: "Lightweight design spec for small changes — tuning adjustments, minor mechanics, balance tweaks. Skips full GDD authoring when a system GDD already exists or the change is too small to warrant one. Produces a Quick Design Spec that embeds directly into story files. ShiningPlague-adopted: canonical project paths (editable data under data/, docs/gdd/ + master GDD, output to docs/specs/)."
 argument-hint: "[brief description of the change]"
 user-invocable: true
 allowed-tools: Read, Glob, Grep, Write, Edit
@@ -9,9 +9,9 @@ metadata:
   origin_url: https://github.com/Donchitos/Claude-Code-Game-Studios
   adopted_by: ShiningPlague
   enhancements:
-    - Project data path (data/ not assets/data/)
+    - Canonical data path (data/)
     - Project GDD path (docs/gdd/*.md + {{GDD_PATH}} master)
-    - Output to docs/quick-specs/YYYY-MM-DD-<topic>-quick-design.md
+    - Output to docs/specs/YYYY-MM-DD-<topic>-quick-design.md
     - Dock-editable data note (in-engine editor docks)
 ---
 
@@ -21,18 +21,18 @@ metadata:
 
 This is the **lightweight design path** for changes that don't need a full GDD. Full GDD authoring via `/design-system` is the heavyweight path. Use this skill for work under approximately 4 hours of implementation — tuning adjustments, minor behavioral tweaks, small additions to existing systems, or standalone features too small to warrant a full document.
 
-**Output:** `docs/quick-specs/YYYY-MM-DD-<topic>-quick-design.md` (project path) — formerly `design/quick-specs/`
+**Output:** `docs/specs/YYYY-MM-DD-<topic>-quick-design.md` — the same spec folder `/brainstorming` writes to, so one lifecycle covers both.
 
 **When to run:** Anytime a change is too small for `/design-system` but too meaningful to implement without a written rationale.
 
 ## Project Paths
 
-| Donchitos vanilla path | Project path |
+| What | Canonical path |
 |---|---|
-| `design/gdd/` | `docs/gdd/*.md` + `{{GDD_PATH}}` (master, e.g. `docs/GDD.md`) |
-| `design/gdd/systems-index.md` | `design/gdd/systems-index.md` (correct) |
-| `assets/data/` | `data/` |
-| `design/quick-specs/` | `docs/quick-specs/YYYY-MM-DD-<topic>-quick-design.md` (auto-indexed via `tools/generate_quick_specs_index.py` hook) |
+| Per-system GDDs | `docs/gdd/*.md` + `{{GDD_PATH}}` (master, e.g. `docs/GDD.md`) |
+| Systems index | `docs/gdd/systems-index.md` |
+| Editable game data | `data/` |
+| Quick spec output | `docs/specs/YYYY-MM-DD-<topic>-quick-design.md` |
 
 ## Project Context
 
@@ -62,7 +62,7 @@ Present classification, confirm before proceeding. If no argument, ask user to d
 Before drafting:
 
 - Search `docs/gdd/` and `{{GDD_PATH}}` for the GDD section relevant to this change. Read affected sections.
-- Check `design/gdd/systems-index.md` (if exists) to understand where this system sits in dependency graph.
+- Check `docs/gdd/systems-index.md` (if exists) to understand where this system sits in dependency graph.
 - Check prior `docs/specs/*-quick-design.md` files for any that touched this system.
 - For Tuning changes, check `data/` for the data file holding relevant values.
 
@@ -190,7 +190,7 @@ All values must live in `data/[appropriate-file].json`, not hardcoded.
 
 ## Systems Index
 
-This system is not currently in `design/gdd/systems-index.md`.
+This system is not currently in `docs/gdd/systems-index.md`.
 [If it should be added: suggest layer and priority tier.]
 [If too small: state "Below systems-index tracking threshold — quick spec sufficient."]
 ```

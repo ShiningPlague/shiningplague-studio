@@ -3,7 +3,7 @@
 > **Status**: Draft | In Review | Approved
 > **Author**: [game-designer / creative-director]
 > **Last Updated**: [Date]
-> **Links To**: `design/gdd/game-concept.md`, `design/gdd/game-pillars.md`
+> **Links To**: `docs/gdd/game-concept.md`, `docs/gdd/game-pillars.md`
 
 ---
 

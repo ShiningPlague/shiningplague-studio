@@ -67,7 +67,7 @@ design-agent-protocol (Question-First Workflow). WAIT for GDD to complete.
 ```
 Skill(skill="map-systems")
 ```
-Decompose into systems with dependencies. Updates `design/gdd/systems-index.md`.
+Decompose into systems with dependencies. Updates `docs/gdd/systems-index.md`.
 
 ### Step 7 (large path only): FIRE `/create-architecture`
 ```
@@ -211,7 +211,7 @@ Skill(skill="session-close")
 
 ## Cross-references — Template + Agent per Activity
 
-This file defines the **skill chain** for each activity. For the **template + agent** that backs each skill in each phase, see **[.claude/docs/agents-index.md § Phase → Template → Skill → Agent Map](../../../docs/agents-index.md)**.
+This file defines the **skill chain** for each activity. For the **template + agent** that backs each skill in each phase, see **[.claude/docs/agents-index.md § Phase → Template → Skill → Agent Map](../agents-index.md)**.
 
 Example lookup: in DESIGN Activity Step 1 (`/brainstorming`), agents-index.md tells you:
 - Concept-phase target → template `game-concept.md`, primary agent `creative-director`

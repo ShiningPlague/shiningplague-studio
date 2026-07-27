@@ -32,10 +32,10 @@ An epic is a named, bounded body of work that maps to one architectural module. 
 
 ## Project Paths
 
-| Donchitos vanilla path | Project path |
+| What | Canonical path |
 |---|---|
-| `design/gdd/*.md` (per-system) | `docs/gdd/*.md` + `{{GDD_PATH}}` (master, e.g. `docs/GDD.md`) |
-| `design/gdd/systems-index.md` | `design/gdd/systems-index.md` (correct — auto-generated) |
+| Per-system GDDs | `docs/gdd/*.md` + `{{GDD_PATH}}` (master, e.g. `docs/GDD.md`) |
+| Systems index | `docs/gdd/systems-index.md` (auto-generated from the registry) |
 | Architecture doc | `docs/architecture/architecture.md` |
 | ADRs | `docs/adr/NNN-*.md` |
 | Control manifest | `docs/architecture/control-manifest.md` |
@@ -84,7 +84,7 @@ For `layer:` or `[system-name]` modes: filter to in-scope GDDs.
 
 For in-scope systems, read:
 
-- `design/gdd/systems-index.md` — authoritative system list, layers, priority
+- `docs/gdd/systems-index.md` — authoritative system list, layers, priority
 - In-scope GDDs only (Approved or Designed status)
 - `docs/architecture/architecture.md` — module ownership and API boundaries
 - Accepted ADRs covering in-scope systems — read "GDD Requirements Addressed", "Decision", "Engine Compatibility"

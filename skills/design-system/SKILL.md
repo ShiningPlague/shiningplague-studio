@@ -27,7 +27,7 @@ Author a per-system Game Design Document using the 8-section Donchitos template.
 
 **If argument provided:** use it as the system name.
 
-**If no argument:** read `design/gdd/systems-index.md` (auto-generated from registry), list systems with Status = "Not Started" or "In Progress", and ask which one to design.
+**If no argument:** read `docs/gdd/systems-index.md` (auto-generated from registry), list systems with Status = "Not Started" or "In Progress", and ask which one to design.
 
 Then check:
 1. Does `docs/gdd/<system-name>.md` already exist? If yes: "GDD already exists. Edit it, or start fresh?"
@@ -91,7 +91,7 @@ Every formula with: variable definitions, expected value ranges, example calcula
 Explicitly state what happens. "Handle gracefully" is not valid. Each edge case = scenario + behavior.
 
 ### Dependencies
-Bidirectional. If this system depends on combat, combat's GDD must mention this system. Cross-reference `design/gdd/systems-index.md` layer assignments.
+Bidirectional. If this system depends on combat, combat's GDD must mention this system. Cross-reference `docs/gdd/systems-index.md` layer assignments.
 
 ### Tuning Knobs
 Each knob: safe range, what gameplay aspect it affects, where the value lives (JSON path + editor dock).
@@ -117,7 +117,7 @@ If REJECT: surface blockers, do not mark GDD as Approved.
 ## Phase 5: Finalize
 
 1. Set GDD status to `Approved` (or `In Review` if director had CONCERNS that were accepted)
-2. Update `design/gdd/systems-index.md` by running `python tools/generate_systems_index.py` (or the hook handles this if registry updated)
+2. Update `docs/gdd/systems-index.md` by running `python tools/generate_systems_index.py` (or the hook handles this if registry updated)
 3. Update `data/_schemas/system_registry.json` — set the system's status to reflect GDD completion
 4. Propose chain follow-on: "GDD complete. Next: `/design-review` for validation, or `/architecture-decision` if this system needs a new ADR."
 

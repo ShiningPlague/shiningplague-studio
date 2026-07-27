@@ -40,7 +40,7 @@ Read silently before presenting anything:
 
 1. `production/stage.txt` — current phase
 2. `production/review-mode.txt` — resolve review mode (full/lean/solo)
-3. `design/gdd/systems-index.md` — systems status overview
+3. `docs/gdd/systems-index.md` — systems status overview
 4. `docs/architecture/tr-registry.yaml` — requirement coverage
 5. `docs/architecture/control-manifest.md` — programmer rules compliance
 6. `data/_schemas/system_registry.json` — authoritative system states
@@ -50,7 +50,7 @@ Read silently before presenting anything:
 10. Glob `production/playtests/*.md` — playtest artifacts (if any)
 
 **Project path adaptations:**
-- ADRs at `docs/adr/` (NOT `docs/architecture/adr-*.md`)
+- ADRs at `docs/adr/` (`docs/architecture/` holds the blueprint + manifest, never ADRs)
 - Master GDD at `{{GDD_PATH}}` (if not split per-system yet)
 - System status from `data/_schemas/system_registry.json` (authoritative)
 - Design specs at `docs/specs/`, plans at `docs/plans/`

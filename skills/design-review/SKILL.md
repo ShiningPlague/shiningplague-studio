@@ -31,7 +31,7 @@ Validates a design document against project pillars, MDA framework, and design t
 - Read the document under review
 - Read `{{GDD_PATH}}` pillars section + MDA section
 - Read `data/_schemas/system_registry.json` for related systems
-- If system GDD: also read `design/gdd/systems-index.md` for dependency context
+- If system GDD: also read `docs/gdd/systems-index.md` for dependency context
 
 ### 2. Dispatch Creative Director
 Spawn `creative-director` with gate **CD-GDD-ALIGN** from `.claude/docs/director-gates.md`.

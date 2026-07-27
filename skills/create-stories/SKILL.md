@@ -31,9 +31,9 @@ A story is a single implementable behaviour — small enough to complete in one 
 
 ## Project Paths
 
-| Donchitos vanilla path | Project path |
+| What | Canonical path |
 |---|---|
-| `design/gdd/[filename].md` | `docs/gdd/[system].md` or `{{GDD_PATH}}` |
+| System GDD | `docs/gdd/[system].md` or `{{GDD_PATH}}` |
 | ADRs | `docs/adr/NNN-*.md` |
 | Control manifest | `docs/architecture/control-manifest.md` |
 | Story output | `production/epics/[epic-slug]/` |

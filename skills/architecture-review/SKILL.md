@@ -1,6 +1,6 @@
 ---
 name: architecture-review
-description: "Use when validating architecture completeness against GDDs, checking ADR coverage gaps, detecting cross-ADR conflicts, verifying engine compatibility, or when the designer says 'review architecture', 'check ADR coverage', or 'are our ADRs complete?' Produces PASS/CONCERNS/FAIL verdict. ShiningPlague-adopted: uses docs/adr/*.md not docs/architecture/adr-*, integrates with system_registry.json + tr-registry.yaml, adds engine-specialist consult."
+description: "Use when validating architecture completeness against GDDs, checking ADR coverage gaps, detecting cross-ADR conflicts, verifying engine compatibility, or when the designer says 'review architecture', 'check ADR coverage', or 'are our ADRs complete?' Produces PASS/CONCERNS/FAIL verdict. ShiningPlague-adopted: reads ADRs from docs/adr/, integrates with system_registry.json + tr-registry.yaml, adds engine-specialist consult."
 argument-hint: "[focus: full | coverage | consistency | engine | single-gdd path/to/gdd.md | rtm]"
 user-invocable: true
 allowed-tools: Read, Glob, Grep, Write, Task, AskUserQuestion, Agent
@@ -11,8 +11,8 @@ metadata:
   origin_url: https://github.com/Donchitos/Claude-Code-Game-Studios
   adopted_by: ShiningPlague
   enhancements:
-    - Project ADR path (docs/adr/*.md not docs/architecture/adr-*)
-    - Master GDD support ({{GDD_PATH}} + design/gdd/<system>.md mix)
+    - Canonical ADR path (docs/adr/*.md)
+    - Master GDD support ({{GDD_PATH}} + docs/gdd/<system>.md mix)
     - system_registry.json cross-reference (system status + dependencies)
     - tr-registry.yaml preservation (never renumber TR-IDs across runs)
     - godot-specialist consultation via Agent dispatch
@@ -22,7 +22,7 @@ metadata:
 
 # Architecture Review
 
-> 🌱 **ShiningPlague-adopted.** Originally Donchitos; battle-tested on a shipped Godot project. Upstream hardcoded `docs/architecture/adr-*.md`; studio ADRs live at `docs/adr/*.md`. Path conventions corrected throughout + project sources added (`data/_schemas/system_registry.json`, `tr-registry.yaml`, engine-specialist Agent dispatch).
+> 🌱 **ShiningPlague-adopted.** Originally Donchitos; battle-tested on a shipped Godot project. Studio ADRs live at `docs/adr/*.md`. Path conventions corrected throughout + project sources added (`data/_schemas/system_registry.json`, `tr-registry.yaml`, engine-specialist Agent dispatch).
 
 Validates that the complete body of architectural decisions covers all game design requirements, is internally consistent, and correctly targets the project's pinned engine version. Quality gate between Technical Setup and Pre-Production.
 
@@ -44,7 +44,7 @@ Validates that the complete body of architectural decisions covers all game desi
 Before reading any full document, use Grep to extract `## Summary` sections:
 
 ```
-Grep pattern="## Summary" glob="design/gdd/*.md" output_mode="content" -A 4
+Grep pattern="## Summary" glob="docs/gdd/*.md" output_mode="content" -A 4
 Grep pattern="## Summary" glob="docs/adr/*.md" output_mode="content" -A 3
 ```
 
@@ -63,11 +63,11 @@ For `coverage` or `full` mode: proceed to full-read everything below.
 
 **Design Documents:**
 - `{{GDD_PATH}}` — master GDD (all system designs until per-system split)
-- Any per-system GDDs at `design/gdd/<system>.md`
-- `design/gdd/systems-index.md` — auto-generated from registry (authoritative system list)
+- Any per-system GDDs at `docs/gdd/<system>.md`
+- `docs/gdd/systems-index.md` — auto-generated from registry (authoritative system list)
 
 **Architecture Documents:**
-- All ADRs at `docs/adr/*.md` (NOT `docs/architecture/` — that's a pointer only)
+- All ADRs at `docs/adr/*.md` (`docs/architecture/` holds the blueprint + manifest, never ADRs)
 - `docs/architecture/architecture.md` (if exists)
 - `docs/architecture/control-manifest.md`
 
@@ -378,11 +378,11 @@ If any spawned agent returns BLOCKED, errors, or fails:
 
 ---
 
-## Project Path Reference (why this override exists)
+## Project Path Reference
 
-| What | Donchitos vanilla path | Project path |
-|------|------------------------|----------|
-| ADRs | `docs/architecture/adr-*.md` | `docs/adr/*.md` |
-| Master GDD | `design/gdd/<system>.md` only | `{{GDD_PATH}}` + `design/gdd/<system>.md` |
-| Systems registry | `design/gdd/systems-index.md` only | `data/_schemas/system_registry.json` (source) + `design/gdd/systems-index.md` (generated view) |
-| Engine reference | `docs/engine-reference/[engine]/` | `docs/engine-reference/<engine>/VERSION.md` |
+| What | Canonical path |
+|------|----------------|
+| ADRs | `docs/adr/*.md` |
+| Master GDD | `{{GDD_PATH}}` + per-system `docs/gdd/<system>.md` |
+| Systems registry | `data/_schemas/system_registry.json` (source) + `docs/gdd/systems-index.md` (generated view) |
+| Engine reference | `docs/engine-reference/<engine>/VERSION.md` |

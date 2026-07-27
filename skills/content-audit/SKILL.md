@@ -1,6 +1,6 @@
 ---
 name: content-audit
-description: "Audit GDD-specified content counts against implemented content. Identifies what's planned vs built. ShiningPlague-adopted: project data paths ({{DATA_DIR}}/enemies/, {{DATA_DIR}}/items/, etc.), system_registry.json as the entity-level source-of-truth instead of design/registry/entities.yaml."
+description: "Audit GDD-specified content counts against implemented content. Identifies what's planned vs built. ShiningPlague-adopted: project data paths ({{DATA_DIR}}/enemies/, {{DATA_DIR}}/items/, etc.), with data/_schemas/system_registry.json as the entity-level source of truth."
 argument-hint: "[system-name | --summary | (no arg = full audit)]"
 user-invocable: true
 allowed-tools: Read, Glob, Grep, Write
@@ -26,15 +26,15 @@ When this skill is invoked, parse the argument:
 
 ## Project Paths
 
-| Donchitos vanilla path | Project path |
+| What | Canonical path |
 |---|---|
-| `design/gdd/systems-index.md` | `design/gdd/systems-index.md` (correct) |
-| `design/gdd/*.md` | `docs/gdd/*.md` + `{{GDD_PATH}}` (master, e.g. `docs/GDD.md`) |
-| `assets/data/**/enemies/` | `{{DATA_DIR}}/enemies/` |
-| `assets/data/**/items/` | `{{DATA_DIR}}/items/` |
-| `assets/data/**/loot/` | `{{DATA_DIR}}/loot_tables/` |
-| `assets/data/**/characters/` | `{{DATA_DIR}}/npcs/` |
-| `design/registry/entities.yaml` | `data/_schemas/system_registry.json` |
+| Systems index | `docs/gdd/systems-index.md` |
+| Per-system GDDs | `docs/gdd/*.md` + `{{GDD_PATH}}` (master, e.g. `docs/GDD.md`) |
+| Enemy data | `{{DATA_DIR}}/enemies/` |
+| Item data | `{{DATA_DIR}}/items/` |
+| Loot tables | `{{DATA_DIR}}/loot_tables/` |
+| NPC / character data | `{{DATA_DIR}}/npcs/` |
+| Entity-level authority | `data/_schemas/system_registry.json` |
 
 ## Project Content Inventory
 
@@ -45,7 +45,7 @@ When this skill is invoked, parse the argument:
 
 ## Phase 1 — Context Gathering
 
-1. **Read `design/gdd/systems-index.md`** for the full list of systems, categories, MVP/priority tier.
+1. **Read `docs/gdd/systems-index.md`** for the full list of systems, categories, MVP/priority tier.
 
 2. **L0 pre-scan**: Before full-reading any GDDs, Grep for `## Summary` + content-count keywords:
    ```

@@ -90,7 +90,7 @@ Default = master; reach for a branch only when one of the three conditions above
 Full Donchitos Claude-Code-Game-Studios framework is installed (`.claude/agents/`, `.claude/docs/`, `.claude/hooks/`, `.claude/rules/`, and the studio skills at project-local `.claude/skills/` — repo-canonical under the two-home separation; user level holds only personal skills). **Our project conventions remain authoritative when they conflict.** Quick lookups:
 
 - **Workflow shape** → your project's workflow conventions win for the small path; Donchitos pipeline (`workflow-catalog.yaml`) is the large path
-- **Directory structure** → our `docs/specs/`, `docs/adr/`, `data/`, `src/systems/` tree wins (not `design/gdd/`, `docs/architecture/`, `src/gameplay/`)
+- **Directory structure** → the canonical tree wins: design docs under `docs/gdd/`, specs under `docs/specs/`, decisions under `docs/adr/`, the blueprint layer under `docs/architecture/`, editable content under `data/`, code under `src/systems/`
 - **Coding standards** → `.claude/rules/gameplay-code.md` (our customised); Donchitos defaults for unspecified topics
 - **Templates** → optional starting points; our ADR template + project-local brainstorming SKILL override win for those skills
 - **Donchitos slash commands** (`/create-epics`, `/create-stories`, `/dev-story`) → use ONLY for the large path (multi-vertical, multi-week work). NOT for small ship cycles.
@@ -109,7 +109,7 @@ Every spec written via `brainstorming` MUST carry an `## Expected outcomes at sh
 The rule itself stays in [CLAUDE.md § Canonical Donchitos Flow Driving](../../CLAUDE.md). These worked examples illustrate the rule for new agents who need pattern reference.
 
 **Designer:** *"I want to work on the narrative system."*
-**Studio lead (driving):** *"Narrative workstream is in Concept phase. Project canonical phase = Concept. Foundational gap: `design/gdd/game-concept.md` is pointer-only. My recommendation: FIRE `/design-system game-concept` first (project-foundational), THEN `/design-system narrative` next chat (per-system GDD). Proceed with game-concept now? Or override and go straight to narrative — we'll backfill the concept doc later (acceptable but logged)."*
+**Studio lead (driving):** *"Narrative workstream is in Concept phase. Project canonical phase = Concept. Foundational gap: `docs/gdd/game-concept.md` is pointer-only. My recommendation: FIRE `/design-system game-concept` first (project-foundational), THEN `/design-system narrative` next chat (per-system GDD). Proceed with game-concept now? Or override and go straight to narrative — we'll backfill the concept doc later (acceptable but logged)."*
 
 **Designer:** *"Let's discuss the economy."*
 **Studio lead (driving):** *"Economy workstream has built code but no per-system GDD. Project still in Concept canonical phase. Quickest path: (a) discuss informally here to clarify intent (no formal output), then (b) FIRE `/design-system game-concept` first (project-foundational), then (c) `/design-system economy` in a later chat. Or override and start formal Economy GDD now — we'll backfill the concept doc later."*

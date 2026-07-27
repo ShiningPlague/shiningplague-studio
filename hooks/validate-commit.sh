@@ -30,12 +30,12 @@ fi
 WARNINGS=""
 
 # Check design documents for required sections
-DESIGN_FILES=$(echo "$STAGED" | grep -E '^design/gdd/')
+DESIGN_FILES=$(echo "$STAGED" | grep -E '^docs/gdd/')
 if [ -n "$DESIGN_FILES" ]; then
     while IFS= read -r file; do
         # Skip auto-generated / different-format files
         case "$file" in
-            design/gdd/systems-index.md|design/gdd/game-concept.md) continue ;;
+            docs/gdd/systems-index.md|docs/gdd/game-concept.md) continue ;;
         esac
         if [[ "$file" == *.md ]] && [ -f "$file" ]; then
             for section in "Overview" "Player Fantasy" "Detailed" "Formulas" "Edge Cases" "Dependencies" "Tuning Knobs" "Acceptance Criteria"; do
@@ -99,9 +99,9 @@ if [ -n "$SRC_FILES" ]; then
 fi
 
 # Check if registry/memory should have been updated (auto-update nag)
-# If we're committing docs/, .claude/skills/, design/, or production/ files
+# If we're committing docs/, .claude/skills/, data/ or production/ files
 # but NOT system_registry.json, remind to check if registry needs updating.
-INFRA_FILES=$(echo "$STAGED" | grep -E '^(docs/|\.claude/skills/|design/|production/|tools/)')
+INFRA_FILES=$(echo "$STAGED" | grep -E '^(docs/|\.claude/skills/|data/|production/|tools/)')
 REGISTRY_INCLUDED=$(echo "$STAGED" | grep -c 'system_registry.json')
 if [ -n "$INFRA_FILES" ] && [ "$REGISTRY_INCLUDED" -eq 0 ]; then
     WARNINGS="$WARNINGS\nREGISTRY: Committing infrastructure files but NOT system_registry.json. Check: does documentation_stack need updating? New docs/skills/tools created?"

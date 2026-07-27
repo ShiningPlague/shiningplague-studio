@@ -20,10 +20,10 @@
 
 ### Design Documentation
 - **Status**: [X%] complete
-- **Files Found**: [N] documents in `design/`
-  - GDD sections: [N] files in `design/gdd/`
-  - Narrative docs: [N] files in `design/narrative/`
-  - Level designs: [N] files in `design/levels/`
+- **Files Found**: [N] documents in `docs/`
+  - GDD sections: [N] files in `docs/gdd/`
+  - Narrative docs: [N] files in `docs/narrative/`
+  - Level designs: [N] files in `docs/levels/`
 - **Key Gaps**:
   - [ ] [Missing doc 1 + why it matters]
   - [ ] [Missing doc 2 + why it matters]
@@ -169,24 +169,29 @@ Based on gaps identified, consider running:
 ## Appendix: File Counts by Directory
 
 ```
-design/
+docs/
   gdd/           [N] files
   narrative/     [N] files
   levels/        [N] files
+  adr/           [N] ADRs
+  architecture/  [N] blueprint + manifest docs
+  specs/         [N] live specs
+  plans/         [N] live plans
+
+data/
+  _schemas/      [N] schema + registry files
 
 src/
   core/          [N] files
-  gameplay/      [N] files
+  systems/       [N] files
   ai/            [N] files
   networking/    [N] files
   ui/            [N] files
 
-docs/
-  architecture/  [N] ADRs
-
 production/
   sprints/       [N] plans
-  milestones/    [N] definitions
+  epics/         [N] epics + stories
+  qa/            [N] bug + evidence files
 
 tests/           [N] test files
 prototypes/      [N] directories

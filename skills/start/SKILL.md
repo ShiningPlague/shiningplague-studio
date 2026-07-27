@@ -23,7 +23,7 @@ Routes the designer to the right onboarding path based on what exists — fresh 
 
 Read silently:
 1. `production/stage.txt` — if exists, project already onboarded
-2. `design/gdd/game-concept.md` — concept exists?
+2. `docs/gdd/game-concept.md` — concept exists?
 3. `.claude/docs/technical-preferences.md` — engine configured?
 4. Glob `src/**/*.gd` — source code exists?
 5. Glob `docs/adr/*.md` — ADRs exist?

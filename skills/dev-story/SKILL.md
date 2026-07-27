@@ -37,9 +37,9 @@ This skill bridges planning and code. It reads a story file in full, assembles a
 
 ## Project Paths
 
-| Donchitos vanilla path | Project path |
+| What | Canonical path |
 |---|---|
-| `design/gdd/[filename].md` | `docs/gdd/[system].md` or `{{GDD_PATH}}` |
+| System GDD | `docs/gdd/[system].md` or `{{GDD_PATH}}` |
 | ADRs | `docs/adr/NNN-*.md` |
 | Control manifest | `docs/architecture/control-manifest.md` |
 | Stories | `production/epics/<epic-slug>/story-*.md` |

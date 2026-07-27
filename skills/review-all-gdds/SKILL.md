@@ -46,7 +46,7 @@ Before reading any full document, use Grep to extract `## Summary` sections
 from all GDD files:
 
 ```
-Grep pattern="## Summary" glob="design/gdd/*.md" output_mode="content" -A 5
+Grep pattern="## Summary" glob="docs/gdd/*.md" output_mode="content" -A 5
 ```
 
 Display a manifest to the user:
@@ -64,30 +64,30 @@ proceed to L1 for those GDDs plus any GDDs listed in their "Key deps".
 
 ### Phase 1b — Registry Pre-Load (fast baseline)
 
-Before full-reading any GDD, check for the entity registry:
+Before full-reading any GDD, read the system registry:
 
 ```
-Read path="design/registry/entities.yaml"
+Read path="data/_schemas/system_registry.json"
 ```
 
-If the registry exists and has entries, use it as a **pre-built conflict
-baseline**: known entities, items, formulas, and constants with their
-authoritative values and source GDDs. In Phase 2, grep GDDs for registered
-names first — this is faster than reading all GDDs in full before knowing
+If the registry has entries, use it as a **pre-built conflict baseline**: the
+systems that exist, their status, their owning data categories and the values
+each one claims as authoritative. In Phase 2, grep the GDDs for registered
+names first — that is faster than reading every GDD in full before knowing
 what to look for.
 
 If the registry is empty or absent: proceed without it. Note in the report:
-"Entity registry is empty — consistency checks rely on full GDD reads only.
+"System registry is empty — consistency checks rely on full GDD reads only.
 Run `/consistency-check` after this review to populate the registry."
 
 ### Phase 1c — L1/L2: Full Document Load
 
 Full-read the in-scope documents:
 
-1. `design/gdd/game-concept.md` — game vision, core loop, MVP definition
-2. `design/gdd/game-pillars.md` if it exists — design pillars and anti-pillars
-3. `design/gdd/systems-index.md` — authoritative system list, layers, dependencies, status
-4. **Every in-scope system GDD in `design/gdd/`** — read completely (skip
+1. `docs/gdd/game-concept.md` — game vision, core loop, MVP definition
+2. `docs/gdd/game-pillars.md` if it exists — design pillars and anti-pillars
+3. `docs/gdd/systems-index.md` — authoritative system list, layers, dependencies, status
+4. **Every in-scope system GDD in `docs/gdd/`** — read completely (skip
    game-concept.md and systems-index.md — those are read above)
 
 Report: "Loaded [N] system GDDs covering [M] systems. Pillars: [list]. Anti-pillars: [list]."
@@ -545,7 +545,7 @@ FAIL: One or more blocking issues must be resolved before architecture begins.
 ## Phase 6: Write Report and Flag GDDs
 
 Use `AskUserQuestion` for write permission:
-- Prompt: "May I write this review to `design/gdd/gdd-cross-review-[date].md`?"
+- Prompt: "May I write this review to `docs/gdd/gdd-cross-review-[date].md`?"
 - Options: `[A] Yes — write the report` / `[B] No — skip`
 
 If any GDDs are flagged for revision, use a second `AskUserQuestion`:
@@ -566,7 +566,7 @@ append to `production/session-state/active.md`:
     - Flagged for revision: [comma-separated list, or "None"]
     - Blocking issues: [N — brief one-line descriptions, or "None"]
     - Recommended next: [the Phase 7 handoff action, condensed to one line]
-    - Report: design/gdd/gdd-cross-review-[date].md
+    - Report: docs/gdd/gdd-cross-review-[date].md
 
 If `active.md` does not exist, create it with this block as the initial content.
 Confirm in conversation: "Session state updated."

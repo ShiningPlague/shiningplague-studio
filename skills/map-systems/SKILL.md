@@ -1,6 +1,6 @@
 ---
 name: map-systems
-description: "Use when decomposing a game concept into systems with dependency ordering, when starting design-first work on a new feature area, or when the designer says 'what systems do we need for X?' Reads the master GDD and produces/updates design/gdd/systems-index.md. ShiningPlague-adopted: full implementation with system_registry.json as source of truth (auto-regenerates systems-index.md), creative-director + technical-director parallel gate review, studio layer/priority taxonomy."
+description: "Use when decomposing a game concept into systems with dependency ordering, when starting design-first work on a new feature area, or when the designer says 'what systems do we need for X?' Reads the master GDD and produces/updates docs/gdd/systems-index.md. ShiningPlague-adopted: full implementation with system_registry.json as source of truth (auto-regenerates systems-index.md), creative-director + technical-director parallel gate review, studio layer/priority taxonomy."
 user-invocable: true
 allowed-tools: Read, Glob, Grep, Write, Edit, Agent
 argument-hint: "[scope: full | area-name]"
@@ -31,7 +31,7 @@ Decomposes a game concept or feature area into systems, assigns layers and prior
 Read:
 1. `{{GDD_PATH}}` (e.g. `docs/GDD.md`) — master GDD (design intent)
 2. `data/_schemas/system_registry.json` — what already exists
-3. `design/gdd/systems-index.md` — current systems table (auto-generated from registry)
+3. `docs/gdd/systems-index.md` — current systems table (auto-generated from registry)
 4. `docs/architecture/tr-registry.yaml` — technical requirements already identified
 
 Report: "Scope: [full/area]. Found [N] existing systems in registry, [M] technical requirements."
@@ -101,7 +101,7 @@ Reference: `.claude/docs/director-gates.md` for full gate prompts.
 
 For NEW systems identified:
 1. Add entries to `data/_schemas/system_registry.json` with status `planned`
-2. The PostToolUse hook auto-regenerates `design/gdd/systems-index.md`
+2. The PostToolUse hook auto-regenerates `docs/gdd/systems-index.md`
 
 For EXISTING systems with new dependency info:
 1. Update `depends_on` / `consumed_by` fields in the registry

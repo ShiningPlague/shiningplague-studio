@@ -15,7 +15,7 @@ Resolve the review mode (once, store for all gate spawns this run):
 
 See `.claude/docs/director-gates.md` for the full check pattern.
 
-Read `design/gdd/game-concept.md`. If it does not exist, fail with:
+Read `docs/gdd/game-concept.md`. If it does not exist, fail with:
 > "No game concept found. Run `/brainstorming` first — the art bible is authored after the game concept is approved."
 
 Extract from game-concept.md:
@@ -25,7 +25,7 @@ Extract from game-concept.md:
 - **Visual Identity Anchor** section if present (from brainstorm Phase 4 art-director output)
 - Target platform (if noted)
 
-**Retrofit mode detection**: Glob `design/art/art-bible.md`. If the file exists:
+**Retrofit mode detection**: Glob `docs/art-bible.md`. If the file exists:
 - Read it in full
 - For each of the 9 sections, check whether the body contains real content (more than a `[To be designed]` placeholder or similar) vs. is empty/placeholder
 - Build a section status table:
@@ -45,7 +45,7 @@ Section | Status
 ```
 
 - Present this table to the user:
-  > "Found existing art bible at `design/art/art-bible.md`. [N] sections are complete, [M] need content. I'll work on the incomplete sections only — existing content will not be touched."
+  > "Found existing art bible at `docs/art-bible.md`. [N] sections are complete, [M] need content. I'll work on the incomplete sections only — existing content will not be touched."
 - Only work on sections with Status: Empty or Placeholder. Do not re-author sections that are already complete.
 
 If the file does not exist, this is a fresh authoring session — proceed normally.
@@ -203,10 +203,10 @@ Handle verdict per standard rules in `director-gates.md`. Record the verdict in 
 ## Phase 6: Close
 
 Before presenting next steps, check project state:
-- Does `design/gdd/systems-index.md` exist? → map-systems is done, skip that option
+- Does `docs/gdd/systems-index.md` exist? → map-systems is done, skip that option
 - Does `.claude/docs/technical-preferences.md` contain a configured engine (not `[TO BE CONFIGURED]`)? → setup-engine is done, skip that option
-- Does `design/gdd/` contain any `*.md` files? → design-system has been run, skip that option
-- Does `design/gdd/gdd-cross-review-*.md` exist? → review-all-gdds is done
+- Does `docs/gdd/` contain any `*.md` files? → design-system has been run, skip that option
+- Does `docs/gdd/gdd-cross-review-*.md` exist? → review-all-gdds is done
 - Do GDDs exist (check above)? → include /consistency-check option
 
 Use `AskUserQuestion` for next steps. Only include options that are genuinely next based on the state check above:
