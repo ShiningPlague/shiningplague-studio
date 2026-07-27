@@ -99,7 +99,8 @@ should complain about that.
 | `tools/consistency_check.py` | Cross-document consistency gate. `/consistency-check`, `/update` and `/session-close` run it. | shipped |
 | `tools/workflow_state_check.py` | Mechanical flow state from the ledger + artifact evidence. The session-start hook runs it. | shipped |
 | `tools/generate_systems_index.py` | Regenerates the `SYSTEMS-TABLE` region of the systems index from the registry. | shipped |
-| `tools/doc_stack_check.py` + `tools/doc_stack.manifest.json` | Proves no doc commands a path that nothing creates. | shipped |
+| `tools/generate_skills_index.py` | Regenerates the `SKILLS-TABLE` region of the skills index from `SKILL.md` frontmatter. | shipped |
+| `tools/doc_stack_check.py` + `tools/doc_stack.manifest.json` | Proves no doc commands a path that nothing creates, and no doc names a slash-command that no skill ships. | shipped |
 | `tools/<step>_<feature>_check.gd` | Your per-step headless harnesses. A naming convention, not a shipped file. | on use |
 | `tools/generate_session_context.sh` | Optional project-owned session context script. The hook runs it only if you wrote one. | project-owned, optional |
 
@@ -144,11 +145,27 @@ engine-reading agent therefore carries the same clause, word for word:
 > continue. Never invent the file to satisfy a checklist, and never fail a close because an
 > optional artifact was never created.
 
+The same rule holds for the tools the framework itself ships: a runner, a template, or a
+`/command` a doc names must exist, or the doc must not name it. `tools/doc_stack_check.py`
+enforces both halves — paths and slash-commands — so a skill can no longer advertise a gate
+that a fresh install has nothing to fire.
+
 Audit it with:
 
 ```bash
-grep -rl "If an artifact named here is absent:" .claude/skills .claude/agents
+grep -rl "If an artifact named here is absent:" .claude/skills .claude/agents | wc -l
 ```
+
+In a default install that returns **80** — 59 of the 69 skills, and 21 of the 35 agents. The
+numbers are lower than the totals on purpose, and the gap is the interesting part:
+
+- **10 skills are excluded deliberately.** They are pure technique — they read no project
+  artifact, so there is nothing for them to degrade over.
+- **14 agents are excluded for the same reason** — they take their context from the
+  dispatching skill rather than reading the doc stack themselves.
+- **2 further clause-bearing agents ship only with an engine pack** (`--engine godot`
+  installs the godot-extras specialists), so a bundle-side grep over `skills/ agents/`
+  in this repo returns **82**, not 80. Both numbers are correct; they count different sets.
 
 Two rules follow from it, and they are the whole point:
 

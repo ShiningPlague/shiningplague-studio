@@ -24,9 +24,10 @@ TWO MODES
     (default)            Bundle mode. Run from the template repo root. Classifies
                          every path reference in skills/ agents/ docs/ templates/
                          rules/ + CLAUDE.md.template. Fails on PHANTOM (nothing
-                         creates it), KILLED (a retired convention) and
+                         creates it), KILLED (a retired convention),
                          UNSCAFFOLDED (the manifest promises it, the installer
-                         does not create it).
+                         does not create it) and PHANTOM-COMMAND (a doc says to
+                         run /x and no skills/x/SKILL.md ships).
     --project <dir>      Install mode. Run against an INSTALLED game project.
                          Asserts the installer actually landed, and that every
                          path the skills read-as-gate or execute exists there.
@@ -59,8 +60,19 @@ HOW TO ADD A LEGITIMATE NEW PATH
     and a wildcard "why" that covers a whole directory ("docs/*.md -- top-level
     docs the skills produce") will absolve real drift. Enumerate instead.
 
+WHAT ELSE COUNTS AS A COMMAND
+    A '/command' is an instruction to RUN something and is judged the same way a
+    path is: skills/<name>/SKILL.md must exist. It is checked separately because
+    it is structurally invisible to the path pass -- '/story-done' is not a path,
+    so no install_map entry can be missing for it. That blind spot let five
+    declared gates (/story-done, /story-readiness, /smoke-check, /test-helpers,
+    /test-evidence-review) survive a clean phantom-path sweep while
+    .claude/skills/ held nothing for the Skill tool to fire. Exemptions live in
+    the manifest's slash_commands.ignore block, each with a reason.
+
 EXIT CODES
-    0  PASS   no phantom, no killed convention, no unscaffolded promise
+    0  PASS   no phantom, no killed convention, no unscaffolded promise,
+              no phantom slash-command
     1  FAIL   at least one of the above (details printed)
     2  ERROR  bad usage / manifest could not be loaded
 
@@ -601,6 +613,63 @@ def installer_coverage(repo_root, manifest):
 
 
 # --------------------------------------------------------------------------
+# slash-command coverage (a skill advertising a tool that does not ship)
+# --------------------------------------------------------------------------
+
+# A command token, not a path and not a placeholder. The trailing guard rejects
+# '/story-*.md' and '/team-<vertical>' (glob and placeholder spellings of a
+# FAMILY of commands, not a command) and '/usr/bin', '/dev/null' (paths).
+SLASH_RE = re.compile(r"(?:^|[\s`\"'(\[*,>|])/([a-z][a-z0-9-]{2,})(?![a-z0-9/._<*-])")
+
+
+def slash_command_coverage(repo_root, manifest, files):
+    """Every '/command' a doc tells a session to RUN must be a shipped skill.
+
+    Structurally invisible to the path checker above: '/story-done' is not a
+    path, so no install_map entry can be missing for it and nothing flags it.
+    That blind spot is how five commands came to be declared across shipped
+    docs -- one of them a `command:` step in the workflow catalogue and a gate
+    another skill said a story "cannot be closed without" -- while
+    .claude/skills/ held nothing for the Skill tool to fire. A pipeline that
+    dead-ends at a gate that cannot run is the same defect as a phantom path,
+    so it is judged the same way and in the same run.
+
+    Fenced blocks are deliberately NOT skipped here (unlike path extraction):
+    a skill's pipeline diagram is fenced, and that is precisely where it
+    advertises the commands. Shell paths inside fences ('/dev/null',
+    '/usr/bin') are excluded by the trailing-'/' guard in SLASH_RE.
+    """
+    shipped = set()
+    skills_dir = os.path.join(repo_root, "skills")
+    if os.path.isdir(skills_dir):
+        for name in sorted(os.listdir(skills_dir)):
+            if os.path.isfile(os.path.join(skills_dir, name, "SKILL.md")):
+                shipped.add(name)
+
+    allowed = {}
+    for entry in manifest.get("slash_commands", {}).get("ignore", []):
+        allowed[entry["name"]] = entry["why"]
+
+    found = defaultdict(list)
+    for path in files:
+        rel = os.path.relpath(path, repo_root).replace(os.sep, "/")
+        with open(path, "r", encoding="utf-8", errors="replace") as fh:
+            for lineno, line in enumerate(fh, 1):
+                for m in SLASH_RE.finditer(line):
+                    found[m.group(1)].append((rel, lineno))
+
+    phantom, ignored = [], []
+    for name in sorted(found):
+        if name in shipped:
+            continue
+        if name in allowed:
+            ignored.append((name, allowed[name]))
+            continue
+        phantom.append((name, found[name]))
+    return shipped, phantom, ignored, len(found)
+
+
+# --------------------------------------------------------------------------
 # reporting
 # --------------------------------------------------------------------------
 
@@ -696,6 +765,21 @@ def run_bundle_mode(repo_root, manifest, manifest_path, args):
               % "")
         print("    see any of these with --list BARE-NAME | ENGINE-ASSET | FENCED | FENCE-ONLY")
 
+    shipped_cmds, cmd_phantom, cmd_ignored, n_cmds = slash_command_coverage(
+        repo_root, manifest, files)
+    print("")
+    print("  SLASH-COMMAND COVERAGE  (a doc telling a session to RUN something)")
+    print("    %-16s %5d   distinct /commands cited across the scanned files"
+          % ("cited", n_cmds))
+    print("    %-16s %5d   skills/<name>/SKILL.md the Skill tool can actually fire"
+          % ("shipped", len(shipped_cmds)))
+    print("    %-16s %5d   declared out of scope in the manifest (built-ins, placeholders)"
+          % ("ignored", len(cmd_ignored)))
+    flag = "  <-- FAIL" if cmd_phantom else ""
+    print("    %-16s %5d   commanded but no such skill ships%s"
+          % ("phantom", len(cmd_phantom), flag))
+    print("    see these with --list PHANTOM-COMMAND | IGNORED-COMMAND")
+
     covered, uncovered, sources, no_region = installer_coverage(repo_root, manifest)
     region = manifest["installer"]["scaffold_region"]
     print("")
@@ -723,6 +807,14 @@ def run_bundle_mode(repo_root, manifest, manifest_path, args):
             "the docs disagree with each other about where things live.",
             buckets[KILLED], args.cite_limit)
 
+    if cmd_phantom:
+        report_failures(
+            "PHANTOM SLASH-COMMANDS",
+            "A doc tells a session to RUN these. No skills/<name>/SKILL.md ships, so "
+            "an installed project has nothing for the Skill tool to fire.",
+            [("/" + name, "no skills/%s/SKILL.md in this bundle" % name, cits)
+             for name, cits in cmd_phantom], args.cite_limit)
+
     if uncovered:
         print("")
         print(THIN)
@@ -747,7 +839,13 @@ def run_bundle_mode(repo_root, manifest, manifest_path, args):
         print(THIN)
         print(" LISTING CLASS: %s" % want)
         print(THIN)
-        if want in unjudged:
+        if want == "PHANTOM-COMMAND":
+            for name, cits in cmd_phantom:
+                print("  /%-51s cited in %d place(s)" % (name, len(cits)))
+        elif want == "IGNORED-COMMAND":
+            for name, why in cmd_ignored:
+                print("  /%-51s %s" % (name, why))
+        elif want in unjudged:
             for ref in sorted(unjudged[want]):
                 print("  %s" % ref)
         else:
@@ -757,17 +855,21 @@ def run_bundle_mode(repo_root, manifest, manifest_path, args):
     n_phantom = len(buckets.get(PHANTOM, []))
     n_killed = len(buckets.get(KILLED, []))
     n_unscaf = len(uncovered)
-    failed = n_phantom + n_killed + n_unscaf
+    n_cmdph = len(cmd_phantom)
+    failed = n_phantom + n_killed + n_unscaf + n_cmdph
 
     print("")
     print(RULE)
     if failed:
         print(" VERDICT: FAIL -- %d phantom path(s), %d killed-convention reference(s), "
-              "%d unscaffolded promise(s)." % (n_phantom, n_killed, n_unscaf))
-        print(" Every one is a doc telling a session to open a file that will not be there.")
+              "%d unscaffolded promise(s), %d phantom slash-command(s)."
+              % (n_phantom, n_killed, n_unscaf, n_cmdph))
+        print(" Every one is a doc telling a session to open a file, or run a command,")
+        print(" that will not be there.")
     else:
         print(" VERDICT: PASS -- every commanded path is shipped, scaffolded, "
-              "created-on-use or templated.")
+              "created-on-use or templated,")
+        print(" and every /command a doc names is a skill that ships.")
     print(RULE)
     return 1 if failed else 0
 
@@ -897,8 +999,9 @@ def main(argv=None):
                         help="template repo root (default: the parent of tools/)")
     parser.add_argument("--list", dest="list_class", metavar="CLASS", default=None,
                         help="also list every reference in CLASS (SHIPPED, SCAFFOLDED, "
-                             "CREATED-ON-USE, TEMPLATED, IGNORED, KILLED, PHANTOM, or the "
-                             "not-judged buckets BARE-NAME, ENGINE-ASSET, FENCED, FENCE-ONLY)")
+                             "CREATED-ON-USE, TEMPLATED, IGNORED, KILLED, PHANTOM, "
+                             "PHANTOM-COMMAND, IGNORED-COMMAND, or the not-judged buckets "
+                             "BARE-NAME, ENGINE-ASSET, FENCED, FENCE-ONLY)")
     parser.add_argument("--cite-limit", type=int, default=4, metavar="N",
                         help="max citing files shown per failure (0 = all; default 4)")
     args = parser.parse_args(argv)

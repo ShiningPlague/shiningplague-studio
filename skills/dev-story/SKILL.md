@@ -31,7 +31,7 @@ This skill bridges planning and code. It reads a story file in full, assembles a
 /story-done [path]        ← verify and close it
 ```
 
-**After all sprint stories are done:** run `/team-qa sprint` to execute the full QA cycle.
+**After all sprint stories are done:** run `/qa-plan [sprint]` to execute the full QA cycle.
 
 **Output:** Source code + test file in the project's `src/` and `tests/` directories.
 
@@ -207,9 +207,9 @@ For **Logic** and **Integration** stories, test must be written as part of this 
 Remind the programmer agent:
 > "Test file for this story is required at: `[path from Test Evidence section]`. Story cannot be closed via `/story-done` without it. Write the test alongside implementation."
 
-Test requirements (from coding-standards.md):
-- File name: `[system]_[feature]_test.gd`
-- Function names: `test_[scenario]_[expected_outcome]`
+Test requirements (the naming and structure rules live in `.claude/rules/test-standards.md`):
+- File name: `[system]_[feature]_test.[engine test extension]` (e.g. `.gd` for Godot, `.cs` for Unity)
+- Function names: `test_[system]_[scenario]_[expected_result]` — the pattern in `.claude/rules/test-standards.md`
 - Each acceptance criterion must have at least one test function
 - No random seeds, no time-dependent assertions, no external I/O
 - Test the formula bounds from GDD Formulas section
@@ -299,4 +299,4 @@ Common blockers:
 
 - Run `/code-review [file1] [file2]` to review before closing
 - Run `/story-done [story-path]` to verify acceptance criteria and mark complete
-- After all sprint stories done: run `/team-qa sprint` for full QA cycle
+- After all sprint stories done: run `/qa-plan [sprint]` for the full QA cycle

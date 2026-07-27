@@ -7,6 +7,28 @@ The format follows [Keep a Changelog](https://keepachangelog.com/); versions fol
 ## [Unreleased]
 
 ### Added
+- **`/story-readiness` and `/story-done` — the two story gates 19 shipped files
+  already commanded.** The story pipeline was documented end to end
+  (`/create-stories` → `/story-readiness` → `/dev-story` → `/code-review` →
+  `/story-done`), a director gate named one of them, the control manifest
+  stamped a version for one to compare against, and the test-evidence template
+  made the other its sign-off gate — but neither skill existed, so a stranger's
+  pipeline dead-ended twice at a command nothing could fire. Both now ship, with
+  the contracts the surrounding docs already specified.
+- **A slash-command cross-check in `tools/doc_stack_check.py`.** `/story-done` is
+  not a path, so no missing-path rule could ever catch it; five declared
+  commands survived a clean phantom-path sweep for exactly that reason. Every
+  `/command` a shipped doc names is now checked against `skills/<name>/SKILL.md`
+  and fails the run if no such skill ships. Exemptions live in the manifest's
+  new `slash_commands.ignore` block — six entries, each with a stated reason
+  (Claude Code built-ins and two literal placeholders in the `/help` output
+  template). Inspect with `--list PHANTOM-COMMAND | IGNORED-COMMAND`.
+- **`tools/generate_skills_index.py`.** `docs/skills-index.md` has always claimed
+  to be auto-generated; nothing generated it, so it was hand-maintained and had
+  drifted — every row clipped mid-word, one of them mid-slash-command
+  (`/executing-pla`), which is how a routing table starts advertising commands
+  that do not exist. The table now regenerates from `SKILL.md` frontmatter into a
+  marked region, clipped on a word boundary with a visible ellipsis.
 - **`docs/doc-stack.md` — the doc-stack contract, in one page.** Installed to
   `.claude/docs/doc-stack.md` and linked from `CLAUDE.md`'s reading map. Every
   artifact in the canonical layout as a table: path, what it is, who writes it,
@@ -74,6 +96,62 @@ The format follows [Keep a Changelog](https://keepachangelog.com/); versions fol
   document is authored twice in this repo.
 - `--no-scaffold` (bash) / `-NoScaffold` (PowerShell) — install the `.claude/` layer
   alone, for projects that already have their own document stack.
+
+### Fixed
+- **Two files still commanded `coding-standards.md`, which ships nowhere.**
+  `agents/qa-tester.md` and `skills/dev-story/SKILL.md` opened their test
+  sections with "classify the story type per `coding-standards.md`" / "test
+  requirements (from coding-standards.md)". Both were bare filenames, which the
+  doc-stack checker declares out of scope and never judged. The classification
+  table and the requirements list follow inline in both files, so the clause was
+  dropped and the naming rule repointed at `.claude/rules/test-standards.md`,
+  which does ship.
+- **`production/sprints/sprint-current.md` — a filename nothing will ever write.**
+  `/sprint-plan` writes `sprint-[N].md`. Two docs sent a reader to
+  `sprint-current.md`; both now name "the newest `production/sprints/sprint-*.md`".
+- **Eight more phantom commands, found by the new cross-check.** `/smoke-check`
+  repointed to the Smoke Test Scope section `/qa-plan` actually writes;
+  `/team-qa` to `/qa-plan`; `/sprint-status` to `/sprint-plan status` (a real
+  mode of a real skill); `/ux-design` and `/ux-review` to the `ux-designer` and
+  `accessibility-specialist` agents that ship; `/test-setup` to a qa-lead +
+  devops-engineer dispatch; `/test-helpers`, `/test-evidence-review`,
+  `/test-flakiness`, `/team-live-ops` and `/skill-test` removed or repointed.
+- **Six phantom files hidden inside fenced code blocks.**
+  `skills/subagent-driven-development/SKILL.md` dispatched three subagents via
+  `./implementer-prompt.md`, `./spec-reviewer-prompt.md` and
+  `./code-quality-reviewer-prompt.md`; `skills/systematic-debugging/SKILL.md`
+  pointed at `root-cause-tracing.md`, `defense-in-depth.md` and
+  `condition-based-waiting.md` "in this directory". None ship. The prompts and
+  the techniques are now written out inline, so both skills are self-contained.
+- **`skills/brainstorming/visual-companion.md` was a 289-line operating manual
+  for software this bundle does not ship** — server startup, the write/read
+  loop, the frame's CSS classes, `scripts/start-server.sh`,
+  `scripts/stop-server.sh`. That server belongs to the optional
+  `obra/superpowers` plugin. The guide now keeps the visual-vs-terminal
+  judgment, states the dependency plainly, tells the session not to offer the
+  companion when the plugin is absent, and gives the terminal fallback.
+- **The degradation clause reached the agent layer.** 13 agents that read project
+  artifacts carried no absent-file behaviour, so a dispatched creative-director
+  or qa-lead had none stated. All 13 now carry the identical sentence, and the
+  three collaborative-protocol templates instruct every future agent to carry it
+  too. Coverage: 82 files bundle-side, 80 in a default install (the difference is
+  two clause-bearing agents that ship only with `--engine godot`) — both numbers
+  are now stated in `docs/doc-stack.md` so the grep result is never a surprise.
+- **Manifest `why` strings cited line numbers, and line numbers rot.** Four whys
+  in `tools/doc_stack.manifest.json` pointed four lines past their subject after
+  the previous edit shifted the files; one landed on a blank line. All 23
+  line-number citations were stripped in favour of file-and-section names, and
+  the manifest's own `_readme` now forbids them — along with whys that name a
+  command which does not ship (one named `/ux-design`).
+- **`counts:` in `manifest.yaml` disagreed with disk.** `tools: 3` while five
+  runners install, `templates: 39` while 41 files exist. Every count now carries
+  the command that reproduces it.
+- **The repo's stale self-install is gone.** A single tracked file,
+  `.claude/docs/workflow-catalog.yaml`, was a partial dogfood copy that had
+  drifted against its source (still globbing the retired `production/playtests/`
+  a release after the source was fixed). `scripts/install.sh` refuses to install
+  into this repo at all, so that copy could only ever drift. Removed, and
+  `/.claude/` is now gitignored with the reason.
 
 ### Changed
 - The scaffold step **never overwrites**: an existing file is left untouched and

@@ -22,6 +22,20 @@ desktop.ini
 # Generated flow-ledger bootstrap draft (review + rename to flow-ledger.yaml — never commit the draft)
 production/flow-ledger.draft.yaml
 
+# ─────────────────────────────────────────────────────────────
+# This repo is the SOURCE of the framework, never an install of it.
+# scripts/install.sh refuses to install into a directory holding
+# manifest.yaml + skills/, so a .claude/ here can only be a stray
+# copy that drifts against docs/. One did: a tracked
+# .claude/docs/workflow-catalog.yaml kept globbing a retired path
+# for a release after the source was fixed. Install into a game
+# project to use the framework; never into this clone.
+# ─────────────────────────────────────────────────────────────
+/.claude/
+
+# Scratch space for verification runs — never committed
+/.scratch/
+
 # Python bytecode from tools/ runners
 __pycache__/
 *.pyc

@@ -2,6 +2,13 @@
 
 Insert this section after the "You are..." introduction and before "Key Responsibilities":
 
+**Every agent built from this protocol also carries the graceful-degradation clause,
+verbatim, immediately after its "You are..." introduction:**
+
+> **If an artifact named here is absent:** say so plainly in one line, skip that step, and
+> continue. Never invent the file to satisfy a checklist, and never fail a close because an
+> optional artifact was never created.
+
 ```markdown
 ### Collaboration Protocol
 

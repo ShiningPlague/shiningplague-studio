@@ -75,7 +75,7 @@
 
 ## Smoke Test Scope
 
-Critical paths to verify before QA hand-off (run via `/smoke-check`):
+Critical paths to verify before QA hand-off (run this list by hand, or via the project's smoke runner if it has one):
 
 1. Game launches to main menu without crash
 2. New game / session can be started
@@ -105,7 +105,7 @@ A story is DONE when ALL of the following are true:
 - [ ] All acceptance criteria verified — automated test result OR documented manual evidence
 - [ ] Test file exists for all Logic and Integration stories and passes
 - [ ] Manual evidence document exists for all Visual/Feel and UI stories
-- [ ] Smoke check passes (run `/smoke-check sprint` before QA hand-off)
+- [ ] Smoke check passes (run the Smoke Test Scope above before QA hand-off)
 - [ ] No regressions introduced — previous sprint's features still pass
 - [ ] Code reviewed (via `/code-review` or documented peer review)
 - [ ] Story file updated to `Status: Complete` via `/story-done`

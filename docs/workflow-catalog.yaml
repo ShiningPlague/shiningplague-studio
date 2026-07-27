@@ -169,7 +169,7 @@ phases:
 
       - id: ux-design
         name: "UX Specs (key screens)"
-        command: /ux-design
+        command: ux-designer agent dispatch
         required: true
         repeatable: true
         artifact:
@@ -179,7 +179,7 @@ phases:
 
       - id: ux-review
         name: "UX Review"
-        command: /ux-review
+        command: ux-designer + accessibility-specialist dispatch
         required: true
         description: "Validate all key screen UX specs for GDD alignment and accessibility tier compliance. Run before creating epics."
 
@@ -214,11 +214,11 @@ phases:
 
       - id: test-setup
         name: "Test Framework Setup"
-        command: /test-setup
+        command: qa-lead + devops-engineer dispatch
         required: false
         artifact:
           note: "Check tests/ directory for engine-specific test framework scaffold"
-        description: "Scaffold the test framework and CI pipeline once before the first sprint. Leads to /test-helpers for fixture generation, /qa-plan per epic, and /smoke-check per sprint."
+        description: "Scaffold the test framework and CI pipeline once before the first sprint — dispatch qa-lead (what must be testable) plus devops-engineer (harness + CI). Feeds /qa-plan per epic, which defines the per-sprint smoke scope."
 
       - id: sprint-plan
         name: "First Sprint Plan"
@@ -286,7 +286,7 @@ phases:
         command: /qa-plan
         required: false
         repeatable: true
-        description: "Generate a QA test plan per epic or sprint. Run /qa-plan [epic-slug]. Produces test cases for /smoke-check, /regression-suite, and /test-evidence-review."
+        description: "Generate a QA test plan per epic or sprint. Run /qa-plan [epic-slug]. Produces the smoke scope, the cases /regression-suite tracks, and the evidence requirements /story-done gates on."
 
       - id: bug-report
         name: "Bug Report / Triage"
@@ -306,7 +306,7 @@ phases:
         name: "Team Orchestration (optional)"
         required: false
         repeatable: true
-        description: "Coordinate multiple agents on a complex feature. Use: /team-combat, /team-narrative, /team-ui, /team-audio, /team-level, /team-live-ops, /team-qa. Run when a feature spans multiple agent domains."
+        description: "Coordinate multiple agents on a complex feature. Use the /team-* skill matching the domain: /team-combat, /team-narrative, /team-ui, /team-audio, /team-level, /team-art, /team-economy, /team-infra, /team-marketing, /team-polish, /team-release, /team-security. Run when a feature spans multiple agent domains."
 
       - id: scope-check
         name: "Scope Check"
@@ -320,7 +320,7 @@ phases:
 
       - id: sprint-status
         name: "Sprint Status"
-        command: /sprint-status
+        command: /sprint-plan status
         required: false
         description: "Quick 30-line snapshot of sprint progress without a full report"
 

@@ -118,7 +118,7 @@ For config/data-only fixes: make the change directly (no programmer agent needed
 
 ## Phase 5: Patch QA Gate
 
-This is a lightweight QA pass — not a full `/team-qa`. The patch is already QA-approved from the release gate; we are only re-verifying the changed areas.
+This is a lightweight QA pass — not a full QA cycle (`/qa-plan` + `/regression-suite`). The patch is already QA-approved from the release gate; we are only re-verifying the changed areas.
 
 Spawn `qa-lead` via Task with:
 - List of all changed files

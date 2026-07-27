@@ -17,7 +17,7 @@ ensures no critical bug is lost between sprints.
 
 **When to run:**
 - Sprint start — assign open bugs to the new sprint or backlog
-- After `/team-qa` completes and new bugs have been filed
+- After a QA cycle (`/qa-plan`) completes and new bugs have been filed
 - When the bug count crosses 10+ open items
 
 ---
@@ -226,7 +226,7 @@ Write only after approval.
 
 After writing:
 - If any S1 bugs are unassigned: "S1 bugs must be assigned before the sprint
-  can be considered healthy. Run `/sprint-status` to see current capacity."
+  can be considered healthy. Run `/sprint-plan status` to see current capacity."
 - If regression bugs exist: "Regressions found — consider re-opening the
   affected stories in sprint tracking and running `/regression-suite` to re-gate."
 - If no P1 bugs exist: "No P1 bugs — build is in good shape for QA hand-off." Verdict: **COMPLETE** — triage report written.

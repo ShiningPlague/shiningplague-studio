@@ -156,7 +156,7 @@ For each story file found:
 | TR registry | `docs/architecture/tr-registry.yaml` | HIGH — no stable requirement IDs |
 | Control manifest | `docs/architecture/control-manifest.md` | HIGH — no layer rules for stories |
 | Manifest version stamp | In manifest header: `Manifest Version:` | MEDIUM — staleness checks blind |
-| Sprint status | `production/sprint-status.yaml` | MEDIUM — `/sprint-status` falls back to markdown |
+| Sprint status | `production/sprint-status.yaml` | MEDIUM — `/sprint-plan status` falls back to markdown |
 | Stage file | `production/stage.txt` | MEDIUM — phase auto-detect unreliable |
 | Engine reference | `docs/engine-reference/[engine]/VERSION.md` | HIGH — ADR engine checks blind |
 | Architecture traceability | `docs/architecture/architecture-traceability.md` | MEDIUM — no persistent matrix |

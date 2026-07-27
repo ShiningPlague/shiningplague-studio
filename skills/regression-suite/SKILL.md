@@ -241,7 +241,7 @@ Verdict: **COMPLETE** — regression suite updated. (If user declined write: Ver
 
 - **Never remove existing regression tests from the manifest** without explicit user approval
 - **Gaps are advisory, not blocking** — surface them clearly but don't prevent other work (except at release gate)
-- **Quarantine is not deletion** — flaky tests should be quarantined (noted in manifest), not removed; they should be fixed by `/test-flakiness`
+- **Quarantine is not deletion** — flaky tests should be quarantined (noted in manifest), not removed; they should be fixed, and a bug filed with `/bug-report` if the cause is not obvious
 - **Ask before writing** — always confirm before creating or updating the manifest
 
 ---

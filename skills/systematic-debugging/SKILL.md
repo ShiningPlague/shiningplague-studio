@@ -111,9 +111,8 @@ You MUST complete each phase before proceeding to the next.
 
    **WHEN error is deep in call stack:**
 
-   See `root-cause-tracing.md` in this directory for the complete backward tracing technique.
+   Trace backward from the symptom to the origin:
 
-   **Quick version:**
    - Where does bad value originate?
    - What called this with bad value?
    - Keep tracing up until you find the source
@@ -277,11 +276,21 @@ If systematic investigation reveals issue is truly environmental, timing-depende
 
 ## Supporting Techniques
 
-These techniques are part of systematic debugging and available in this directory:
+Three techniques worth naming, summarised here rather than pointed at — this
+skill carries what it needs.
 
-- **`root-cause-tracing.md`** - Trace bugs backward through call stack to find original trigger
-- **`defense-in-depth.md`** - Add validation at multiple layers after finding root cause
-- **`condition-based-waiting.md`** - Replace arbitrary timeouts with condition polling
+- **Root-cause tracing** — when the error surfaces deep in a call stack, walk
+  *backward*: where did the bad value originate, what passed it in, and what
+  passed it to that? Keep going until the answer is "the input". Fix there.
+- **Defense in depth** — once the root cause is fixed, add validation at the
+  layers the bad value crossed, so the next variant of it fails loudly and early
+  instead of silently and late.
+- **Condition-based waiting** — replace every arbitrary `sleep` or fixed timeout in a test
+  or a repro with a poll on the actual condition. Arbitrary waits turn a
+  deterministic bug into a flaky one, which is a worse bug.
+
+The upstream `obra/superpowers` plugin ships a longer treatment of each; it is an
+optional enhancer, not a dependency.
 
 **Related skills:**
 - **test-driven-development (bundled)** - For creating failing test case (Phase 4, Step 1)

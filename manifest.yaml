@@ -13,16 +13,23 @@ lineage:
   born_from: "a Godot narrative-RPG project"
 
 counts:
-  skills: 67          # includes godot-engine + dispatching-parallel-agents (bundled in 0.3.0)
-  agents_active: 35
-  agents_engine_packs: 14
+  skills: 69          # `ls -d skills/*/` — includes godot-engine + dispatching-parallel-agents
+                      # (bundled in 0.3.0) and story-readiness + story-done (the two story
+                      # gates 19 shipped files commanded before they existed, added in 0.4.1)
+  agents_active: 35   # `ls agents/*.md`
+  agents_engine_packs: 14   # `ls agents/engine-packs/*/*.md`
   hooks: 13
   rules: 11
-  templates: 39       # includes settings.template.json (hook wiring, new in 0.3.0)
-  tools: 3            # workflow_state_check.py (flow-state detection), doc_stack_check.py
-                      # (doc-stack regression guard, plus its doc_stack.manifest.json data
-                      # file) and consistency_check.py (the 12-check doc-stack gate that
-                      # /consistency-check, /update, /red-flag-scan and /session-close run)
+  templates: 41       # `find templates -type f` — 38 top-level (incl. settings.template.json,
+                      # hook wiring, new in 0.3.0) + 3 under collaborative-protocols/
+  tools: 5            # `ls tools/*.py` — workflow_state_check.py (flow-state detection),
+                      # doc_stack_check.py (doc-stack + slash-command regression guard, plus
+                      # its doc_stack.manifest.json data file), consistency_check.py (the
+                      # 12-check doc-stack gate that /consistency-check, /update,
+                      # /red-flag-scan and /session-close run), generate_systems_index.py
+                      # (systems-index table from the registry) and generate_skills_index.py
+                      # (skills-index routing table from SKILL.md frontmatter).
+                      # 6 files in tools/ — the sixth is the .json data file, not a runner.
   scaffold_files: 23  # seed artifacts in scaffold/ copied 1:1 into a fresh project
                       # (24 files on disk; scaffold/README.md documents the folder and is
                       #  never installed)
