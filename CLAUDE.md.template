@@ -40,7 +40,7 @@ You do not need to read every doc before acting. Match the question to ONE row, 
 | **One system's design in depth** | `docs/gdd/<system>.md`; the decomposition + status table is `docs/gdd/systems-index.md`. |
 | **Visual identity** — palette, shape language, asset standards | `docs/art-bible.md` |
 | **Architecture decisions** — locked technical/design choices | `docs/adr/` — one ADR per decision, permanent. |
-| **System blueprint + programmer rules** | `docs/architecture/` — `architecture.md`, `control-manifest.md`, `tr-registry.yaml`. |
+| **System blueprint + programmer rules** | `docs/architecture/architecture.md`, `docs/architecture/control-manifest.md`, `docs/architecture/tr-registry.yaml` |
 | **In-progress feature design** — "where's the spec for X?" | `docs/specs/` — check BEFORE restarting a brainstorm. |
 | **The plan for work in flight** | `docs/plans/` — the archive lifecycle is in § Project conventions below. |
 | **Data / pipeline reference** — formulas, tables, tuning | `docs/implementation-status.md` (points at the data files; numbers live in the data, not here) |
