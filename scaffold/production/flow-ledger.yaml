@@ -1,0 +1,51 @@
+# production/flow-ledger.yaml — the honest record of where THIS project actually is.
+#
+# WHAT THIS IS   The pipeline's TRUE state, per step: what is done, what was
+#                deliberately skipped, and why. The catalog
+#                (.claude/docs/workflow-catalog.yaml) says what the ideal
+#                progression is; this file says what really happened.
+# WRITTEN BY     you (human-authored), plus any skill that closes a pipeline step.
+# READ BY        tools/workflow_state_check.py — which the session-start hook runs
+#                on every session open to print the recommended next action, and
+#                /help re-runs on demand.
+# SEEDED BY      the installer's scaffold step, empty and honest: nothing claimed,
+#                nothing skipped. The checker will read it and recommend the first
+#                canonical step.
+#
+# THE ONE RULE   Never claim `done` without evidence that exists on disk. The
+#                checker cross-checks every claim and reports CONFLICT (exit 1)
+#                when a `done` has no surviving evidence. A ledger that lies is
+#                worse than no ledger.
+#
+# STEP ENTRY SHAPE
+#   - id: game-concept          # a step id from workflow-catalog.yaml, or custom: true
+#     status: done              # done | in-progress | skipped | leapfrogged | not-started | n-a
+#     evidence: [docs/gdd/game-concept.md]   # REQUIRED for done; must exist + be non-empty
+#     reason: "why"             # REQUIRED for skipped / leapfrogged
+#     date: "YYYY-MM-DD"
+#
+# WORKED EXAMPLE  .claude/docs/templates/flow-ledger.TEMPLATE.yaml carries a
+#                 done-with-evidence, a leapfrogged-with-reason and a custom step
+#                 to copy from.
+# ADOPTING AN EXISTING PROJECT?  Delete this file and run
+#                 `python tools/workflow_state_check.py` once — BOOTSTRAP MODE
+#                 infers a draft from the artifacts you already have, which you
+#                 then review and rename to production/flow-ledger.yaml.
+
+posture: concept   # your project posture, one word (e.g. concept / production / polish)
+
+# Designer-decision blockers. Printed BEFORE the recommended next step — while one
+# is open, the steps it `blocks` are skipped when choosing what to recommend.
+# Shape: - id: <slug>
+#          title: "ONE-LINE DECISION THE DESIGNER OWES"
+#          blocks: [step-id, step-id]
+#          reason: "why this gates that work"
+#          date: "YYYY-MM-DD"
+rule_pending: []
+
+# Blockers that have been ruled on. Kept so the reasoning survives the decision.
+rule_resolved: []
+
+# One entry per canonical step you have actually touched. Steps you have not
+# reached yet are simply absent — they default to not-started.
+steps: []

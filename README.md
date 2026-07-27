@@ -21,7 +21,7 @@ Set up the ShiningPlague Studio in this project:
 5. Tell me the studio is ready and suggest my first move.
 ```
 
-Setup is **100% project-local**: everything lands inside your game folder (`.claude/` + `tools/` + a seeded `CLAUDE.md`), and nothing ever touches your personal `~/.claude`. Each game gets its own install, and edits you make stay in that project. Re-running the installer later updates it in place — your `CLAUDE.md` and `.claude/settings.json` are never overwritten.
+Setup is **100% project-local**: everything lands inside your game folder (`.claude/` + `tools/` + a seeded `CLAUDE.md` + the document stack the skills read — `docs/`, `data/`, `production/`), and nothing ever touches your personal `~/.claude`. Each game gets its own install, and edits you make stay in that project. Re-running the installer later updates the `.claude/` layer in place — your `CLAUDE.md`, `.claude/settings.json` and every seeded document are never overwritten.
 
 <details>
 <summary><strong>Manual install</strong> (if you'd rather run it yourself)</summary>
@@ -99,6 +99,8 @@ shiningplague-studio/
 ├── templates/              # Doc scaffolds + settings.template.json → <project>/.claude/docs/templates/
 ├── docs/                   # Framework documentation → <project>/.claude/docs/
 ├── tools/                  # Project runtime tools → <project>/tools/
+├── scaffold/               # Seed document stack → <project>/docs/, data/, production/
+│                           #   (never overwrites; skip with --no-scaffold)
 ├── scripts/                # install.sh / install.ps1 (project-local installers)
 ├── CLAUDE.md.template      # Project instruction file → <project>/CLAUDE.md (seeded if absent)
 ├── manifest.yaml           # Inventory + lineage + install targets

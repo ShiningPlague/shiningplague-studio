@@ -4,6 +4,33 @@ All notable changes to the ShiningPlague Game Studio framework are recorded here
 The format follows [Keep a Changelog](https://keepachangelog.com/); versions follow
 [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Added
+- **`scaffold/` — the project document stack the skills read.** The installer used to
+  create the `.claude/` layer and nothing else, so every instruction that pointed
+  outside it ("open `data/_schemas/system_registry.json` first", "check
+  `production/review-mode.txt`", "append to `docs/devlog.md`", "resume from
+  `production/session-state/active.md`") was commanding a file no fresh install had.
+  Both installers now seed 36 paths — a valid empty registry with documented schema
+  notes, a dev diary, the handover file, stage + review-mode + sprint-status +
+  flow-ledger, devlog / implementation-status / open-flags, the ADR and workstream
+  templates in place, and the spec / plan / gdd / architecture / epic / sprint / qa
+  directories. Six of them are copies of shipped `templates/` documents, so no
+  document is authored twice in this repo.
+- `--no-scaffold` (bash) / `-NoScaffold` (PowerShell) — install the `.claude/` layer
+  alone, for projects that already have their own document stack.
+
+### Changed
+- The scaffold step **never overwrites**: an existing file is left untouched and
+  counted as skipped, so a live project's real registry, devlog and session state
+  survive any number of re-runs. Running the installer twice is a byte-for-byte
+  no-op the second time (`seeded 0 · skipped 29`).
+- `tools/doc_stack_check.py` now sees a kept promise: installer scaffold coverage
+  went from 0/34 covered to 36/36, and the "unscaffolded promises" failure class
+  dropped to zero. Against a fresh install, commanded-but-missing paths fell from
+  46 to 2 (the two remaining are runners, not documents).
+
 ## [0.4.0] - 2026-07-20 — first public release
 
 ### Added

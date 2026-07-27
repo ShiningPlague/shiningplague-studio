@@ -1,0 +1,30 @@
+# production/sprint-status.yaml — machine-readable state of the CURRENT sprint.
+#
+# WHAT THIS IS   The one file that answers "what is in flight right now?" without
+#                parsing prose. The human-readable plan lives at
+#                production/sprints/sprint-<N>.md; this is its index.
+# WRITTEN BY     /sprint-plan (creates + updates), /retrospective (closes),
+#                /goal-check + /session-close (carry-over on close).
+# READ BY        /help (production phase reads story states from here, not globs),
+#                /project-stage-detect, /qa-plan, /sprint-plan status.
+# SEEDED BY      the installer's scaffold step. Empty on day one — that is correct:
+#                status `none` means "no sprint has been planned yet".
+#
+# STORY ENTRY SHAPE (add one per story when a sprint is planned):
+#   - id: STORY-001                     # or the story file's slug
+#     title: "Short imperative title"
+#     file: production/epics/<epic-slug>/STORY-001-<slug>.md
+#     status: ready-for-dev             # ready-for-dev | in-progress | blocked | done
+#     owner: ""                         # agent or person
+#     estimate_h: 0
+#     blocked_by: ""                    # required when status is blocked
+
+sprint: null                 # sprint number, e.g. 1
+theme: ""                    # one line — what this sprint is FOR
+status: none                 # none | planning | active | closed
+started: null                # YYYY-MM-DD
+ends: null                   # YYYY-MM-DD
+plan: null                   # production/sprints/sprint-<N>.md
+retrospective_logged: null   # docs/devlog.md#<anchor>, set by /retrospective
+stories: []
+carry_over: []               # stories that did not close, carried to the next sprint

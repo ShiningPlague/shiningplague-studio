@@ -1,0 +1,1 @@
+# production/qa/bugs/ — one file per bug, BUG-NNN-<slug>.md. Filed by /bug-report, re-prioritised by /bug-triage. A bug is a defect in the game; a contradiction between docs is a flag (docs/open-flags.md).

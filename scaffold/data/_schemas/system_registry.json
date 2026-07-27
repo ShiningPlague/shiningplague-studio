@@ -1,0 +1,73 @@
+{
+  "_readme": [
+    "data/_schemas/system_registry.json — THE built-state source of truth.",
+    "",
+    "WHAT THIS IS  The one file that answers 'is it built?'. CLAUDE.md's reading map",
+    "              sends every fresh session here FIRST, before any prose doc. When a",
+    "              doc and this file disagree, this file wins and the doc is stale.",
+    "WRITTEN BY    /map-systems (adds planned systems), /design-system (status on GDD",
+    "              completion), /architecture-decision (appends to decisions[] and",
+    "              adr_index), /brainstorming (spec_index lifecycle), /update (T10",
+    "              docs-sync: new tools, data categories, priority rotation),",
+    "              /goal-check + /sprint-plan (next_session_priorities).",
+    "READ BY       /help, /gate-check, /consistency-check, /architecture-review,",
+    "              /content-audit, /project-stage-detect, /regression-suite, and the",
+    "              CLAUDE.md session-open ritual.",
+    "SEEDED BY     the installer's scaffold step — valid, parseable, and EMPTY. An",
+    "              empty registry is the correct day-one state; it fills as systems",
+    "              land. Do not delete keys you have not used yet: a skill that finds",
+    "              the key finds an empty list and moves on; a skill that finds no key",
+    "              has to guess."
+  ],
+  "_schema_notes": {
+    "phase": "Mirror of production/stage.txt, kept here so a single JSON read answers 'where are we?'. stage.txt stays AUTHORITATIVE — /gate-check writes it. If the two ever disagree, believe stage.txt and fix this.",
+    "systems": "One object per system. Required: id, name, status, layer. Optional: priority, features[], dependencies[], decisions[] (ADR ids), gdd (path), notes. Example entry: {\"id\": \"your-system\", \"name\": \"Your System\", \"status\": \"planned\", \"layer\": \"gameplay\", \"dependencies\": [], \"decisions\": [], \"gdd\": \"docs/gdd/your-system.md\"}",
+    "tools": "One object per runnable tool the project owns: {\"path\": \"tools/your_check.py\", \"purpose\": \"...\", \"run\": \"python tools/your_check.py\"}. /consistency-check verifies every tool it finds on disk has an entry.",
+    "data": "One object per editable data category: {\"dir\": \"data/your-category/\", \"schema\": \"data/_schemas/your_category_schema.json\", \"count\": 0, \"purpose\": \"...\"}. Architecture principle 1 — content lives in data, never in scripts — is audited from here.",
+    "documentation_stack": "The doc ledger. active_docs[] = every live doc's path + role. spec_index.specs[] = every spec's state (in_progress | final | archived), file, archive_path, linked plan and ADR. adr_index.adrs[] = number, title, status, date, file. archived_docs[] = what moved to docs/z-old/ and when.",
+    "next_session_priorities": "Ordered array; [0] is what happens next. /update rotates it at ship time; /help and /sprint-plan read it. Entry shape: {\"title\": \"...\", \"why\": \"...\", \"workstream\": \"...\", \"added\": \"YYYY-MM-DD\"}.",
+    "flagged_for_designer_review": "Open contradictions the automated checks cannot resolve. Entry shape: {\"id\": \"FLAG-001\", \"severity\": \"high|medium|low\", \"summary\": \"...\", \"raised\": \"YYYY-MM-DD\", \"report\": \"docs/open-flags.md\", \"resolved_in_commit\": null}. Mirror the human-readable version in docs/open-flags.md.",
+    "live_test_notes": "How to actually run and see the thing today. current_focus is the one-liner /consistency-check compares against the top devlog entry.",
+    "recently_changed": "Append a dated array key per ship — recently_changed_YYYY-MM-DD: [\"what changed\"]. /regression-suite globs recently_changed_* to decide what needs a regression test. No dated key exists on day one because nothing has changed yet.",
+    "status_vocabulary": "See _status_meanings. Use exactly these words — skills match them as strings."
+  },
+  "_status_meanings": {
+    "planned": "Decided and on the map; no code yet.",
+    "stub": "A placeholder exists that compiles/loads but does nothing real.",
+    "wip": "Actively being built right now.",
+    "partial": "Works for the main path; known gaps remain.",
+    "active": "Built, wired, and in use.",
+    "phasing_out": "Superseded by another system; still present so nothing breaks.",
+    "deprecated": "Kept only for compatibility; do not build on it.",
+    "dormant": "Complete but switched off.",
+    "for_review": "Built, but its behaviour needs a designer verdict."
+  },
+  "_edit_policy": "Skills update this file as part of their normal run — no permission prompt for status/index changes. ASK before deleting a system entry or rewriting next_session_priorities wholesale; those are designer-owned decisions.",
+  "phase": "concept",
+  "last_full_audit": null,
+  "audit_scope": null,
+  "documentation_stack": {
+    "last_reviewed": null,
+    "boundary_rule": "A doc belongs to exactly one owner skill. If two skills write the same doc, one of them is drifting.",
+    "active_docs": [],
+    "spec_index": {
+      "specs": []
+    },
+    "adr_index": {
+      "adrs": []
+    },
+    "archived_docs": []
+  },
+  "systems": [],
+  "tools": [],
+  "data": [],
+  "live_test_notes": {
+    "last_updated": null,
+    "current_focus": "",
+    "how_to_test": [],
+    "known_working": [],
+    "open_drifts": []
+  },
+  "next_session_priorities": [],
+  "flagged_for_designer_review": []
+}

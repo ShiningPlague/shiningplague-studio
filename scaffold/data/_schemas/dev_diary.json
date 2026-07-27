@@ -1,0 +1,30 @@
+{
+  "_readme": [
+    "data/_schemas/dev_diary.json — the session-by-session work record.",
+    "",
+    "WHAT THIS IS  One entry per working day: what shipped, what is next, what you",
+    "              were thinking. The devlog (docs/devlog.md) is the human-readable",
+    "              narrative; this is its machine-readable twin, and the two must",
+    "              agree.",
+    "WRITTEN BY    /update (step 6, writes today's entry), /session-close (adds",
+    "              close_note + close_ref).",
+    "READ BY       hooks/session-start-producer-check.sh (reads the newest entry's",
+    "              'next' field and injects specialist-dispatch guidance),",
+    "              /sprint-plan (newest 'next' = immediate next actions),",
+    "              /consistency-check (cross-checks done_major against the devlog",
+    "              top entry and the registry's current focus).",
+    "SEEDED BY     the installer's scaffold step. entries is empty on day one; the",
+    "              hooks handle that silently.",
+    "",
+    "ENTRY SHAPE   entries['YYYY-MM-DD'] = {",
+    "                done_major : [ 'shipped thing (commit hash)' , ... ]",
+    "                done_minor : [ 'smaller fix', ... ]",
+    "                next       : 'one line — the immediate next action'",
+    "                thoughts   : 'free text, designer-owned'",
+    "                close_note : '2 sentences, written by /session-close'",
+    "                close_ref  : 'production/session-logs/YYYY-MM-DD-<workstream>-close.md'",
+    "              }"
+  ],
+  "_edit_policy": "Append a new dated key per session; never rewrite history. 'next' and 'thoughts' are designer-owned — a skill may propose changes to them but must ask first.",
+  "entries": {}
+}

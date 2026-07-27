@@ -1,0 +1,1 @@
+# production/session-logs/ — one log per closed session. /session-close writes YYYY-MM-DD-<workstream>-close.md; hooks/session-end.sh appends a snapshot to session-log.md.

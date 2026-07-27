@@ -14,6 +14,7 @@
       docs\              -> <target>\.claude\docs\
       templates\         -> <target>\.claude\docs\templates\
       tools\             -> <target>\tools\
+      scaffold\          -> <target>\ (docs\, data\, production\ — only files absent)
       CLAUDE.md.template -> <target>\CLAUDE.md              (only if absent)
       templates\settings.template.json -> <target>\.claude\settings.json (only if absent)
 
@@ -23,8 +24,9 @@
 
     Idempotent: re-running updates the install in place. Existing files that
     differ from the bundle are overwritten, with a diff count printed so local
-    modifications don't vanish silently. CLAUDE.md and settings.json are never
-    overwritten.
+    modifications don't vanish silently. CLAUDE.md, settings.json and EVERY
+    scaffolded artifact are never overwritten — a project's real registry,
+    devlog and session state survive any number of re-runs.
 
 .PARAMETER Target
     The game project directory to install into. If omitted, the current
@@ -39,6 +41,11 @@
     into <target>\.claude\agents\. Valid: unity, unreal, godot-extras,
     multiplayer.
 
+.PARAMETER NoScaffold
+    Install the .claude\ layer only. Skips seeding the project document stack
+    (docs\, data\, production\) that the skills read. The bash equivalent is
+    --no-scaffold. Use it when the project already has its own stack.
+
 .EXAMPLE
     ./install.ps1 C:\games\mygame
     Install the studio into C:\games\mygame (project-local).
@@ -46,6 +53,10 @@
 .EXAMPLE
     ./install.ps1 C:\games\mygame -Engine unity
     Install the studio plus the Unity specialist agent pack.
+
+.EXAMPLE
+    ./install.ps1 C:\games\mygame -NoScaffold
+    Install the .claude\ layer without seeding the project document stack.
 #>
 [CmdletBinding()]
 param(
@@ -53,7 +64,9 @@ param(
     [string]$Target,
 
     [ValidateSet('unity', 'unreal', 'godot-extras', 'multiplayer')]
-    [string[]]$Engine = @()
+    [string[]]$Engine = @(),
+
+    [switch]$NoScaffold
 )
 
 $ErrorActionPreference = 'Stop'
@@ -182,6 +195,33 @@ function Copy-StudioTree {
     }
 }
 
+# --- seed engine: create-if-absent, NEVER overwrite --------------------------
+# Different discipline from Copy-StudioFile on purpose. The .claude\ layer is
+# OURS and is updated in place; the document stack is the PROJECT'S and is only
+# ever seeded. A second install must not touch a registry that now has 40
+# systems in it, a devlog with a year of history, or a half-written handover.
+$script:SeedNew      = 0
+$script:SeedSkipped  = 0
+$script:SeedMissing  = New-Object System.Collections.Generic.List[string]
+
+function Copy-StudioSeed {
+    param([string]$Src, [string]$Dest)
+    if (Test-Path -LiteralPath $Dest) {
+        $script:SeedSkipped++
+        return
+    }
+    if (-not (Test-Path -LiteralPath $Src -PathType Leaf)) {
+        $script:SeedMissing.Add("$Src (source not in bundle)")
+        return
+    }
+    $destDir = Split-Path -Parent $Dest
+    if (-not (Test-Path -LiteralPath $destDir)) {
+        New-Item -ItemType Directory -Force -Path $destDir | Out-Null
+    }
+    Copy-Item -LiteralPath $Src -Destination $Dest -Force
+    $script:SeedNew++
+}
+
 # --- install -----------------------------------------------------------------
 $DestClaude = Join-Path $TargetDir '.claude'
 Write-Step "Installing ShiningPlague Game Studio into: $TargetDir"
@@ -235,6 +275,115 @@ foreach ($pack in $Engine) {
     }
 }
 
+# --- project document stack (never overwrite) --------------------------------
+# The .claude\ layer is instructions; those instructions command paths OUTSIDE
+# .claude\ ("open data/_schemas/system_registry.json first", "check
+# production/review-mode.txt", "append to docs/devlog.md"). This step is what
+# makes those paths exist on day one.
+#
+# Every path created here is listed below AND in the `scaffold` block of
+# tools/doc_stack.manifest.json. tools/doc_stack_check.py reads the region
+# between the two markers and fails the build on any promise made there that is
+# not kept here. Keep the list and the manifest in step.
+#
+# SCAFFOLD-BEGIN
+$ScaffoldPaths = @(
+    'docs/',
+    'docs/GDD.md',
+    'docs/gdd/',
+    'docs/gdd/systems-index.md',
+    'docs/gdd/game-concept.md',
+    'docs/gdd/game-pillars.md',
+    'docs/art-bible.md',
+    'docs/adr/',
+    'docs/adr/TEMPLATE.md',
+    'docs/architecture/',
+    'docs/specs/',
+    'docs/plans/',
+    'docs/z-old/specs/',
+    'docs/z-old/plans/',
+    'docs/devlog.md',
+    'docs/implementation-status.md',
+    'docs/open-flags.md',
+    'data/',
+    'data/_schemas/',
+    'data/_schemas/system_registry.json',
+    'data/_schemas/dev_diary.json',
+    'production/',
+    'production/session-state/',
+    'production/session-state/active.md',
+    'production/session-logs/',
+    'production/workstreams/',
+    'production/workstreams/TEMPLATE.md',
+    'production/sprints/',
+    'production/epics/',
+    'production/qa/',
+    'production/qa/bugs/',
+    'production/qa/evidence/',
+    'production/stage.txt',
+    'production/review-mode.txt',
+    'production/sprint-status.yaml',
+    'production/flow-ledger.yaml'
+)
+
+# Seeds that are just a copy of a shipped template, so no document in this repo
+# is written twice: fix the template, and every future project's seed is fixed.
+$ScaffoldFromTemplate = [ordered]@{
+    'game-design-document.md'          = 'docs/GDD.md'
+    'game-concept.md'                  = 'docs/gdd/game-concept.md'
+    'game-pillars.md'                  = 'docs/gdd/game-pillars.md'
+    'systems-index.md'                 = 'docs/gdd/systems-index.md'
+    'art-bible.md'                     = 'docs/art-bible.md'
+    'architecture-decision-record.md'  = 'docs/adr/TEMPLATE.md'
+}
+
+if (-not $NoScaffold) {
+    Write-Step "scaffold\  -> docs\ data\ production\  (seeds only what is absent)"
+    $scaffoldSrc = Join-Path $RepoDir 'scaffold'
+    if (Test-Path -LiteralPath $scaffoldSrc -PathType Container) {
+        $scaffoldFull = (Resolve-Path -LiteralPath $scaffoldSrc).Path
+        Get-ChildItem -LiteralPath $scaffoldFull -Recurse -File -Force | Sort-Object FullName | ForEach-Object {
+            $rel = $_.FullName.Substring($scaffoldFull.Length).TrimStart('\','/')
+            # scaffold\README.md documents this directory for repo readers; it is
+            # not part of a game project and must never land in one.
+            if ($rel -ne 'README.md') {
+                Copy-StudioSeed -Src $_.FullName -Dest (Join-Path $TargetDir $rel)
+            }
+        }
+    } else {
+        Write-Warn "skip scaffold\ -- not present in bundle"
+        $script:SkippedItems.Add('scaffold\ (not in bundle)')
+    }
+
+    foreach ($tmplName in $ScaffoldFromTemplate.Keys) {
+        Copy-StudioSeed -Src (Join-Path $RepoDir "templates\$tmplName") `
+                        -Dest (Join-Path $TargetDir $ScaffoldFromTemplate[$tmplName])
+    }
+
+    # A list nothing enforces is a comment. Verify every promised path landed.
+    $scaffoldAbsent = New-Object System.Collections.Generic.List[string]
+    foreach ($p in $ScaffoldPaths) {
+        if (-not (Test-Path -LiteralPath (Join-Path $TargetDir $p))) { $scaffoldAbsent.Add($p) }
+    }
+
+    Write-Info "seeded new:      $($script:SeedNew)"
+    Write-Info "already present: $($script:SeedSkipped) (left untouched)"
+    if ($scaffoldAbsent.Count -gt 0) {
+        Write-Warn "these promised paths are NOT present after seeding:"
+        $scaffoldAbsent | ForEach-Object { Write-Host "         $_" }
+    }
+    if ($script:SeedMissing.Count -gt 0) {
+        Write-Warn "seed sources missing from the bundle:"
+        $script:SeedMissing | ForEach-Object { Write-Host "         $_" }
+    }
+} else {
+    Write-Step "scaffold   -> SKIPPED (-NoScaffold)"
+    Write-Info "the .claude\ layer is installed, but docs\, data\ and production\ are not seeded."
+    Write-Info "skills that read the registry, the stage, the review mode or the handover"
+    Write-Info "file will find nothing until you create those paths yourself."
+}
+# SCAFFOLD-END
+
 # --- CLAUDE.md seed (never overwrite) ----------------------------------------
 $tmplSrc    = Join-Path $RepoDir 'CLAUDE.md.template'
 $projClaude = Join-Path $TargetDir 'CLAUDE.md'
@@ -274,9 +423,15 @@ if (Test-Path -LiteralPath $settingsSrc -PathType Leaf) {
 # --- summary -----------------------------------------------------------------
 Write-Host ""
 Write-Step "Install complete: $TargetDir"
-Write-Info "new files:        $($script:CountNew)"
-Write-Info "updated in place: $($script:CountUpdated)"
-Write-Info "unchanged:        $($script:CountUnchanged)"
+Write-Info ".claude layer -- new files:        $($script:CountNew)"
+Write-Info ".claude layer -- updated in place: $($script:CountUpdated)"
+Write-Info ".claude layer -- unchanged:        $($script:CountUnchanged)"
+if (-not $NoScaffold) {
+    Write-Info "doc stack     -- seeded:           $($script:SeedNew)"
+    Write-Info "doc stack     -- skipped (exists): $($script:SeedSkipped)"
+} else {
+    Write-Info "doc stack     -- not seeded (-NoScaffold)"
+}
 if ($script:CountUpdated -gt 0) {
     Write-Host ""
     Write-Warn "$($script:CountUpdated) existing file(s) differed from the bundle and were UPDATED IN PLACE."

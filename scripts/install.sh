@@ -11,6 +11,7 @@
 #   docs/              -> <target>/.claude/docs/
 #   templates/         -> <target>/.claude/docs/templates/
 #   tools/             -> <target>/tools/
+#   scaffold/          -> <target>/ (docs/, data/, production/ — only files absent)
 #   CLAUDE.md.template -> <target>/CLAUDE.md              (only if absent)
 #   templates/settings.template.json -> <target>/.claude/settings.json (only if absent)
 #
@@ -20,8 +21,9 @@
 #
 # Idempotent: re-running updates the install in place. Files that already
 # exist and differ from the bundle are overwritten, with a diff count printed
-# so local modifications don't vanish silently. CLAUDE.md and settings.json
-# are never overwritten.
+# so local modifications don't vanish silently. CLAUDE.md, settings.json and
+# EVERY scaffolded artifact are never overwritten — a project's real registry,
+# devlog and session state survive any number of re-runs.
 #
 set -euo pipefail
 
@@ -31,6 +33,7 @@ REPO_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
 TARGET_DIR=""
 ENGINE_PACKS=()
+DO_SCAFFOLD=1
 
 usage() {
   cat <<'USAGE'
@@ -38,6 +41,7 @@ ShiningPlague Game Studio installer — project-local, zero-prerequisite.
 
 Usage:
   install.sh [TARGET_DIR] [--engine unity|unreal|godot-extras|multiplayer]...
+             [--no-scaffold]
 
   TARGET_DIR   The game project to install into. If omitted, the current
                directory is used when it looks like a project root (contains
@@ -51,11 +55,15 @@ Options:
   --engine <pack>   Also install an engine agent pack from agents/engine-packs/
                     into <target>/.claude/agents/. May be given more than once.
                     Packs: unity, unreal, godot-extras, multiplayer.
+  --no-scaffold     Install the .claude/ layer only. Skips seeding the project
+                    document stack (docs/, data/, production/) that the skills
+                    read. Use it when the project already has its own.
   -h, --help        Show this help.
 
-Everything installs INSIDE the target project (.claude/ + tools/). Nothing is
-written to ~/.claude or any user-level path. Re-running updates in place;
-CLAUDE.md and .claude/settings.json are never overwritten.
+Everything installs INSIDE the target project (.claude/ + tools/ + the seeded
+document stack). Nothing is written to ~/.claude or any user-level path.
+Re-running updates the .claude/ layer in place; CLAUDE.md, .claude/settings.json
+and every scaffolded artifact are never overwritten.
 USAGE
 }
 
@@ -68,6 +76,7 @@ while [ $# -gt 0 ]; do
         exit 2
       fi
       ENGINE_PACKS+=("$2"); shift 2 ;;
+    --no-scaffold) DO_SCAFFOLD=0; shift ;;
     -h|--help) usage; exit 0 ;;
     -*) echo "ERROR: unknown option: $1" >&2; usage >&2; exit 2 ;;
     *)
@@ -213,6 +222,31 @@ copy_tree() {
   done < <(find "${src}" -type f | sort)
 }
 
+# --- seed engine: create-if-absent, NEVER overwrite --------------------------
+# Different discipline from copy_file on purpose. The .claude/ layer is OURS and
+# is updated in place; the document stack is the PROJECT'S and is only ever
+# seeded. A second install must not touch a registry that now has 40 systems in
+# it, a devlog with a year of history, or a half-written handover file.
+SEED_NEW=0
+SEED_SKIPPED=0
+SEED_MISSING=""
+
+seed_file() {
+  # $1 = src file, $2 = dest file
+  local src="$1" dest="$2"
+  if [ -e "${dest}" ]; then
+    SEED_SKIPPED=$((SEED_SKIPPED + 1))
+    return 0
+  fi
+  if [ ! -f "${src}" ]; then
+    SEED_MISSING="${SEED_MISSING}${src#"${REPO_DIR}"/} (source not in bundle)"$'\n'
+    return 0
+  fi
+  mkdir -p "$(dirname "${dest}")"
+  cp "${src}" "${dest}"
+  SEED_NEW=$((SEED_NEW + 1))
+}
+
 # --- install -----------------------------------------------------------------
 DEST_CLAUDE="${TARGET_DIR}/.claude"
 step "Installing ShiningPlague Game Studio into: ${TARGET_DIR}"
@@ -264,6 +298,118 @@ for pack in ${ENGINE_PACKS[@]+"${ENGINE_PACKS[@]}"}; do
   done
 done
 
+# --- project document stack (never overwrite) --------------------------------
+# The .claude/ layer is instructions; those instructions command paths OUTSIDE
+# .claude/ ("open data/_schemas/system_registry.json first", "check
+# production/review-mode.txt", "append to docs/devlog.md"). This step is what
+# makes those paths exist on day one.
+#
+# Every path created here is listed below AND in the `scaffold` block of
+# tools/doc_stack.manifest.json. tools/doc_stack_check.py reads the region
+# between the two markers and fails the build on any promise made there that is
+# not kept here. Keep the list and the manifest in step.
+#
+# SCAFFOLD-BEGIN
+SCAFFOLD_PATHS="
+docs/
+docs/GDD.md
+docs/gdd/
+docs/gdd/systems-index.md
+docs/gdd/game-concept.md
+docs/gdd/game-pillars.md
+docs/art-bible.md
+docs/adr/
+docs/adr/TEMPLATE.md
+docs/architecture/
+docs/specs/
+docs/plans/
+docs/z-old/specs/
+docs/z-old/plans/
+docs/devlog.md
+docs/implementation-status.md
+docs/open-flags.md
+data/
+data/_schemas/
+data/_schemas/system_registry.json
+data/_schemas/dev_diary.json
+production/
+production/session-state/
+production/session-state/active.md
+production/session-logs/
+production/workstreams/
+production/workstreams/TEMPLATE.md
+production/sprints/
+production/epics/
+production/qa/
+production/qa/bugs/
+production/qa/evidence/
+production/stage.txt
+production/review-mode.txt
+production/sprint-status.yaml
+production/flow-ledger.yaml
+"
+
+# Seeds that are just a copy of a shipped template, so no document in this repo
+# is written twice: fix the template, and every future project's seed is fixed.
+SCAFFOLD_FROM_TEMPLATE="
+game-design-document.md|docs/GDD.md
+game-concept.md|docs/gdd/game-concept.md
+game-pillars.md|docs/gdd/game-pillars.md
+systems-index.md|docs/gdd/systems-index.md
+art-bible.md|docs/art-bible.md
+architecture-decision-record.md|docs/adr/TEMPLATE.md
+"
+
+if [ "${DO_SCAFFOLD}" -eq 1 ]; then
+  step "scaffold/  -> docs/ data/ production/  (seeds only what is absent)"
+  scaffold_src="${REPO_DIR}/scaffold"
+  if [ -d "${scaffold_src}" ]; then
+    while IFS= read -r f; do
+      rel="${f#"${scaffold_src}"/}"
+      # scaffold/README.md documents this directory for repo readers; it is not
+      # part of a game project and must never land in one.
+      [ "${rel}" = "README.md" ] && continue
+      seed_file "${f}" "${TARGET_DIR}/${rel}"
+    done < <(find "${scaffold_src}" -type f | sort)
+  else
+    warn "skip scaffold/ — not present in bundle"
+    SKIPPED_ITEMS="${SKIPPED_ITEMS}scaffold/ (not in bundle)"$'\n'
+  fi
+
+  while IFS= read -r pair; do
+    [ -n "${pair}" ] || continue
+    seed_file "${REPO_DIR}/templates/${pair%%|*}" "${TARGET_DIR}/${pair##*|}"
+  done <<EOF
+${SCAFFOLD_FROM_TEMPLATE}
+EOF
+
+  # A list nothing enforces is a comment. Verify every promised path landed.
+  scaffold_absent=""
+  while IFS= read -r p; do
+    [ -n "${p}" ] || continue
+    [ -e "${TARGET_DIR}/${p}" ] || scaffold_absent="${scaffold_absent}${p}"$'\n'
+  done <<EOF
+${SCAFFOLD_PATHS}
+EOF
+
+  info "seeded new:      ${SEED_NEW}"
+  info "already present: ${SEED_SKIPPED} (left untouched)"
+  if [ -n "${scaffold_absent}" ]; then
+    warn "these promised paths are NOT present after seeding:"
+    printf '%s' "${scaffold_absent}" | sed 's/^/         /'
+  fi
+  if [ -n "${SEED_MISSING}" ]; then
+    warn "seed sources missing from the bundle:"
+    printf '%s' "${SEED_MISSING}" | sed 's/^/         /'
+  fi
+else
+  step "scaffold   -> SKIPPED (--no-scaffold)"
+  info "the .claude/ layer is installed, but docs/, data/ and production/ are not seeded."
+  info "skills that read the registry, the stage, the review mode or the handover"
+  info "file will find nothing until you create those paths yourself."
+fi
+# SCAFFOLD-END
+
 # --- CLAUDE.md seed (never overwrite) ----------------------------------------
 tmpl_src="${REPO_DIR}/CLAUDE.md.template"
 proj_claude="${TARGET_DIR}/CLAUDE.md"
@@ -303,9 +449,15 @@ fi
 # --- summary -----------------------------------------------------------------
 echo ""
 step "Install complete: ${TARGET_DIR}"
-info "new files:       ${COUNT_NEW}"
-info "updated in place: ${COUNT_UPDATED}"
-info "unchanged:       ${COUNT_UNCHANGED}"
+info ".claude layer — new files:       ${COUNT_NEW}"
+info ".claude layer — updated in place: ${COUNT_UPDATED}"
+info ".claude layer — unchanged:       ${COUNT_UNCHANGED}"
+if [ "${DO_SCAFFOLD}" -eq 1 ]; then
+  info "doc stack     — seeded:          ${SEED_NEW}"
+  info "doc stack     — skipped (exists): ${SEED_SKIPPED}"
+else
+  info "doc stack     — not seeded (--no-scaffold)"
+fi
 if [ "${COUNT_UPDATED}" -gt 0 ]; then
   echo ""
   warn "${COUNT_UPDATED} existing file(s) differed from the bundle and were UPDATED IN PLACE."

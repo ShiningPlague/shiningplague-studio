@@ -21,6 +21,15 @@ counts:
   templates: 39       # includes settings.template.json (hook wiring, new in 0.3.0)
   tools: 2            # workflow_state_check.py (flow-state detection) + doc_stack_check.py
                       # (doc-stack regression guard), plus its doc_stack.manifest.json data file
+  scaffold_files: 23  # seed artifacts in scaffold/ copied 1:1 into a fresh project
+                      # (24 files on disk; scaffold/README.md documents the folder and is
+                      #  never installed)
+  scaffold_from_templates: 6  # seeds that are a copy of a shipped template, so no document
+                      # is authored twice: GDD.md, gdd/game-concept.md, gdd/game-pillars.md,
+                      # gdd/systems-index.md, art-bible.md, adr/TEMPLATE.md
+  scaffold_paths: 36  # total paths the scaffold step guarantees exist in a fresh project;
+                      # enumerated in the SCAFFOLD-BEGIN..SCAFFOLD-END region of BOTH
+                      # installers and cross-checked by tools/doc_stack_check.py
 
 skills_new_in_0_3_0:
   - godot-engine              # bundled engine skill — replaces the anthropic-skills:godot plugin dependency
@@ -34,6 +43,15 @@ install_targets:
   docs: "project (.claude/docs/)"
   templates: "project (.claude/docs/templates/)"
   tools: "project (tools/)"
+  scaffold: >-
+    project root (docs/, data/, production/) — the document stack the skills read:
+    system_registry.json, dev_diary.json, session-state/active.md, stage.txt,
+    review-mode.txt, sprint-status.yaml, flow-ledger.yaml, workstreams/TEMPLATE.md,
+    adr/TEMPLATE.md, devlog.md, implementation-status.md, open-flags.md, plus the
+    spec / plan / gdd / architecture / epic / sprint / qa directories. NEVER
+    overwrites: an existing file is left untouched and counted as skipped, so a
+    live project's real registry and devlog survive any re-run. Skip it with
+    --no-scaffold (bash) / -NoScaffold (PowerShell).
   claude_md: "project root (CLAUDE.md, from CLAUDE.md.template — only if absent)"
   settings: "project (.claude/settings.json, from templates/settings.template.json — only if absent)"
 
