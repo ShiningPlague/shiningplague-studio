@@ -136,15 +136,18 @@ Merge, commit, update.
 
 ### Step 1: Identify data type
 Read the workstream state file → what content needs authoring?
-(Enemies, cards, locations, dialogue, loot tables, etc.)
+(Whatever content types this project defines — enemies, locations, dialogue,
+loot tables, items, etc.)
 
-### Step 2: Open the relevant dock or JSON
-- Monsters → Monster Editor dock
-- Rarity tiers → Rarity Tier Editor dock
-- Locations → Location Graph Editor dock
-- Cards → data/cards/*.json (Card Editor dock = Step 4 future)
-- Trait multipliers → Trait Multipliers Editor dock
-- Other → direct JSON editing at data/<type>/
+### Step 2: Open the relevant editor or JSON
+Route each content type to whichever in-engine editor your project has built for
+it, and fall back to direct JSON editing when it has none. **Illustrative only —
+replace these rows with your project's actual content types and editors:**
+
+- `example-enemy` → Enemy Editor dock, else `data/enemies/*.json`
+- `example-location` → Location Graph Editor dock, else `data/locations/*.json`
+- `your-content-type` → its editor dock, else `data/<your-content-type>/*.json`
+- Anything with no editor yet → direct JSON editing at `data/<type>/`
 
 ### Step 3: Validate
 Run `tools/consistency_check.py` to verify data integrity after changes.

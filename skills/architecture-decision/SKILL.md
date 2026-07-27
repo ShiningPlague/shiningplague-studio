@@ -61,7 +61,7 @@ Await verdict.
 - Set status to Accepted
 - Update `docs/architecture/control-manifest.md` with new programmer rules
 - Update `data/_schemas/system_registry.json` — add ADR to relevant system entries' `decisions[]` and to `documentation_stack.adr_index.adrs[]`
-- Update `docs/architecture/tr-registry.md` — mark covered requirements
+- Update `docs/architecture/tr-registry.yaml` — mark covered requirements
 
 ### 6. Present to Designer
 Show the ADR for final approval before committing.
@@ -81,5 +81,5 @@ One ADR covers 2–3 related decisions from one design phase. Don't write one AD
 - ADRs: `docs/adr/NNN-<slug>.md` (`docs/architecture/` holds the blueprint + manifest, never ADRs)
 - Template: `docs/adr/TEMPLATE.md`
 - Control manifest: `docs/architecture/control-manifest.md`
-- TR registry: `docs/architecture/tr-registry.md`
+- TR registry: `docs/architecture/tr-registry.yaml`
 - Director gates: `.claude/docs/director-gates.md`

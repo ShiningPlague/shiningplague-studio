@@ -211,10 +211,16 @@ def _split_inline_list(inner):
 # ---------------------------------------------------------------------------
 # Evidence checking
 # ---------------------------------------------------------------------------
-def evidence_exists(patterns):
+def evidence_exists(patterns, min_count=1):
     """
-    True if at least one path (glob OK) matches an existing non-empty file
-    OR a non-empty directory. Returns (found_bool, matched_paths).
+    True if at least `min_count` paths (glob OK) match an existing non-empty
+    file OR a non-empty directory. Returns (found_bool, matched_paths).
+
+    min_count is the catalog's `artifact.min_count`. It used to be declared in
+    workflow-catalog.yaml (8 steps, including the "Minimum 3 Foundation-layer
+    ADRs" gate) and read by NOTHING — so the header comment promised a count
+    gate while the tool enforced >=1, and a phase could clear a 3-artifact gate
+    on one file. Threading it through here is what makes the declaration real.
     """
     matched = []
     for pat in patterns or []:
@@ -226,7 +232,26 @@ def evidence_exists(patterns):
                     matched.append(h)
             elif os.path.isfile(h) and os.path.getsize(h) > 0:
                 matched.append(h)
-    return (len(matched) > 0, matched)
+    # De-duplicate: two patterns may resolve to the same file, and a count gate
+    # that double-counts one artifact is not a count gate.
+    unique = sorted(set(matched))
+    return (len(unique) >= _as_min_count(min_count), unique)
+
+
+def _as_min_count(value):
+    """
+    Coerce a catalog min_count to a positive int.
+
+    Defensive on purpose: PyYAML yields int 3, but the built-in fallback parser
+    this tool ships for bare repos yields the STRING "3" — and `len(x) >= "3"`
+    is a TypeError in Python 3. That would crash the tool on exactly the
+    no-dependency machine its portability story is written for.
+    """
+    try:
+        n = int(value)
+    except (TypeError, ValueError):
+        return 1
+    return n if n > 0 else 1
 
 
 # ---------------------------------------------------------------------------
@@ -310,11 +335,19 @@ def crosscheck(catalog, ledger):
             art = (cat or {}).get("artifact", {}) or {}
             has_note = bool(art.get("note"))
             pats = [] if has_note else _artifact_patterns(art)
-            found, matched = evidence_exists(pats)
+            need = _artifact_min_count(art)
+            # ANY evidence means unlogged work, even below the count gate --
+            # calling 2-of-3 ADRs "no evidence" would be a lie. The count gate
+            # sharpens the NOTE here; it gates for real on a `done` claim below.
+            found, matched = evidence_exists(pats, 1)
             status = "(unlogged)"
             if found:
                 verdict = "UNRECORDED"
-                note = "evidence present but NOT in ledger — log it"
+                if len(matched) < need:
+                    note = ("partial: %d of %d artifact(s), none logged — log it"
+                            % (len(matched), need))
+                else:
+                    note = "evidence present but NOT in ledger — log it"
                 problems.append(("unrecorded", sid, ", ".join(_rel(matched)[:2])))
             else:
                 verdict = "-"
@@ -330,7 +363,13 @@ def crosscheck(catalog, ledger):
 
         status = (led.get("status") or "?").lower()
         ev_patterns = led.get("evidence") or []
-        found, matched = evidence_exists(ev_patterns)
+        need = _artifact_min_count((cat or {}).get("artifact", {}))
+        # Two questions, two thresholds: "is there ANY work here?" (>=1, drives
+        # UNRECORDED) and "is this step COMPLETE?" (>= the catalog's min_count,
+        # drives CONFLICT). Collapsing them is how a 3-artifact gate cleared on
+        # one file for as long as min_count went unread.
+        found, matched = evidence_exists(ev_patterns, 1)
+        enough = len(matched) >= need
         reason = (led.get("reason") or "").strip()
 
         verdict = "OK"
@@ -345,6 +384,12 @@ def crosscheck(catalog, ledger):
                 verdict = "CONFLICT"
                 note = "status=done but evidence MISSING/empty: " + ", ".join(ev_patterns)
                 problems.append(("conflict", sid, "done but evidence missing"))
+            elif not enough:
+                verdict = "CONFLICT"
+                note = ("status=done but only %d of %d required artifact(s): %s"
+                        % (len(matched), need, ", ".join(_rel(matched)[:2])))
+                problems.append(("conflict", sid,
+                                 "done with %d/%d required artifacts" % (len(matched), need)))
             else:
                 note = "verified: " + ", ".join(_rel(matched)[:2])
         elif status in SKIP_STATES:
@@ -383,6 +428,11 @@ def crosscheck(catalog, ledger):
 def _artifact_patterns(art):
     g = art.get("glob")
     return [g] if g else []
+
+
+def _artifact_min_count(art):
+    """The catalog step's declared min_count (default 1)."""
+    return _as_min_count((art or {}).get("min_count", 1))
 
 
 def _rel(paths):
@@ -496,7 +546,9 @@ def bootstrap(catalog):
     for st in catalog_steps(catalog):
         art = st.get("artifact", {}) or {}
         pats = _artifact_patterns(art)
-        found, matched = evidence_exists(pats)
+        # Honour the count gate: a draft that infers "done" for a 3-artifact
+        # step off one file hands the user a ledger that lies on day one.
+        found, matched = evidence_exists(pats, _artifact_min_count(art))
         status = "done" if found else "not-started"
         lines.append("  - id: %s" % st["id"])
         lines.append("    status: %s" % status)

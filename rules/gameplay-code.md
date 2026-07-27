@@ -11,10 +11,10 @@ paths:
 - Cross-system communication via Godot SIGNALS, never direct method calls between systems
 - Every autoload exposes a clear public API (`# --- PUBLIC API ---` comment block convention)
 - State machines: use the `Easy State Machine` addon or `behaviour_toolkit` addon, with explicit transition tables
-- Document which GDD section / ADR each feature implements in code comments (e.g. `# ADR 001 Decision 3 — deck policy`)
-- **Autoload singleton pattern is the project convention** (TimeSystem, CombatSystem, CardDB, etc.) — this diverges from Donchitos's DI-first default, and is correct for Godot 4 project patterns. No need for dependency injection.
+- Document which GDD section / ADR each feature implements in code comments (e.g. `# ADR 001 Decision 3 — <decision slug>`)
+- **Autoload singleton pattern is the project convention** (e.g. TimeSystem, CombatSystem, your-content-DB) — this diverges from Donchitos's DI-first default, and is correct for Godot 4 project patterns. No need for dependency injection.
 - Static typing everywhere: `var name: String = ""` not `var name = ""`. Dictionary accesses always cast explicitly (`int(data["hp"])`).
-- Tests: scene-based verification for Step 1+. GUT framework adoption is a future infra decision.
+- Tests: scene-based verification from the first vertical slice onward. Adopting a test framework (e.g. GUT) is a future infra decision.
 
 ## Examples
 

@@ -49,7 +49,7 @@ See `.claude/docs/director-gates.md` for the full check pattern.
 | ADRs | `docs/adr/NNN-*.md` |
 | Editable game data | `data/` |
 | Architecture output | `docs/architecture/architecture.md` |
-| TR registry | `docs/architecture/tr-registry.md` |
+| TR registry | `docs/architecture/tr-registry.yaml` |
 | Control manifest | `docs/architecture/control-manifest.md` |
 
 ## Project Context

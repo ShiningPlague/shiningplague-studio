@@ -54,7 +54,7 @@ Selection of high-traffic overrides:
 | Skill | Override reason |
 |---|---|
 | `brainstorming` | Project spec paths (`docs/specs/`) + outcome-first framing + per-Q appendix + 5-mode framework |
-| `consistency-check` | Reads `system_registry.json` not Donchitos's `entities.yaml` |
+| `consistency-check` | Reads `data/_schemas/system_registry.json`, not Donchitos's upstream entity manifest (a convention this studio replaced) |
 | `verification-before-completion` | Concrete per-project verification commands ({{VERIFY_CMD}}) |
 | `regression-suite` | Project headless harness pattern + capture-as-test |
 | `update` | Project `/update` procedure (changelog + diary + registry + push prompt) |

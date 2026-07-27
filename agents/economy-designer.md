@@ -102,7 +102,7 @@ items for registration:
 If the game includes reward tables, drop systems, unlock gates, or any
 mechanic that distributes resources probabilistically or on condition —
 document them with explicit rates, not vague descriptions. The format
-adapts to the game's vocabulary (drops, unlocks, rewards, cards, outcomes):
+adapts to the game's vocabulary (drops, unlocks, rewards, outcomes):
 
 1. **Output table** (markdown, using the game's terminology):
 

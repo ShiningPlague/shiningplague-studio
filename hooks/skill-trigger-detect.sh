@@ -260,7 +260,7 @@ esac
 
 # Combat workstream
 case "$INPUT" in
-  *"combat"*|*"battle"*|*"fight"*|*"timeline"*|*"card system"*|*"deck"*|*"damage"*|*"trait"*|*"status effect"*)
+  *"combat"*|*"battle"*|*"fight"*|*"timeline"*|*"ability"*|*"enemy"*|*"damage"*|*"trait"*|*"status effect"*)
     add_reminder "[workstream-trigger] Combat workstream detected. Load production/workstreams/combat.md if exists. Propose dispatching /team-combat (gameplay-programmer + systems-designer + qa-tester)." ;;
 esac
 

@@ -310,7 +310,7 @@ Flag dangerous economic conditions:
 ```
 🔴 Economic Imbalance: Unbounded Positive Feedback
 gold economy:
-  Sources: monster drops (scales with player power), merchant selling (unlimited)
+  Sources: enemy drops (scales with player power), merchant selling (unlimited)
   Sinks: equipment purchase (one-time), ability upgrades (finite count)
 → After equipment and abilities are purchased, gold has no sink.
   Infinite surplus. Gold becomes meaningless mid-game.

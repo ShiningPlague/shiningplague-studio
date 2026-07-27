@@ -74,7 +74,7 @@ leapfrogs, skips, or custom steps — so you:
 4. Re-run the checker to get the real state report.
 
 Prefer to start from a worked example instead of the auto-draft? Copy
-[`.claude/docs/templates/flow-ledger.TEMPLATE.yaml`](templates/flow-ledger.TEMPLATE.yaml) — it carries
+`.claude/docs/templates/flow-ledger.TEMPLATE.yaml` — it carries
 the full schema header plus a done-with-evidence, a leapfrogged-with-reason, and a custom
 example step to edit down.
 

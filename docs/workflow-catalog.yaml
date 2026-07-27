@@ -2,9 +2,12 @@
 # Used by /help to determine where a user is and what comes next.
 #
 # Artifact checks:
-#   glob: file glob pattern — complete if ≥1 file matches (or min_count)
+#   glob: file glob pattern — complete when at least min_count files match
 #   pattern: text pattern that must appear in the file (checked after glob)
-#   min_count: minimum matching files required (default: 1)
+#   min_count: minimum distinct matching files required (default: 1).
+#              ENFORCED by tools/workflow_state_check.py: a ledger step claiming
+#              status=done with fewer matches reports CONFLICT (exit 1), and
+#              bootstrap mode will not infer "done" below the count.
 #   note: human-readable fallback when completion can't be auto-detected
 #
 # required: true → blocks progression to next phase (shown as REQUIRED)

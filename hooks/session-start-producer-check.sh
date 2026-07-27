@@ -68,7 +68,7 @@ case "$NEXT_LOWER" in
 esac
 
 case "$NEXT_LOWER" in
-  *"combat"*|*"card system"*|*"step 3"*|*"step 4"*|*"step 5"*|*"trait"*|*"effect"*|*"deck"*|*"monster"*)
+  *"combat"*|*"damage"*|*"ability"*|*"abilities"*|*"trait"*|*"effect"*|*"status"*|*"enemy"*|*"enemies"*|*"boss"*)
     add_dispatch "[chat-start 🔒 MANDATORY DISPATCH] dev_diary.next field flags combat-vertical territory. **DISPATCH \`gameplay-programmer\` + \`systems-designer\` (or \`/team-combat\` for full vertical) FIRST** for non-trivial scoped work. /team-combat orchestrates gameplay-programmer + systems-designer + qa-tester." ;;
 esac
 

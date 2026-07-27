@@ -230,7 +230,7 @@ Template:
 
 ### For the designer (editable / testable)
 - <new dock X lets you edit Y>
-- <new field Z is now author-able on monster JSONs via Editor A>
+- <new field Z is now author-able on example-enemy JSONs via Editor A>
 - <new data file N tunes behaviour B, validated by dock>
 - ... (concrete — not "improved flexibility"; say what clicks produce what results)
 
