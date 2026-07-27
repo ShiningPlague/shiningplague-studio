@@ -1,0 +1,224 @@
+{
+  "_readme": [
+    "DATA FILE for tools/doc_stack_check.py. This is the ONE place a contributor adds a path.",
+    "Every entry carries a 'why' explaining what creates the path and who reads it.",
+    "Adding a legitimate new path: pick the block that says how the path comes into existence --",
+    "  install_map     -> the installer copies it out of this bundle (evidence = the file exists here)",
+    "  scaffold        -> the installer's scaffold step must mkdir/seed it in a fresh project",
+    "  created_on_use  -> a skill writes it while it runs; absent until then, and that is correct",
+    "  ignore          -> the user's own game code/assets; the doc stack never creates it",
+    "and add ONE entry with a one-line 'why'. Do not add matching logic to the .py file."
+  ],
+
+  "version": 1,
+
+  "scan": {
+    "_why": "The surfaces that COMMAND paths at a reader. If a doc here names a path, something must create it.",
+    "roots": ["skills", "agents", "docs", "templates", "rules"],
+    "extra_files": ["CLAUDE.md.template"],
+    "file_suffixes": [".md", ".yaml", ".yml"]
+  },
+
+  "extraction": {
+    "_why": "What counts as a path reference. Deliberately conservative: a candidate needs a directory component so prose words with dots are never mistaken for files.",
+    "path_extensions": [
+      "md", "yaml", "yml", "json", "txt", "py", "sh", "ps1", "bat",
+      "csv", "html", "js", "toml", "cfg", "ini", "lock", "log"
+    ],
+    "root_files": {
+      "CLAUDE.md": "The one file a fresh session reads cold; the only doc-stack file addressed without a directory component."
+    },
+    "engine_asset_suffixes": {
+      "_why": "Engine/source/binary formats are always the USER's game content, never doc-stack files this bundle owes anyone.",
+      "list": ["gd", "gdshader", "tscn", "tres", "godot", "uproject", "cs", "cpp", "h", "hpp", "unity", "prefab", "asset", "meta", "png", "jpg", "svg", "ogg", "wav", "mp3", "ttf", "glb", "fbx", "blend"]
+    },
+    "reject_prefixes": {
+      "http://": "URL, not a project path.",
+      "https://": "URL, not a project path.",
+      "res://": "Godot resource URI -- addresses the user's game content, not the doc stack.",
+      "user://": "Godot user-data URI -- runtime path, never a repo file.",
+      "uid://": "Godot resource UID -- an identifier, not a path.",
+      "~/": "User-level home path; the studio is project-local and never writes there.",
+      "@": "Skill/plugin reference syntax (@skills/...), not a filesystem path.",
+      "$": "Shell variable expansion, resolved at runtime.",
+      "/": "Leading slash is a slash-command (/help) or an absolute path outside the project."
+    }
+  },
+
+  "install_map": [
+    {
+      "project": ".claude/docs/templates/",
+      "bundle": ["templates/"],
+      "why": "install.sh: templates/ -> .claude/docs/templates/ -- document templates the authoring skills fill in."
+    },
+    {
+      "project": ".claude/docs/",
+      "bundle": ["docs/"],
+      "why": "install.sh: docs/ -> .claude/docs/ -- the reference library (skills-index, agents-index, workflow-catalog, gates)."
+    },
+    {
+      "project": ".claude/skills/",
+      "bundle": ["skills/"],
+      "why": "install.sh: skills/ -> .claude/skills/ -- every workflow skill the user invokes."
+    },
+    {
+      "project": ".claude/agents/",
+      "bundle": ["agents/", "agents/engine-packs/*/"],
+      "why": "install.sh: agents/*.md -> .claude/agents/, plus agents/engine-packs/<pack>/*.md when --engine is passed."
+    },
+    {
+      "project": ".claude/hooks/",
+      "bundle": ["hooks/"],
+      "why": "install.sh: hooks/ -> .claude/hooks/ -- session-start, skill-gate and validation hooks."
+    },
+    {
+      "project": ".claude/rules/",
+      "bundle": ["rules/"],
+      "why": "install.sh: rules/ -> .claude/rules/ -- per-domain coding rules loaded by the agents."
+    },
+    {
+      "project": ".claude/settings.json",
+      "bundle": ["templates/settings.template.json"],
+      "why": "install.sh seeds .claude/settings.json from templates/settings.template.json (never overwrites)."
+    },
+    {
+      "project": "CLAUDE.md",
+      "bundle": ["CLAUDE.md.template"],
+      "why": "install.sh seeds the project CLAUDE.md from CLAUDE.md.template (never overwrites)."
+    },
+    {
+      "project": "tools/",
+      "bundle": ["tools/"],
+      "why": "install.sh: tools/ -> <project>/tools/ -- runnable checkers the skills execute by path."
+    }
+  ],
+
+  "installer": {
+    "_why": "Where the scaffold step must live, and how this check proves it exists rather than trusting it.",
+    "scripts": ["scripts/install.sh", "scripts/install.ps1"],
+    "scaffold_region": {
+      "begin": "SCAFFOLD-BEGIN",
+      "end": "SCAFFOLD-END",
+      "why": "The scaffold step must sit between these two markers in each installer script. Matching only inside the region stops an incidental mention in a copy comment from being read as coverage."
+    }
+  },
+
+  "scaffold": [
+    { "path": "docs/",                              "why": "Root of the design doc stack; CLAUDE.md's reading map sends every fresh session here." },
+    { "path": "docs/GDD.md",                        "why": "Master GDD -- CLAUDE.md reading map row for 'mechanics, pillars, systems intent'." },
+    { "path": "docs/gdd/",                          "why": "Per-system GDDs written by /design-system (replaces the retired design/gdd/)." },
+    { "path": "docs/gdd/systems-index.md",          "why": "System decomposition index produced by /map-systems and synced by the sync-systems-index hook." },
+    { "path": "docs/gdd/game-concept.md",           "why": "Concept doc gated by the concept phase in workflow-catalog.yaml." },
+    { "path": "docs/gdd/game-pillars.md",           "why": "Design pillars every /design-review checks a spec against." },
+    { "path": "docs/art-bible.md",                  "why": "Visual identity spec that gates asset production (/art-bible)." },
+    { "path": "docs/adr/",                          "why": "Architecture decision records; CLAUDE.md names this the permanent decision home." },
+    { "path": "docs/adr/TEMPLATE.md",               "why": "ADR skeleton /architecture-decision copies for each new NNN-<slug>.md." },
+    { "path": "docs/architecture/",                 "why": "Architecture layer -- the blueprint, control manifest and traceability registry." },
+    { "path": "docs/specs/",                        "why": "Live spec folder /brainstorming writes into; CLAUDE.md tells sessions to check here before re-brainstorming." },
+    { "path": "docs/plans/",                        "why": "Live plan folder /writing-plans writes into and /executing-plans reads." },
+    { "path": "docs/z-old/specs/",                  "why": "Archive target for FINAL specs; the lifecycle in CLAUDE.md moves them here." },
+    { "path": "docs/z-old/plans/",                  "why": "Archive target for SHIPPED plans; same lifecycle." },
+    { "path": "docs/devlog.md",                     "why": "Change log + retrospective record; /update and /retrospective append to it." },
+    { "path": "docs/implementation-status.md",      "why": "Data/pipeline reference row in the CLAUDE.md reading map." },
+    { "path": "docs/open-flags.md",                 "why": "Unresolved designer-review flags raised by the consistency gate." },
+    { "path": "data/",                              "why": "Editable game data (replaces the retired assets/data/); architecture principle 1 depends on it existing." },
+    { "path": "data/_schemas/",                     "why": "Schema + registry home for the data layer." },
+    { "path": "data/_schemas/system_registry.json", "why": "THE built-state source of truth; CLAUDE.md reading map says 'Open first'." },
+    { "path": "data/_schemas/dev_diary.json",       "why": "Session-by-session work record the consistency gate cross-checks against the devlog." },
+    { "path": "production/",                        "why": "Production layer root -- state, logs, sprints, epics, QA." },
+    { "path": "production/session-state/",          "why": "Carry-forward state directory read at every session open." },
+    { "path": "production/session-state/active.md", "why": "Last session / next steps; CLAUDE.md's session-open ritual reads it first." },
+    { "path": "production/session-logs/",           "why": "Per-session logs written by /session-close and the session-end hook." },
+    { "path": "production/workstreams/",            "why": "Per-domain progress files; CLAUDE.md reading map row for workstream state." },
+    { "path": "production/sprints/",                "why": "Sprint plans produced by /sprint-plan." },
+    { "path": "production/epics/",                  "why": "Epics and their story files (/create-epics, /create-stories, /dev-story)." },
+    { "path": "production/qa/bugs/",                "why": "Bug reports filed by /bug-report and re-prioritised by /bug-triage." },
+    { "path": "production/qa/evidence/",            "why": "Test evidence attached to stories before /story-done." },
+    { "path": "production/stage.txt",               "why": "Current project phase; /project-stage-detect and the session-start hook read it." },
+    { "path": "production/review-mode.txt",         "why": "full|lean|solo review mode that /gate-check and the director gates honour." },
+    { "path": "production/sprint-status.yaml",      "why": "Machine-readable sprint state /sprint-plan and /retrospective update." },
+    { "path": "production/flow-ledger.yaml",        "why": "Mechanical workflow-state ledger read by tools/workflow_state_check.py and the session-start hook." }
+  ],
+
+  "created_on_use": [
+    { "pattern": "docs/specs/*.md",                  "why": "/brainstorming writes YYYY-MM-DD-<topic>-design.md here as it runs." },
+    { "pattern": "docs/plans/*.md",                  "why": "/writing-plans writes YYYY-MM-DD-<topic>-plan.md here as it runs." },
+    { "pattern": "docs/z-old/**",                    "why": "Archived specs/plans land here when their lifecycle completes." },
+    { "pattern": "docs/adr/*.md",                    "why": "/architecture-decision writes NNN-<slug>.md per accepted decision." },
+    { "pattern": "docs/gdd/*.md",                    "why": "/design-system writes one GDD per system in the systems index." },
+    { "pattern": "docs/architecture/*",              "why": "/create-architecture, /create-control-manifest and the traceability registry write here." },
+    { "pattern": "docs/*.md",                        "why": "Top-level design docs the authoring skills produce (post-mortems, status, pitch, release notes)." },
+    { "pattern": "data/**",                          "why": "Game data files are project content -- authored per game, never shipped by the template." },
+    { "pattern": "production/session-logs/*",        "why": "One log per closed session, written by /session-close." },
+    { "pattern": "production/session-state/*",       "why": "Session carry-forward files (active.md and its supporting state)." },
+    { "pattern": "production/workstreams/*.md",      "why": "One file per workstream, created when that domain's work begins." },
+    { "pattern": "production/sprints/*",             "why": "One plan per sprint, created by /sprint-plan." },
+    { "pattern": "production/epics/**",              "why": "Epic folders and their story files, created by /create-epics and /create-stories." },
+    { "pattern": "production/qa/**",                 "why": "Bug reports, triage output and test evidence, created as QA runs." },
+    { "pattern": "production/*.md",                  "why": "Production-layer notes and reports the producer skills emit." },
+    { "pattern": "production/*.yaml",                "why": "Machine-readable production state (sprint-status, flow-ledger) the skills rewrite." },
+    { "pattern": "production/*.txt",                 "why": "Single-value state files (stage, review-mode) the skills rewrite." },
+    { "pattern": "prototypes/**",                    "why": "Prototype folders + REPORT.md written by the prototyper agent; checked as a workflow artifact." },
+    { "pattern": "tools/*_check.gd",                 "why": "Per-project headless test harnesses the project author writes; a naming convention, not a shipped file." },
+    { "pattern": ".claude/docs/technical-preferences.md", "why": "/setup-engine writes the engine profile into the installed docs folder." },
+    { "pattern": ".claude/settings.local.json",      "why": "Per-machine settings overlay Claude Code itself creates; never shipped." },
+    { "pattern": ".claude/agents-optional/",         "why": "Opt-in agent parking folder the user creates when trimming the active roster." }
+  ],
+
+  "ignore": [
+    { "pattern": "src/**",          "why": "The user's game source tree -- the doc stack never creates game code." },
+    { "pattern": "scenes/**",       "why": "The user's scene files -- game content, not doc stack." },
+    { "pattern": "scripts/**",      "why": "The user's gameplay scripts -- game content, not doc stack." },
+    { "pattern": "assets/**",       "why": "The user's art/audio/source assets (assets/data/ is separately a KILLED convention and is caught first)." },
+    { "pattern": "addons/**",       "why": "Engine plugins the user installs." },
+    { "pattern": "plugins/**",      "why": "Third-party plugins the user installs." },
+    { "pattern": "third_party/**",  "why": "Vendored dependencies the user adds." },
+    { "pattern": "vendor/**",       "why": "Vendored dependencies the user adds." },
+    { "pattern": "locales/**",      "why": "Localisation files the user's project owns." },
+    { "pattern": "tests/**",        "why": "The user's test tree; the template ships no tests into a game project." },
+    { "pattern": "server/**",       "why": "An optional MCP/backend server some projects have; not part of the doc stack." },
+    { "pattern": "builds/**",       "why": "Build output directory." },
+    { "pattern": "exports/**",      "why": "Export output directory." },
+    { "pattern": ".git/**",         "why": "Git internals." },
+    { "pattern": ".godot/**",       "why": "Godot's import cache." },
+    { "pattern": ".worktrees/**",   "why": "Git worktree parking dir used by the worktree skill." },
+    { "pattern": "worktrees/**",    "why": "Git worktree parking dir used by the worktree skill." },
+    { "pattern": ".superpowers/**", "why": "Scratch dir the optional superpowers brainstorm server creates at runtime." },
+    { "pattern": "node_modules/**", "why": "Dependency tree." },
+    { "pattern": "references/**",   "why": "Optional per-skill reference folder the user may add." },
+    { "pattern": "path/to/**",      "why": "Illustrative placeholder in prose and argument-hints ('path/to/gdd.md'), never a real project path." },
+    { "pattern": "**/path/to/**",   "why": "Same illustrative placeholder with a lead-in word ('exact/path/to/file.py')." }
+  ],
+
+  "killed_conventions": [
+    { "pattern": "design/gdd/",           "replacement": "docs/gdd/",                        "why": "The GDD layer moved under docs/ so CLAUDE.md's reading map is the single law." },
+    { "pattern": "design/art/",           "replacement": "docs/art-bible.md",                "why": "The art bible moved to docs/art-bible.md alongside the rest of the design stack." },
+    { "pattern": "design/registry/",      "replacement": "data/_schemas/system_registry.json","why": "Entity/registry state moved into the data layer's system registry." },
+    { "pattern": "design/live-ops/",      "replacement": "production/",                      "why": "Live-ops planning belongs to the production layer." },
+    { "pattern": "docs/architecture/adr-","replacement": "docs/adr/NNN-<slug>.md",           "why": "ADRs live in their own folder; the adr- prefix under architecture/ was the competing convention." },
+    { "pattern": "assets/data/",          "replacement": "data/",                            "why": "Editable game data moved out of the art/asset tree into the top-level data/ layer." }
+  ],
+
+  "project_contract": [
+    { "path": "CLAUDE.md",                          "kind": "gate", "source": "shipped",  "why": "The one file every fresh session reads cold; without it no routing happens." },
+    { "path": ".claude/settings.json",              "kind": "gate", "source": "shipped",  "why": "Wires the hooks; without it session-start/skill-gate never fire." },
+    { "path": ".claude/docs/skills-index.md",       "kind": "gate", "source": "shipped",  "why": "CLAUDE.md sends 'which skill do I invoke?' here." },
+    { "path": ".claude/docs/agents-index.md",       "kind": "gate", "source": "shipped",  "why": "CLAUDE.md's dispatch rule reads the Intent -> Agent table here." },
+    { "path": ".claude/docs/workflow-catalog.yaml", "kind": "gate", "source": "shipped",  "why": "/help and /project-stage-detect read phase + artifact globs from it." },
+    { "path": ".claude/docs/director-gates.md",     "kind": "gate", "source": "shipped",  "why": "FULL mode and /gate-check read the gate definitions here." },
+    { "path": ".claude/docs/skills-protocol-extended.md", "kind": "gate", "source": "shipped", "why": "CLAUDE.md points FULL mode at this for the full-discipline reference." },
+    { "path": ".claude/hooks/session-start.sh",     "kind": "exec", "source": "shipped",  "why": "settings.json runs it at every session start." },
+    { "path": ".claude/hooks/pretool-skill-gate.sh","kind": "exec", "source": "shipped",  "why": "settings.json runs it before tool calls to enforce the skill protocol." },
+    { "path": ".claude/hooks/skill-trigger-detect.sh","kind": "exec","source": "shipped", "why": "settings.json runs it to auto-fire the 8 trigger skills." },
+    { "path": "tools/workflow_state_check.py",      "kind": "exec", "source": "shipped",  "why": "The session-start hook and /help execute it for mechanical flow state." },
+    { "path": "tools/consistency_check.py",         "kind": "exec", "source": "shipped",  "why": "/consistency-check advertises it in its own description and /session-close + /update execute it." },
+    { "path": "data/_schemas/system_registry.json", "kind": "gate", "source": "scaffold", "why": "CLAUDE.md reading map row 1 -- 'the authoritative built-state source. Open first.'" },
+    { "path": "production/session-state/active.md", "kind": "gate", "source": "scaffold", "why": "CLAUDE.md's session-open ritual reads it before doing anything." },
+    { "path": "production/stage.txt",               "kind": "gate", "source": "scaffold", "why": "CLAUDE.md reading map row for project phase; /project-stage-detect reads it." },
+    { "path": "production/review-mode.txt",         "kind": "gate", "source": "scaffold", "why": "/gate-check and /start read the review mode from it." },
+    { "path": "production/flow-ledger.yaml",        "kind": "gate", "source": "scaffold", "why": "tools/workflow_state_check.py reads it; a missing ledger makes flow detection silently wrong." },
+    { "path": "docs/devlog.md",                     "kind": "gate", "source": "scaffold", "why": "CLAUDE.md reading map row for 'what changed recently'; /update appends to it." },
+    { "path": "docs/adr/",                          "kind": "gate", "source": "scaffold", "why": "CLAUDE.md names it the permanent home for locked decisions." },
+    { "path": "docs/specs/",                        "kind": "gate", "source": "scaffold", "why": "CLAUDE.md tells a session to check here BEFORE restarting a brainstorm." }
+  ]
+}

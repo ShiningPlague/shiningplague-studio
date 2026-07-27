@@ -21,3 +21,7 @@ desktop.ini
 
 # Generated flow-ledger bootstrap draft (review + rename to flow-ledger.yaml — never commit the draft)
 production/flow-ledger.draft.yaml
+
+# Python bytecode from tools/ runners
+__pycache__/
+*.pyc
