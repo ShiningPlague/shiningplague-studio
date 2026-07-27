@@ -155,6 +155,7 @@ FRAMEWORK_TOOLS = {
     "doc_stack_check.py",
     "workflow_state_check.py",
     "generate_systems_index.py",
+    "generate_skills_index.py",
     "doc_stack.manifest.json",
 }
 

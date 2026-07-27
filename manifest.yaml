@@ -1,5 +1,5 @@
 name: shiningplague-studio
-version: 0.4.0
+version: 0.5.0
 description: >-
   A complete multi-agent game-development studio for Claude Code — workflow
   skills, specialist agents, gated pipelines, and hooks that turn Claude Code
@@ -12,33 +12,84 @@ lineage:
   obra_superpowers: https://github.com/obra/superpowers
   born_from: "a Godot narrative-RPG project"
 
+# Every number below is reproduced by the command beside it. Run them; they are
+# not estimates. CI (.github/workflows/doc-stack.yml) re-runs the two checkers on
+# every push, so a count that drifts from disk is caught before a release.
 counts:
-  skills: 69          # `ls -d skills/*/` — includes godot-engine + dispatching-parallel-agents
-                      # (bundled in 0.3.0) and story-readiness + story-done (the two story
-                      # gates 19 shipped files commanded before they existed, added in 0.4.1)
-  agents_active: 35   # `ls agents/*.md`
-  agents_engine_packs: 14   # `ls agents/engine-packs/*/*.md`
-  hooks: 13
-  rules: 11
-  templates: 41       # `find templates -type f` — 38 top-level (incl. settings.template.json,
-                      # hook wiring, new in 0.3.0) + 3 under collaborative-protocols/
-  tools: 5            # `ls tools/*.py` — workflow_state_check.py (flow-state detection),
-                      # doc_stack_check.py (doc-stack + slash-command regression guard, plus
-                      # its doc_stack.manifest.json data file), consistency_check.py (the
-                      # 12-check doc-stack gate that /consistency-check, /update,
-                      # /red-flag-scan and /session-close run), generate_systems_index.py
-                      # (systems-index table from the registry) and generate_skills_index.py
-                      # (skills-index routing table from SKILL.md frontmatter).
-                      # 6 files in tools/ — the sixth is the .json data file, not a runner.
-  scaffold_files: 23  # seed artifacts in scaffold/ copied 1:1 into a fresh project
-                      # (24 files on disk; scaffold/README.md documents the folder and is
-                      #  never installed)
+  skills: 69          # `ls -d skills/*/ | wc -l` — includes godot-engine +
+                      # dispatching-parallel-agents (bundled in 0.3.0) and story-readiness +
+                      # story-done (the two story gates 19 shipped files commanded before
+                      # they existed, added in 0.5.0)
+  agents_active: 35   # `ls agents/*.md | wc -l`
+  agents_engine_packs: 14   # `ls agents/engine-packs/*/*.md | wc -l` — 4 packs:
+                      # godot-extras, multiplayer, unity, unreal
+  hooks: 13           # `find hooks -type f | wc -l` — all POSIX shell
+  rules: 11           # `find rules -type f | wc -l`
+  templates: 41       # `find templates -type f | wc -l` — 38 top-level (incl.
+                      # settings.template.json, hook wiring, new in 0.3.0) + 3 under
+                      # collaborative-protocols/
+  docs: 12            # `find docs -type f | wc -l` — 11 top-level + engine-notes/
+  tools: 5            # `ls tools/*.py | wc -l` — workflow_state_check.py (flow-state
+                      # detection), doc_stack_check.py (doc-stack + slash-command
+                      # regression guard), consistency_check.py (the 12-check doc-stack
+                      # gate that /consistency-check, /update, /red-flag-scan and
+                      # /session-close run), generate_systems_index.py (systems-index table
+                      # from the registry) and generate_skills_index.py (skills-index
+                      # routing table from SKILL.md frontmatter).
+                      # `find tools -maxdepth 1 -type f | wc -l` = 6 — the sixth is
+                      # doc_stack.manifest.json, a data file, not a runner.
+  scaffold_files: 23  # `find scaffold -type f | wc -l` = 24; scaffold/README.md documents
+                      # the folder for repo readers and is never installed, so 23 land.
   scaffold_from_templates: 6  # seeds that are a copy of a shipped template, so no document
                       # is authored twice: GDD.md, gdd/game-concept.md, gdd/game-pillars.md,
                       # gdd/systems-index.md, art-bible.md, adr/TEMPLATE.md
-  scaffold_paths: 36  # total paths the scaffold step guarantees exist in a fresh project;
-                      # enumerated in the SCAFFOLD-BEGIN..SCAFFOLD-END region of BOTH
-                      # installers and cross-checked by tools/doc_stack_check.py
+  scaffold_paths: 36  # 19 directories + 17 files — the paths the scaffold step guarantees
+                      # exist in a fresh project; enumerated in the
+                      # SCAFFOLD-BEGIN..SCAFFOLD-END region of BOTH installers and
+                      # cross-checked by tools/doc_stack_check.py (INSTALLER SCAFFOLD
+                      # COVERAGE: covered 36 / uncovered 0).
+  install_files: 191  # what a default install lands outside the doc stack:
+                      # 184 under .claude/ (incl. settings.json) + 6 under tools/ +
+                      # CLAUDE.md. Matches the installer's own "new files" line. Build
+                      # artefacts (__pycache__/, *.pyc) are excluded by both installers,
+                      # so this number does not depend on whether the clone was ever run.
+
+# What the installer seeds OUTSIDE .claude/ — the project's own document stack.
+# The .claude/ layer is instructions; those instructions command paths outside it
+# ("open data/_schemas/system_registry.json first", "append to docs/devlog.md").
+# Before 0.5.0 nothing created them and every such instruction was a phantom.
+scaffold:
+  purpose: >-
+    Make every path the skills read exist on day one, so a fresh install is
+    coherent before the first conversation instead of after the first repair.
+  source: "scaffold/ (23 installed files) + 6 copies of shipped templates/ documents"
+  creates: 36   # 19 directories, 17 files
+  overwrite_policy: >-
+    NEVER. An existing file is left untouched and counted as skipped, so a live
+    project's real registry, devlog and session state survive any number of
+    re-runs. A second install is a byte-for-byte no-op on the doc stack
+    (`seeded 0 · skipped 29`).
+  opt_out: "--no-scaffold (bash) / -NoScaffold (PowerShell)"
+  enforced_by: >-
+    tools/doc_stack_check.py reads the SCAFFOLD-BEGIN..SCAFFOLD-END region of both
+    installers and fails the run on any path the manifest promises that the
+    installers do not create.
+  seeds:
+    docs: >-
+      GDD.md, gdd/{systems-index,game-concept,game-pillars}.md, art-bible.md,
+      adr/TEMPLATE.md, devlog.md, implementation-status.md, open-flags.md, and the
+      architecture/ specs/ plans/ z-old/{specs,plans}/ directories
+    data: >-
+      _schemas/system_registry.json (valid, parseable and EMPTY — the correct
+      day-one state, with its schema documented inline) and _schemas/dev_diary.json
+    production: >-
+      session-state/active.md, workstreams/TEMPLATE.md, stage.txt, review-mode.txt,
+      sprint-status.yaml, flow-ledger.yaml, and the session-logs/ sprints/ epics/
+      qa/{bugs,evidence}/ directories
+  verify: >-
+    From the installed project: `python tools/consistency_check.py` — a fresh
+    install exits 0 with 4 PASS, 0 FAIL and 8 checks that have nothing to look at
+    yet saying so.
 
 skills_new_in_0_3_0:
   - godot-engine              # bundled engine skill — replaces the anthropic-skills:godot plugin dependency

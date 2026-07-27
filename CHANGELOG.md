@@ -6,7 +6,83 @@ The format follows [Keep a Changelog](https://keepachangelog.com/); versions fol
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-07-28 — the install is now what the skills describe
+
+**What was wrong.** Every version up to 0.4.0 shipped a `.claude/` layer and
+nothing else. The skills inside it command paths *outside* `.claude/` — "open
+`data/_schemas/system_registry.json` first", "check `production/review-mode.txt`",
+"append to `docs/devlog.md`", "resume from `production/session-state/active.md`" —
+and the installer created none of them. On a fresh install those were instructions
+pointing at files that did not exist, so a stranger's first session opened by
+inventing the document stack the framework was supposed to hand them.
+
+Some of what was commanded was not a document but a **program**. The
+`consistency-check` skill advertised its runner in its own description ("Runner at
+`tools/consistency_check.py`"), and `/update`, `/red-flag-scan` and `/session-close`
+executed it as a gate — but that file had never been written. The first
+`/session-close` on a real project crashed on a missing file. The same was true of
+`tools/generate_systems_index.py`, which `hooks/sync-systems-index.sh` ran on every
+registry write, and of `docs/skills-index.md`, which claimed to be auto-generated
+while nothing generated it.
+
+And the layout **contradicted itself in three directions at once**. Documents were
+addressed as `design/gdd/…`, as `docs/gdd/…` and as `docs/architecture/adr-*` in
+different files; game data lived at `assets/data/` in some skills and `data/` in
+others. `CLAUDE.md` — the one file every fresh session reads cold — named
+`docs/gdd/`, and **44 files named `design/gdd/` against 11 that agreed with it**.
+The majority of the bundle disagreed with the map every session is told to trust.
+The mechanical stage detector therefore reported "missing" for artifacts that were
+sitting on disk under the other name.
+
+**What this release is.** One canonical layout, an installer that creates it, the
+three missing runners, and a regression guard that fails the build if a path or a
+`/command` ever goes phantom again. Verified end to end against a fresh install,
+not asserted.
+
 ### Added
+- **`scaffold/` — the project document stack the skills read.** Both installers now
+  seed **36 paths** (19 directories, 17 files): a valid, parseable and *empty*
+  registry with its schema documented inline, a dev diary, the session handover
+  file, `stage.txt` / `review-mode.txt` / `sprint-status.yaml` / `flow-ledger.yaml`,
+  `devlog.md` / `implementation-status.md` / `open-flags.md`, the ADR and workstream
+  templates in place, and the spec / plan / gdd / architecture / epic / sprint / qa
+  directories. Six seeds are copies of shipped `templates/` documents, so no
+  document is authored twice in this repo. The scaffold **never overwrites** — see
+  *Upgrading* below.
+- `--no-scaffold` (bash) / `-NoScaffold` (PowerShell) — install the `.claude/` layer
+  alone, for projects that already have their own document stack.
+- **`tools/consistency_check.py` — the runner four skills already commanded.** Pure
+  Python 3 stdlib, cross-platform, 12 checks. The registry parses and carries the
+  keys the skills read; entries have the required keys, a status from the vocabulary
+  and unique ids; every registry path and id reference resolves; what is on disk
+  (data dirs, autoloads, addons, project tools) is in the registry; every path
+  `CLAUDE.md`'s reading map promises exists; the registry's own doc ledger resolves;
+  specs and plans sit where their status says; ADR numbering, Status lines and
+  `ADR-NNN` references hold up; the registry, `implementation-status.md` and
+  `stage.txt` agree; no relative markdown link is broken; `active.md` is not lagging
+  the newest commit; and every wired hook plus every `SKILL.md` frontmatter is
+  intact. FAIL fails the run, WARN never does, and a check with nothing to look at
+  yet says "not applicable" and keeps going — so a brand-new install exits 0 with a
+  clean report instead of a traceback. Flags: `--quiet`, `--no-bump`, `--fix-safe`
+  (creates absent empty directories and nothing else — never touches prose or data),
+  `--stale-days N`, `--root DIR`.
+- **`tools/doc_stack_check.py` — the regression guard.** Reads every path and every
+  `/command` cited across `skills/`, `agents/`, `docs/`, `templates/`, `rules/` and
+  `CLAUDE.md.template`, and classifies each as shipped, scaffolded, created-on-use,
+  templated, ignored, killed or **phantom**. Non-zero phantom fails the run. It also
+  cross-checks the `SCAFFOLD-BEGIN..SCAFFOLD-END` region of *both* installers against
+  the manifest's scaffold promises, so a path can never be promised in one place and
+  created in neither. `--project DIR` checks an installed project instead of the
+  bundle. New paths are declared in `tools/doc_stack.manifest.json`, never in the
+  script.
+- **A slash-command cross-check in `tools/doc_stack_check.py`.** `/story-done` is not
+  a path, so no missing-path rule could ever catch it; five declared commands
+  survived a clean phantom-path sweep for exactly that reason. Every `/command` a
+  shipped doc names is now checked against `skills/<name>/SKILL.md` and fails the run
+  if no such skill ships. Exemptions live in the manifest's `slash_commands.ignore`
+  block, each with a stated reason (Claude Code built-ins and two literal
+  placeholders in the `/help` output template). Inspect with
+  `--list PHANTOM-COMMAND | IGNORED-COMMAND`.
 - **`/story-readiness` and `/story-done` — the two story gates 19 shipped files
   already commanded.** The story pipeline was documented end to end
   (`/create-stories` → `/story-readiness` → `/dev-story` → `/code-review` →
@@ -15,14 +91,6 @@ The format follows [Keep a Changelog](https://keepachangelog.com/); versions fol
   made the other its sign-off gate — but neither skill existed, so a stranger's
   pipeline dead-ended twice at a command nothing could fire. Both now ship, with
   the contracts the surrounding docs already specified.
-- **A slash-command cross-check in `tools/doc_stack_check.py`.** `/story-done` is
-  not a path, so no missing-path rule could ever catch it; five declared
-  commands survived a clean phantom-path sweep for exactly that reason. Every
-  `/command` a shipped doc names is now checked against `skills/<name>/SKILL.md`
-  and fails the run if no such skill ships. Exemptions live in the manifest's
-  new `slash_commands.ignore` block — six entries, each with a stated reason
-  (Claude Code built-ins and two literal placeholders in the `/help` output
-  template). Inspect with `--list PHANTOM-COMMAND | IGNORED-COMMAND`.
 - **`tools/generate_skills_index.py`.** `docs/skills-index.md` has always claimed
   to be auto-generated; nothing generated it, so it was hand-maintained and had
   drifted — every row clipped mid-word, one of them mid-slash-command
@@ -64,38 +132,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/); versions fol
   it cannot ship, because it records what one *pinned* engine version does. The
   skill now offers to create it (`VERSION.md` plus three companion notes and a
   `modules/` folder), and every reader is labelled optional.
-- **`tools/consistency_check.py` — the runner four skills already commanded.**
-  `consistency-check` advertised it in its own description ("Runner at
-  tools/consistency_check.py"), and `/update`, `/red-flag-scan` and
-  `/session-close` executed it as a gate — but it had never shipped, so on a real
-  project the close ritual crashed on a missing file. It exists now: pure Python
-  3 stdlib, cross-platform, 12 checks. The registry parses and carries the keys
-  the skills read; entries have the required keys, a status from the vocabulary
-  and unique ids; every registry path and id reference resolves; what is on disk
-  (data dirs, autoloads, addons, project tools) is in the registry; every path
-  `CLAUDE.md`'s reading map promises exists; the registry's own doc ledger
-  resolves; specs and plans sit where their status says; ADR numbering, Status
-  lines and `ADR-NNN` references hold up; the registry, `implementation-status.md`
-  and `stage.txt` agree; no relative markdown link is broken; `active.md` is not
-  lagging the newest commit; and every wired hook plus every `SKILL.md`
-  frontmatter is intact. FAIL fails the run, WARN never does, and a check with
-  nothing to look at yet says "not applicable" and keeps going — so a
-  brand-new install exits 0 with a clean report instead of a traceback.
-  Flags: `--quiet`, `--no-bump`, `--fix-safe` (creates absent empty directories
-  and nothing else — never touches prose or data), `--stale-days N`, `--root DIR`.
-- **`scaffold/` — the project document stack the skills read.** The installer used to
-  create the `.claude/` layer and nothing else, so every instruction that pointed
-  outside it ("open `data/_schemas/system_registry.json` first", "check
-  `production/review-mode.txt`", "append to `docs/devlog.md`", "resume from
-  `production/session-state/active.md`") was commanding a file no fresh install had.
-  Both installers now seed 36 paths — a valid empty registry with documented schema
-  notes, a dev diary, the handover file, stage + review-mode + sprint-status +
-  flow-ledger, devlog / implementation-status / open-flags, the ADR and workstream
-  templates in place, and the spec / plan / gdd / architecture / epic / sprint / qa
-  directories. Six of them are copies of shipped `templates/` documents, so no
-  document is authored twice in this repo.
-- `--no-scaffold` (bash) / `-NoScaffold` (PowerShell) — install the `.claude/` layer
-  alone, for projects that already have their own document stack.
+- **A GitHub Actions workflow (`.github/workflows/doc-stack.yml`).** On every push
+  and pull request it runs `tools/doc_stack_check.py` against the bundle, installs
+  the studio into a throwaway directory, re-runs the checker against that install
+  with `--project`, and runs `tools/consistency_check.py` from inside it. It also
+  asserts that every runner in `tools/` is registered in `consistency_check.py`'s
+  framework-tools list. The drift this release repaired cannot return silently.
 
 ### Fixed
 - **Two files still commanded `coding-standards.md`, which ships nowhere.**
@@ -146,6 +188,57 @@ The format follows [Keep a Changelog](https://keepachangelog.com/); versions fol
 - **`counts:` in `manifest.yaml` disagreed with disk.** `tools: 3` while five
   runners install, `templates: 39` while 41 files exist. Every count now carries
   the command that reproduces it.
+- **`/start` would have greeted a brand-new project with "already onboarded".**
+  Found by walking the first-time path end to end after the scaffold landed. The
+  scaffold is what broke it: `/start` treated *the existence of*
+  `production/stage.txt` as proof the project had been onboarded, and the installer
+  now always seeds that file — so a stranger's very first `start` would route them
+  to Path D (`/adopt`, the **brownfield** path: "audit existing project artifacts")
+  on an empty folder. Three more signals had gone constant the same way:
+  `review-mode.txt` always exists, so the review-mode question would never be
+  asked; `docs/gdd/game-concept.md` always exists as the blank template; and
+  `docs/adr/*.md` matched the seeded `docs/adr/TEMPLATE.md`, so "ADRs exist?" was
+  true on day one. **Existence stopped being evidence the moment the installer
+  started creating things**, and every affected reader now judges *content*:
+  `stage.txt` past `concept`, a non-empty `systems[]`, an elevator pitch that is no
+  longer bracketed prompt text. ADR globs across five skills narrowed from
+  `docs/adr/*.md` to `docs/adr/[0-9]*.md` — the leading digit is what separates a
+  decision from the skeleton beside it, which is the form
+  `.claude/docs/workflow-catalog.yaml` already used. The rule is now stated once,
+  for future skills, in `docs/doc-stack.md`.
+- **`python tools/doc_stack_check.py`, run from a game project, reported ~56
+  failures on a perfectly good install.** MODE 1 reads the *bundle's* source layout
+  (`skills/`, `agents/`, `templates/` at the root); an installed project keeps all
+  of that under `.claude/`, so every scaffold promise looked unkept and every skill
+  looked like a phantom command. The bare command is the obvious thing to type from
+  a project root — and the README now tells people to type it — so the tool detects
+  where it is rather than requiring the user to know which flag the situation calls
+  for. It prints one line saying which mode it chose. `--project DIR` still forces
+  MODE 2 explicitly.
+- **The installer posted one developer's Python bytecode into every project.**
+  `copy_tree` copied `tools/` wholesale, and running any `tools/` runner inside a
+  studio clone leaves `__pycache__/*.pyc` behind — so whether a project received a
+  stray `.pyc` depended on whether the clone had ever been used. Both installers now
+  exclude `__pycache__/`, `*.pyc` and OS cruft, which also makes the install count
+  deterministic: **191 files** every time.
+- **A fresh install's very first `/consistency-check` warned about a framework
+  file.** Check 4 ("what is on disk but not in the registry") exempts the runners
+  the template ships, because they belong to the template rather than to the game —
+  but `tools/generate_skills_index.py` shipped after that list was written and was
+  never added to it. Day one therefore opened with a warning about a file the user
+  did not create and cannot be expected to register. Registered, and CI now asserts
+  that every runner in `tools/` is on that list, so the next runner cannot repeat
+  it. A fresh install is now **4 PASS, 0 WARN, 0 FAIL**.
+- **The TR registry forked on its own file extension.** `/architecture-decision`
+  wrote requirement coverage into `docs/architecture/tr-registry.md` while the skill
+  that creates it, the skill that reads it at the gate, and `CLAUDE.md` all use
+  `tr-registry.yaml` — a silent fork in the one piece of state a gate depends on.
+  The guard could not catch it because the manifest covered `docs/architecture/*`
+  with a single wildcard, so *both* spellings classified clean; that wildcard is now
+  seven named entries, each naming the skill that writes it.
+- **`min_count` was declared on 8 catalogue steps and read by nothing.** "Minimum 3
+  Foundation-layer ADRs" was mechanically enforced as ">= 1".
+  `tools/workflow_state_check.py` now honours it.
 - **The repo's stale self-install is gone.** A single tracked file,
   `.claude/docs/workflow-catalog.yaml`, was a partial dogfood copy that had
   drifted against its source (still globbing the retired `production/playtests/`
@@ -154,6 +247,30 @@ The format follows [Keep a Changelog](https://keepachangelog.com/); versions fol
   `/.claude/` is now gitignored with the reason.
 
 ### Changed
+- **BREAKING (for the layout, not for your files): one canonical layout.** A fresh
+  session read `CLAUDE.md` and was pointed one way; the skills wrote another way;
+  `docs/workflow-catalog.yaml` looked for the artifacts in a third place — so the
+  mechanical stage detector reported "missing" for artifacts that existed. Measured
+  on the bundle before the repair: **44 files said `design/gdd`, 11 said `docs/gdd`;
+  22 said `docs/adr/`, 8 said `docs/architecture/adr-`; 5 said `assets/data/` while
+  21 said `data/_schemas`.** `CLAUDE.md` is the one file every fresh session reads
+  cold, so its reading map is now the law and every other reference was moved to it:
+
+  | Was | Is |
+  |---|---|
+  | `design/gdd/**` | `docs/gdd/**` |
+  | `design/art/art-bible.md` | `docs/art-bible.md` |
+  | `design/live-ops/**`, `design/{ux,levels,narrative,assets}/**` | `docs/live-ops/**`, `docs/{ux,levels,narrative,assets}/**` |
+  | `design/quick-specs/` | `docs/specs/` (a quick spec is a spec) |
+  | `design/registry/entities.yaml` | removed — the entity authority **is** `data/_schemas/system_registry.json` |
+  | `docs/architecture/adr-*.md` | `docs/adr/NNN-<slug>.md` |
+  | `assets/data/` | `data/` |
+
+  `docs/architecture/` survives and keeps exactly three files: `architecture.md`,
+  `control-manifest.md`, `tr-registry.yaml`. There is no top-level `design/` layer
+  any more, so the guard treats a bare `design/` prefix as a retired convention — a
+  stray `design/whatever/` is caught the day it is written. Retired-convention
+  references in the bundle and in a fresh install: **0**.
 - The scaffold step **never overwrites**: an existing file is left untouched and
   counted as skipped, so a live project's real registry, devlog and session state
   survive any number of re-runs. Running the installer twice is a byte-for-byte
@@ -161,7 +278,57 @@ The format follows [Keep a Changelog](https://keepachangelog.com/); versions fol
 - `tools/doc_stack_check.py` now sees a kept promise: installer scaffold coverage
   went from 0/34 covered to 36/36, and the "unscaffolded promises" failure class
   dropped to zero. Against a fresh install, commanded-but-missing paths fell from
-  46 to 2 (the two remaining are runners, not documents).
+  46 to 0.
+- `manifest.yaml` gains a `scaffold:` section — what the installer seeds, the
+  never-overwrite policy, the opt-out flag, and the command that verifies it.
+
+### Upgrading from 0.4.x
+
+**Re-run the installer over your project.** That is the whole upgrade:
+
+```bash
+git pull                                          # in your studio clone
+bash /path/to/shiningplague-studio/scripts/install.sh /path/to/your/game
+```
+
+- **Nothing you already have is overwritten by the scaffold.** Every seeded
+  artifact is create-if-absent. Your registry, your devlog, your session state,
+  your specs and ADRs are left exactly as they are; the installer reports them as
+  `skipped (exists)`. If your project already has a full document stack, the
+  scaffold step is a no-op and you can skip it outright with `--no-scaffold`.
+- **The `.claude/` layer *is* updated in place** — that is where the repaired
+  skills live, and it is the framework's, not yours. If you edited a skill, agent,
+  hook or rule locally, the installer prints every file it overwrote and tells you
+  to recover from your project's git history. **Commit your project before
+  upgrading.**
+- **`CLAUDE.md` and `.claude/settings.json` are never overwritten**, in this
+  release as in every previous one. If you want the new reading map (it now names
+  `docs/doc-stack.md`), diff yours against `CLAUDE.md.template` by hand.
+- **If your project used the old paths** (`design/gdd/`, `docs/architecture/adr-*`,
+  `assets/data/`), your files still work — nothing moves them. But the repaired
+  skills now write to the canonical paths, so you will end up with both. Either
+  move your documents to the canonical layout, or edit your `CLAUDE.md` reading map
+  to name your paths; the skills follow `CLAUDE.md`.
+- **Then check it**, from your project root:
+  ```
+  python tools/consistency_check.py
+  ```
+  Exit 0 means the stack is coherent. It is the same gate `/session-close` runs.
+
+### Not changed
+
+- **Attribution.** `LICENSE` (MIT, preserving Kirill Ivanov / Donchitos'
+  copyright), `CREDITS.md` and the `lineage` block in `manifest.yaml` are
+  untouched. The upstream credit to Donchitos and obra/superpowers travels with
+  every copy.
+- **Prerequisites: still none.** `obra/superpowers` and `anthropic-skills` remain
+  optional enhancers, never required.
+- **Isolation: still 100% project-local.** Nothing is written to `~/.claude` or any
+  user-level path.
+- **No skill was removed**, and no skill's trigger phrasing changed. The interaction
+  model — you talk, the studio routes — is identical.
+- **`tools/workflow_state_check.py`** keeps its interface and its flow-ledger
+  contract; it gained `min_count` enforcement, nothing more.
 
 ## [0.4.0] - 2026-07-20 — first public release
 

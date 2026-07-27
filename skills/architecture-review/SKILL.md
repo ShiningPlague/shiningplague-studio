@@ -11,7 +11,7 @@ metadata:
   origin_url: https://github.com/Donchitos/Claude-Code-Game-Studios
   adopted_by: ShiningPlague
   enhancements:
-    - Canonical ADR path (docs/adr/*.md)
+    - Canonical ADR path (docs/adr/[0-9]*.md)
     - Master GDD support ({{GDD_PATH}} + docs/gdd/<system>.md mix)
     - system_registry.json cross-reference (system status + dependencies)
     - tr-registry.yaml preservation (never renumber TR-IDs across runs)
@@ -22,7 +22,7 @@ metadata:
 
 # Architecture Review
 
-> 🌱 **ShiningPlague-adopted.** Originally Donchitos; battle-tested on a shipped Godot project. Studio ADRs live at `docs/adr/*.md`. Path conventions corrected throughout + project sources added (`data/_schemas/system_registry.json`, `tr-registry.yaml`, engine-specialist Agent dispatch).
+> 🌱 **ShiningPlague-adopted.** Originally Donchitos; battle-tested on a shipped Godot project. Studio ADRs live at `docs/adr/[0-9]*.md`. Path conventions corrected throughout + project sources added (`data/_schemas/system_registry.json`, `tr-registry.yaml`, engine-specialist Agent dispatch).
 
 Validates that the complete body of architectural decisions covers all game design requirements, is internally consistent, and correctly targets the project's pinned engine version. Quality gate between Technical Setup and Pre-Production.
 
@@ -49,7 +49,7 @@ Before reading any full document, use Grep to extract `## Summary` sections:
 
 ```
 Grep pattern="## Summary" glob="docs/gdd/*.md" output_mode="content" -A 4
-Grep pattern="## Summary" glob="docs/adr/*.md" output_mode="content" -A 3
+Grep pattern="## Summary" glob="docs/adr/[0-9]*.md" output_mode="content" -A 3
 ```
 
 Also scan master GDD for system sections:
@@ -71,7 +71,7 @@ For `coverage` or `full` mode: proceed to full-read everything below.
 - `docs/gdd/systems-index.md` — auto-generated from registry (authoritative system list)
 
 **Architecture Documents:**
-- All ADRs at `docs/adr/*.md` (`docs/architecture/` holds the blueprint + manifest, never ADRs)
+- All ADRs at `docs/adr/[0-9]*.md` (`docs/architecture/` holds the blueprint + manifest, never ADRs)
 - `docs/architecture/architecture.md` (if exists)
 - `docs/architecture/control-manifest.md`
 
@@ -386,7 +386,7 @@ If any spawned agent returns BLOCKED, errors, or fails:
 
 | What | Canonical path |
 |------|----------------|
-| ADRs | `docs/adr/*.md` |
+| ADRs | `docs/adr/[0-9]*.md` |
 | Master GDD | `{{GDD_PATH}}` + per-system `docs/gdd/<system>.md` |
 | Systems registry | `data/_schemas/system_registry.json` (source) + `docs/gdd/systems-index.md` (generated view) |
 | Engine reference | `docs/engine-reference/<engine>/VERSION.md` |

@@ -5,13 +5,31 @@
 
 You installed the studio. Here's how it actually works, in plain terms. You don't need to read anything else before your first session.
 
+## What the install just put on disk
+
+Two layers, and the difference between them matters:
+
+- **`.claude/` + `tools/` — the framework.** 69 skills, 35 agents, 13 hooks, 11 rules, and 5 zero-LLM Python runners. This layer is the studio's, and re-running the installer updates it in place.
+- **`docs/`, `data/`, `production/` — the project's own document stack.** 36 paths seeded blank: the built-state registry, the GDD and ADR homes, the spec/plan lifecycle folders, the devlog, the session handover file. This layer is the *project's*. The installer **never overwrites** anything here, on any re-run.
+
+Everything the skills read lives at a fixed path, and `CLAUDE.md`'s reading map is the authority all of them follow. Two commands confirm it landed, and both are safe to run right now:
+
+```bash
+python tools/consistency_check.py     # is this project's doc stack coherent?  (exit 0 = yes)
+python tools/doc_stack_check.py       # did the install land completely?
+```
+
+On a brand-new project the first one reports `4 PASS, 0 FAIL` with 8 checks saying they have nothing to look at yet. That is the correct day-one result, not a problem to fix.
+
+**One consequence worth knowing:** because the stack is seeded, *every* one of those files exists from minute one, and they are all empty. A blank `game-concept.md` is not a written concept, and a `stage.txt` reading `concept` is the seeded default, not progress. The skills judge these on content — so "start" on a fresh install correctly says "let's begin", not "already onboarded".
+
 ## The one idea that matters
 
 **You talk about your game in normal words. The studio matches what you said to a workflow and a specialist.** You never have to remember commands — although every skill *can* be invoked directly (`/brainstorming`, `/help`, `/sprint-plan`) once you know its name.
 
 ## How skills fire
 
-A **skill** is a guided workflow — a written process Claude follows instead of improvising. There are 67 of them, and they fire in two ways:
+A **skill** is a guided workflow — a written process Claude follows instead of improvising. There are 69 of them, and they fire in two ways:
 
 1. **You say a thing, a workflow catches it.** "Brainstorm my combat system" starts `brainstorming`. "Something's broken" starts `systematic-debugging`. "What's next?" starts `help`. "Wrap up" starts `session-close`. Your phrasing is the trigger.
 2. **A handful fire automatically** at the right moments — before creative work, before code gets written, before Claude claims anything is "done", at session end. These are the studio's quality instincts. You'll see them announced ("this is creative work, starting `brainstorming`") and you can always redirect.
@@ -51,6 +69,8 @@ The studio is tuned to propose the lightest process that fits. If it ever feels 
 | "brainstorm X" | Explore X with you before anything gets built |
 | "something's wrong with X" | Investigate evidence-first before proposing fixes |
 | "wrap up" | Close the session so the next chat resumes cleanly |
+
+Two of these touch the checkers directly. "Wrap up" fires `session-close`, which runs `python tools/consistency_check.py` as its gate — so the first time a session closes, the doc stack gets audited. "Where are we?" reads `production/stage.txt`, the registry, and the session handover file, all of which the installer already put there.
 
 ## Where the strict stuff lives
 

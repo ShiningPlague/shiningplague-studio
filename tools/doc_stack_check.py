@@ -987,6 +987,27 @@ def run_project_mode(repo_root, manifest, manifest_path, args):
 # entry point
 # --------------------------------------------------------------------------
 
+def is_bundle_root(root):
+    """True if `root` is the studio bundle: the source layout MODE 1 reads.
+
+    The same two markers scripts/install.sh uses to refuse installing into the
+    studio repo -- keep the three in step.
+    """
+    return (os.path.isfile(os.path.join(root, "manifest.yaml"))
+            and os.path.isdir(os.path.join(root, "skills")))
+
+
+def installed_project_root(root):
+    """Absolute path of the installed project at `root`, or None.
+
+    An install is recognised by the layer the installer creates and the bundle
+    never has: .claude/skills/ next to a tools/ holding this script.
+    """
+    if os.path.isdir(os.path.join(root, ".claude", "skills")):
+        return os.path.abspath(root)
+    return None
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(
         prog="doc_stack_check.py",
@@ -1019,6 +1040,23 @@ def main(argv=None):
     except (OSError, ValueError) as exc:
         print("ERROR: could not load manifest: %s" % exc, file=sys.stderr)
         return 2
+
+    # MODE 1 reads the bundle's source layout (skills/, agents/, templates/ at the
+    # root). An INSTALLED project has none of that -- its skills live under
+    # .claude/ -- so running bare from a game project used to report every scaffold
+    # promise as unkept and every skill as a phantom command: ~56 failures, all
+    # false, on a perfectly good install. `python tools/doc_stack_check.py` is the
+    # obvious thing to type from a project root, so detect where we are rather than
+    # make the user know which flag the situation calls for.
+    if not args.project and not is_bundle_root(repo_root):
+        installed = installed_project_root(repo_root)
+        if installed:
+            args.project = installed
+            print("note: %s is an installed project, not the studio bundle "
+                  "-- checking it in MODE 2 (same as --project %s)."
+                  % (installed.replace(os.sep, "/"), os.path.relpath(installed, os.getcwd())
+                     .replace(os.sep, "/") or "."))
+            print("")
 
     if args.project:
         return run_project_mode(repo_root, manifest, manifest_path, args)

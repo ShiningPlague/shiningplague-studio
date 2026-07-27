@@ -71,12 +71,12 @@ Show only if at least one uncataloged skill exists. Limit to the 10 most relevan
    - "Polish" → `polish`
    - "Release" → `release`
 
-2. **If missing**, infer phase from artifacts (most-advanced match wins):
+2. **If missing** (a `--no-scaffold` install), infer phase from artifacts (most-advanced match wins). The installer seeds this stack blank, so judge these on **content**, not existence — an unfilled template is not an artifact:
    - `src/` has 10+ source files → `production`
    - `production/epics/**/*.md` exists → `pre-production`
-   - `docs/adr/*.md` exists → `technical-setup`
-   - `docs/gdd/systems-index.md` exists → `systems-design`
-   - `docs/gdd/game-concept.md` exists → `concept`
+   - `docs/adr/[0-9]*.md` exists → `technical-setup` (`NNN-<slug>.md` only; the leading digit excludes the seeded `docs/adr/TEMPLATE.md`)
+   - `docs/gdd/systems-index.md` has rows in its systems table → `systems-design`
+   - `docs/gdd/game-concept.md` has a written elevator pitch (not the bracketed `[…]` prompt text) → `concept`
    - Nothing → `concept` (fresh project)
 
 ---

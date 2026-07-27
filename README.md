@@ -16,12 +16,24 @@ Never used Claude Code skills or agents before? You don't need to have. Open [Cl
 Set up the ShiningPlague Studio in this project:
 1. git clone https://github.com/ShiningPlague/shiningplague-studio.git .sp-studio-tmp
 2. bash .sp-studio-tmp/scripts/install.sh .
-3. delete the .sp-studio-tmp folder
-4. Read the new CLAUDE.md, then ask me (one question at a time) for: project name, engine + version, and a one-sentence description of my game — and fill those into CLAUDE.md for me.
-5. Tell me the studio is ready and suggest my first move.
+3. run: python tools/consistency_check.py   — it should exit 0
+4. delete the .sp-studio-tmp folder
+5. Read the new CLAUDE.md, then ask me (one question at a time) for: project name, engine + version, and a one-sentence description of my game — and fill those into CLAUDE.md for me.
+6. Tell me the studio is ready and suggest my first move.
 ```
 
 Setup is **100% project-local**: everything lands inside your game folder (`.claude/` + `tools/` + a seeded `CLAUDE.md` + the document stack the skills read — `docs/`, `data/`, `production/`), and nothing ever touches your personal `~/.claude`. Each game gets its own install, and edits you make stay in that project. Re-running the installer later updates the `.claude/` layer in place — your `CLAUDE.md`, `.claude/settings.json` and every seeded document are never overwritten.
+
+### Check it landed
+
+Two commands, both pure-stdlib Python 3, both runnable the second the installer finishes:
+
+```bash
+python tools/consistency_check.py     # is this project's doc stack coherent?
+python tools/doc_stack_check.py       # does every path the docs command actually exist?
+```
+
+`consistency_check.py` is the gate the close ritual runs — 12 checks over your registry, your docs and your ADRs. On a brand-new install it exits **0** and reports `4 PASS, 0 FAIL` with 8 checks that have nothing to look at yet saying so plainly. `doc_stack_check.py` is the regression guard: it reads every path and every `/command` the shipped docs name and fails if any of them is a phantom. Run bare from your project root it detects that it is looking at an install and checks that the install landed complete; run bare from a studio clone it checks the bundle instead. Neither one writes to your game.
 
 <details>
 <summary><strong>Manual install</strong> (if you'd rather run it yourself)</summary>
@@ -50,14 +62,55 @@ That's the whole interaction model. Every workflow in the studio works like this
 
 | | Count | What they are |
 |---|---|---|
-| **Skills** | 67 | Guided workflows — brainstorming, writing a design doc, planning a sprint, reviewing code, closing a session. Each one walks Claude through a repeatable process instead of improvising. |
+| **Skills** | 69 | Guided workflows — brainstorming, writing a design doc, planning a sprint, reviewing code, closing a session. Each one walks Claude through a repeatable process instead of improvising. |
 | **Agents** | 35 (+14 in engine packs) | Specialist subagents the skills dispatch — game designer, gameplay programmer, narrative director, QA lead, and more. Each runs in its own context and reports back. |
 | **Hooks** | 13 | Session-lifecycle automation — start-of-session briefings, keyword detection that suggests the right skill, validation checks. |
 | **Rules** | 11 | Path-scoped coding standards that apply automatically to the files they govern. |
-| **Templates** | 39 | Document scaffolds — GDDs, ADRs, specs, plans, sprint files, workstream state. |
-| **Tools** | 1 | A zero-LLM workflow-state checker that reads your project and reports the honest next step ([docs/flow-ledger.md](docs/flow-ledger.md)). |
+| **Templates** | 41 | Document scaffolds — GDDs, ADRs, specs, plans, sprint files, workstream state. |
+| **Tools** | 5 | Zero-LLM Python runners: two checkers you can run right now (`consistency_check.py`, `doc_stack_check.py`), the workflow-state detector ([docs/flow-ledger.md](docs/flow-ledger.md)), and two index generators. |
+| **Scaffold** | 36 paths | The document stack the skills read, seeded into your project on install — and never overwritten on re-run. |
+
+Every count above is reproduced by a command recorded beside it in [manifest.yaml](manifest.yaml), and CI re-runs both checkers on every push.
 
 Under the hood these organize into pipelines that move work through phases — **Concept → Design → Architecture → Production → Release** — but you don't need to know any of that on day one. Say what you want; the studio knows where it fits.
+
+## What you get
+
+The installer lands two things: the framework under `.claude/` + `tools/`, and the document stack your project actually writes into. This is the canonical layout — every skill reads and writes these paths, and `CLAUDE.md`'s reading map is the authority they all follow.
+
+```
+your-game/
+├── CLAUDE.md                      # seeded from template; the file every session reads first
+├── .claude/
+│   ├── skills/                    # 69 guided workflows
+│   ├── agents/                    # 35 specialists (+ engine packs)
+│   ├── hooks/                     # 13 session-lifecycle hooks
+│   ├── rules/                     # 11 path-scoped coding standards
+│   ├── docs/                      # the framework's reference library (+ docs/templates/)
+│   └── settings.json              # hook wiring — never overwritten
+├── tools/                         # 5 zero-LLM Python runners
+│
+├── docs/                          # ── seeded, never overwritten ──
+│   ├── GDD.md                     # master game design document
+│   ├── gdd/                       # per-system GDDs + systems-index, game-concept, game-pillars
+│   ├── art-bible.md
+│   ├── adr/                       # NNN-<slug>.md decision records + TEMPLATE.md
+│   ├── architecture/              # architecture.md · control-manifest.md · tr-registry.yaml
+│   ├── specs/ · plans/            # in-flight design specs and implementation plans
+│   ├── z-old/{specs,plans}/       # where they retire to
+│   └── devlog.md · implementation-status.md · open-flags.md
+├── data/
+│   └── _schemas/
+│       ├── system_registry.json   # THE built-state source of truth (seeded valid + empty)
+│       └── dev_diary.json
+└── production/
+    ├── session-state/active.md    # session handover — how the next chat resumes
+    ├── session-logs/ · workstreams/ · sprints/ · epics/
+    ├── qa/{bugs,evidence}/
+    └── stage.txt · review-mode.txt · sprint-status.yaml · flow-ledger.yaml
+```
+
+Already have your own document stack? `--no-scaffold` (bash) / `-NoScaffold` (PowerShell) installs the `.claude/` layer alone.
 
 ## Your first session
 
@@ -72,8 +125,10 @@ After installing, open Claude Code in your project and try any of these:
 ## Going deeper
 
 - **[docs/START-HERE.md](docs/START-HERE.md)** — the 15-minute orientation: how skills fire, how agents get dispatched, when to use the pipeline and when to skip it. **Read this one first.**
+- [docs/doc-stack.md](docs/doc-stack.md) — the doc-stack contract: every artifact in the layout above, who writes it, who reads it, and whether it ships, is scaffolded, or is written on first use. The page to open when the answer is "where does X live?".
 - [docs/flow-ledger.md](docs/flow-ledger.md) — the mechanical workflow-state checker (`tools/workflow_state_check.py`): a small zero-LLM script that cross-checks claimed progress against the files that actually exist.
 - `tools/consistency_check.py` — the doc-stack gate the close ritual runs (`python tools/consistency_check.py`). 12 mechanical checks: the registry parses and its references resolve, every path `CLAUDE.md` promises exists, ADRs are numbered and statused, specs sit where their status says, no markdown link is broken, every wired hook is on disk. A brand-new install passes it clean — checks that have nothing to look at yet say so and move on.
+- `tools/doc_stack_check.py` — the regression guard (`python tools/doc_stack_check.py`; it detects whether it is looking at a studio clone or an installed project, and `--project <dir>` forces the latter). Classifies every path and every `/command` the shipped docs name; any phantom fails the run. New paths get declared in `tools/doc_stack.manifest.json`, never in the script. Wired into CI on push and pull request.
 - [docs/skills-protocol-extended.md](docs/skills-protocol-extended.md) — advanced: the full-discipline skills protocol.
 - [docs/agent-coordination-map.md](docs/agent-coordination-map.md) — advanced: the complete org chart, delegation rules, and escalation paths.
 - [docs/director-gates.md](docs/director-gates.md) — advanced: the phase-gate review reference.
@@ -103,8 +158,9 @@ shiningplague-studio/
 ├── scaffold/               # Seed document stack → <project>/docs/, data/, production/
 │                           #   (never overwrites; skip with --no-scaffold)
 ├── scripts/                # install.sh / install.ps1 (project-local installers)
+├── .github/workflows/      # CI — both checkers, on push + pull request
 ├── CLAUDE.md.template      # Project instruction file → <project>/CLAUDE.md (seeded if absent)
-├── manifest.yaml           # Inventory + lineage + install targets
+├── manifest.yaml           # Inventory + lineage + install targets + scaffold contract
 ├── CHANGELOG.md
 ├── CREDITS.md
 └── LICENSE
@@ -113,6 +169,8 @@ shiningplague-studio/
 ## Honest status
 
 This is an **early public release**, hardened on one real production project. The framework is game-neutral and self-contained, but expect to tune reference implementations (engine checks, example paths) to your own project rather than dropping it in untouched.
+
+**Upgrading from 0.4.x?** Re-run the installer — that is the whole upgrade, and nothing you already have is overwritten. The details, and what 0.5.0 actually repaired, are in [CHANGELOG.md](CHANGELOG.md).
 
 Contributions and forks welcome.
 

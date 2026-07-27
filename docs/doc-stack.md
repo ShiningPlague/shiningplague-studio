@@ -51,6 +51,23 @@ should complain about that.
 | `docs/content-audit-*.md` | Planned-vs-built content report. | `/content-audit` | `/gate-check` | on use, optional |
 | `docs/ux/*.md` · `docs/levels/` · `docs/narrative/` · `docs/assets/specs/*.md` | Filled-in copies of the shipped templates for those disciplines. | the matching `/team-*` skill | `/asset-spec`, the discipline agents | on use, optional |
 
+> **Existence is not evidence — judge a scaffolded artifact on its content.** The
+> installer seeds this whole stack, so on a brand-new project every `scaffold` row
+> above already exists and is blank. "Does the file exist?" was a usable phase
+> signal when the installer created nothing; it is a constant now. Two rules follow
+> from that, and every shipped skill obeys them:
+>
+> 1. **Glob ADRs as `docs/adr/[0-9]*.md`, never `docs/adr/*.md`.** A real ADR is
+>    `NNN-<slug>.md`; the leading digit separates a decision from the scaffolded
+>    `TEMPLATE.md` beside it. A bare `*.md` glob counts the skeleton as a decision,
+>    which is how a fresh install starts reporting it has reached technical-setup.
+>    `.claude/docs/workflow-catalog.yaml` uses the digit form too.
+> 2. **Read the value, not the filename.** `stage.txt` is seeded `concept` and
+>    `review-mode.txt` is seeded `lean` — those are defaults nobody chose. A
+>    template whose prompts are still in `[brackets]` has not been written. The
+>    strongest "this project is in flight" signal is a non-empty `systems[]` in
+>    `data/_schemas/system_registry.json`.
+
 ## Architecture layer — `docs/architecture/`
 
 | Path | What it is | Written by | Read by | Source |

@@ -48,7 +48,7 @@ Read silently before presenting anything:
 4. `docs/architecture/tr-registry.yaml` — requirement coverage
 5. `docs/architecture/control-manifest.md` — programmer rules compliance
 6. `data/_schemas/system_registry.json` — authoritative system states
-7. Glob `docs/adr/*.md` — all ADRs and statuses
+7. Glob `docs/adr/[0-9]*.md` — all ADRs and statuses
 8. Glob `docs/gdd/*.md` + `{{GDD_PATH}}` — all GDD artifacts
 9. Glob `production/sprints/sprint-*.md` — sprint artifacts (if any)
 10. Glob `production/session-logs/playtest-*.md` — playtest notes written by `/qa-plan` (if any)

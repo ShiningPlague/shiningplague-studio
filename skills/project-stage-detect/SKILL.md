@@ -49,7 +49,7 @@ Read `.claude/docs/workflow-catalog.yaml`. For each phase up to and including cu
 - Cross-GDD review: review-all-gdds artifact
 
 **Technical Setup phase:**
-- ADRs: `docs/adr/*.md`
+- ADRs: `docs/adr/[0-9]*.md`
 - Master architecture: `docs/architecture/architecture.md`
 - Control manifest: `docs/architecture/control-manifest.md`
 - Engine reference: `docs/engine-reference/`

@@ -188,9 +188,16 @@ function Copy-StudioTree {
         Write-Warn "skip $(Split-Path -Leaf $Src)\ -- not present in bundle"
         return
     }
+    # Build artefacts are excluded: running a tools\ runner inside a studio clone
+    # leaves __pycache__\*.pyc behind, and without this the installer would post
+    # one developer's stale bytecode into every project it touches (and the
+    # install file count would depend on whether the clone had ever been run).
     $srcFull = (Resolve-Path -LiteralPath $Src).Path
     Get-ChildItem -LiteralPath $srcFull -Recurse -File | Sort-Object FullName | ForEach-Object {
         $rel = $_.FullName.Substring($srcFull.Length).TrimStart('\','/')
+        if ($rel -match '(^|[\\/])__pycache__[\\/]') { return }
+        if ($_.Name -like '*.pyc') { return }
+        if ($_.Name -in @('.DS_Store','Thumbs.db')) { return }
         Copy-StudioFile -Src $_.FullName -Dest (Join-Path $Dest $rel)
     }
 }

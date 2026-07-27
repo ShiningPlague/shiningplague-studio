@@ -33,7 +33,7 @@ Based on what changed in the session (detected via `git diff`), dispatch the rig
 |---|---|---|
 | Any source-code change (`src/**/*.gd`) | `/code-review` | Code review report |
 | GDD modified (`docs/GDD*.md`, `docs/gdd/*.md`) | `/review-all-gdds` | Cross-GDD review report |
-| ADR added or arch changed (`docs/adr/*.md`, `docs/architecture/*.md`) | `/architecture-review` | Architecture review report |
+| ADR added or arch changed (`docs/adr/[0-9]*.md`, `docs/architecture/*.md`) | `/architecture-review` | Architecture review report |
 | Any doc stack change (>3 docs touched) | `/consistency-check` | 49-check audit report |
 | Any work-completion claim mid-session | `/verification-before-completion` (likely already fired) | Verification evidence |
 | Always: framework-specific drift (complexity, hooks, broken skills) | THIS skill's own scan (Steps 3-6 below) | Drift report |

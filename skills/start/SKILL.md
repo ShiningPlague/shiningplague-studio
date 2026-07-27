@@ -25,13 +25,30 @@ Routes the designer to the right onboarding path based on what exists — fresh 
 
 ## Phase 1: Detect Project State
 
+> **Existence is not evidence.** The installer seeds the whole document stack, so
+> on a brand-new project `stage.txt`, `game-concept.md`, `review-mode.txt`, the
+> registry and `docs/adr/TEMPLATE.md` all *exist* and are all still empty. Judge
+> every signal below on **content**, never on the file being present — otherwise a
+> stranger's first `/start` reports "already onboarded" at an untouched install.
+
 Read silently:
-1. `production/stage.txt` — if exists, project already onboarded
-2. `docs/gdd/game-concept.md` — concept exists?
-3. `.claude/docs/technical-preferences.md` — engine configured?
-4. Glob `src/**/*.gd` — source code exists?
-5. Glob `docs/adr/*.md` — ADRs exist?
-6. `docs/adoption-plan-*.md` — prior adoption plan?
+1. `production/stage.txt` — read the value. Anything past `concept` means real
+   work has happened. `concept` is the seeded day-one value and proves nothing.
+2. `data/_schemas/system_registry.json` — the built-state authority. A non-empty
+   `systems[]` is the strongest "this project is already in flight" signal there is.
+3. `docs/gdd/game-concept.md` — concept **written**? The seeded copy is the blank
+   template; if the elevator pitch is still the bracketed `[…]` prompt text, treat
+   it as absent.
+4. `.claude/docs/technical-preferences.md` — engine configured? (Not scaffolded —
+   presence here is a real signal.)
+5. Glob `src/**/*` for engine source files — source code exists?
+6. Glob `docs/adr/[0-9]*.md` — real ADRs exist? (`NNN-<slug>.md` only; the leading
+   digit excludes the seeded `docs/adr/TEMPLATE.md`, which is a skeleton, not a
+   decision.)
+7. `docs/adoption-plan-*.md` — prior adoption plan?
+
+**Fresh project** = none of 1–3, 5 or 6 carry content. Route to Path A/B/C.
+**Existing project** = any of them does. Route to Path D.
 
 ---
 
@@ -69,19 +86,25 @@ Based on findings, present the appropriate path. Frame it as a friendly roadmap,
 
 ---
 
-## Phase 3: Set Review Mode (if not already set)
+## Phase 3: Confirm Review Mode
 
-Check `production/review-mode.txt`. If it doesn't exist, ask:
+`production/review-mode.txt` is seeded by the installer as `lean`, so it always
+exists — its presence is not a sign the designer ever chose. On a fresh project
+(Phase 1 found no content), confirm the default rather than assuming it:
 
-"How much design review would you like as you work?"
+"You're set to **lean** review — director specialists weigh in at phase gates
+only. Want to change that?"
 - **Full** — Director specialists review at each workflow step. Recommended for solo devs who want the full agent team experience.
-- **Lean** — Directors only at phase gates. Balanced.
+- **Lean** — Directors only at phase gates. Balanced. *(the seeded default)*
 - **Solo** — No director reviews. Maximum speed.
 
-Write choice to `production/review-mode.txt`.
+Write the choice to `production/review-mode.txt` only if they pick something other
+than what is already there. If the file is absent (a `--no-scaffold` install), ask
+the open question instead and write the answer.
 
 ---
 
 ## Re-invocation Note
 
-- If `/start` is invoked on an already-onboarded project (stage.txt exists), report: "Project already onboarded. Current phase: [stage]. Run `/adopt` to re-audit, `/gate-check` to validate readiness, or `/help` for what to do next."
+- If `/start` is invoked on an already-onboarded project — Phase 1 found **content**, not merely files: `stage.txt` past `concept`, a non-empty `systems[]`, a written concept, or a real `docs/adr/[0-9]*.md` — report: "Project already onboarded. Current phase: [stage]. Run `/adopt` to re-audit, `/gate-check` to validate readiness, or `/help` for what to do next."
+- Never report "already onboarded" because the seeded document stack exists. A fresh install has every one of those files and an empty project; that is the day-one state, not prior work.

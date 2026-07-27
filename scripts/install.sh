@@ -213,13 +213,21 @@ copy_file() {
 }
 
 copy_tree() {
-  # $1 = src dir, $2 = dest dir — merge-copy every file, preserving structure
+  # $1 = src dir, $2 = dest dir — merge-copy every file, preserving structure.
+  # Build artefacts are excluded: running a tools/ runner inside a studio clone
+  # leaves __pycache__/*.pyc behind, and without this the installer would post
+  # one developer's stale bytecode into every project it touches (and the
+  # install file count would depend on whether the clone had ever been run).
   local src="$1" dest="$2" f rel
   [ -d "${src}" ] || { warn "skip $(basename "${src}")/ — not present in bundle"; return 0; }
   while IFS= read -r f; do
     rel="${f#"${src}"/}"
     copy_file "${f}" "${dest}/${rel}"
-  done < <(find "${src}" -type f | sort)
+  done < <(find "${src}" -type f \
+             -not -path '*/__pycache__/*' \
+             -not -name '*.pyc' \
+             -not -name '.DS_Store' \
+             -not -name 'Thumbs.db' | sort)
 }
 
 # --- seed engine: create-if-absent, NEVER overwrite --------------------------

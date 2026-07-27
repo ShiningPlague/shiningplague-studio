@@ -1,0 +1,172 @@
+# The guard that keeps the 0.5.0 repair from rotting.
+#
+# Before 0.5.0 the bundle shipped skills that commanded ~46 paths nothing
+# created, five /commands with no skill behind them, and three competing path
+# conventions. All of that was invisible because nothing mechanical ever looked.
+# This workflow looks, on every push and every pull request.
+#
+# Nothing here needs a token, a secret, or a third-party action beyond checkout.
+# Both checkers are pure Python 3 stdlib, so this runs in seconds.
+
+name: doc-stack
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  checkers:
+    name: doc-stack + consistency
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out the bundle
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      # 1. The bundle itself: does every path and every /command the shipped
+      #    docs name resolve to something this repo creates?
+      - name: doc_stack_check — the bundle
+        run: python tools/doc_stack_check.py
+
+      # 2. The user journey. A checker that only ever reads the source can pass
+      #    while the installer fails to deliver any of it, so CI installs the
+      #    studio the way a stranger would and checks the result.
+      - name: install into a throwaway project
+        run: |
+          set -euo pipefail
+          mkdir -p "${RUNNER_TEMP}/fresh-project"
+          bash scripts/install.sh "${RUNNER_TEMP}/fresh-project"
+
+      - name: doc_stack_check — the installed project
+        run: python tools/doc_stack_check.py --project "${RUNNER_TEMP}/fresh-project"
+
+      # 3. The gate the close ritual runs, from inside a brand-new project.
+      #    A fresh install must exit 0 with a clean report — not a traceback,
+      #    and not a warning about a file the framework itself shipped.
+      - name: consistency_check — from inside the fresh install
+        working-directory: ${{ runner.temp }}/fresh-project
+        run: python tools/consistency_check.py
+
+      # 4. Idempotency. Re-running the installer must update the .claude/ layer
+      #    and touch nothing in the project's own document stack.
+      - name: re-run the installer — must not clobber the doc stack
+        run: |
+          set -euo pipefail
+          before="$(find "${RUNNER_TEMP}/fresh-project/docs" \
+                         "${RUNNER_TEMP}/fresh-project/data" \
+                         "${RUNNER_TEMP}/fresh-project/production" \
+                         -type f -exec sha256sum {} + | sort -k2)"
+          bash scripts/install.sh "${RUNNER_TEMP}/fresh-project" | tee /tmp/rerun.log
+          after="$(find "${RUNNER_TEMP}/fresh-project/docs" \
+                        "${RUNNER_TEMP}/fresh-project/data" \
+                        "${RUNNER_TEMP}/fresh-project/production" \
+                        -type f -exec sha256sum {} + | sort -k2)"
+          if [ "${before}" != "${after}" ]; then
+            echo "FAIL: the second install modified the project's document stack." >&2
+            diff <(printf '%s\n' "${before}") <(printf '%s\n' "${after}") || true
+            exit 1
+          fi
+          grep -Eq 'seeded:[[:space:]]+0([^0-9]|$)' /tmp/rerun.log \
+            || { echo "FAIL: re-run did not report 'seeded 0'." >&2; exit 1; }
+          echo "OK: second install seeded 0 files and changed no checksum."
+
+      # 5. The list that let a warning reach a brand-new user. check 4 of
+      #    consistency_check.py exempts runners the FRAMEWORK ships, by name.
+      #    generate_skills_index.py shipped after that list was written and was
+      #    not added, so day one opened with a warning about a file the user did
+      #    not create. Assert the list and the directory agree.
+      - name: every tools/ runner is registered as a framework tool
+        run: |
+          python - <<'PY'
+          import pathlib, re, sys
+
+          root = pathlib.Path(".")
+          src = (root / "tools" / "consistency_check.py").read_text(encoding="utf-8")
+          block = re.search(r"FRAMEWORK_TOOLS\s*=\s*\{(.*?)\}", src, re.S)
+          if not block:
+              sys.exit("FAIL: could not find FRAMEWORK_TOOLS in tools/consistency_check.py")
+          declared = set(re.findall(r'"([^"]+)"', block.group(1)))
+
+          on_disk = {p.name for p in (root / "tools").glob("*.py")}
+          on_disk |= {p.name for p in (root / "tools").glob("*.json")}
+
+          missing = sorted(on_disk - declared)
+          if missing:
+              sys.exit(
+                  "FAIL: these ship in tools/ but are not in FRAMEWORK_TOOLS, so a "
+                  "fresh install's first /consistency-check will warn about them:\n  "
+                  + "\n  ".join(missing)
+              )
+          stale = sorted(declared - on_disk)
+          if stale:
+              sys.exit("FAIL: FRAMEWORK_TOOLS names files that no longer ship:\n  "
+                       + "\n  ".join(stale))
+          print(f"OK: {len(declared)} framework tools declared, {len(on_disk)} on disk, exact match.")
+          PY
+
+      # 6. The counts in manifest.yaml are load-bearing — the README quotes them
+      #    and a reader trusts them. Each one has a command beside it; run them.
+      - name: manifest counts match disk
+        run: |
+          python - <<'PY'
+          import pathlib, re, sys
+
+          root = pathlib.Path(".")
+          text = (root / "manifest.yaml").read_text(encoding="utf-8")
+
+          def declared(key):
+              m = re.search(rf"^\s{{2}}{key}:\s*(\d+)", text, re.M)
+              if not m:
+                  sys.exit(f"FAIL: manifest.yaml has no count for '{key}'")
+              return int(m.group(1))
+
+          actual = {
+              "skills":              len(list((root / "skills").glob("*/SKILL.md"))),
+              "agents_active":       len(list((root / "agents").glob("*.md"))),
+              "agents_engine_packs": len(list((root / "agents/engine-packs").glob("*/*.md"))),
+              "hooks":               len([p for p in (root / "hooks").rglob("*") if p.is_file()]),
+              "rules":               len([p for p in (root / "rules").rglob("*") if p.is_file()]),
+              "templates":           len([p for p in (root / "templates").rglob("*") if p.is_file()]),
+              "docs":                len([p for p in (root / "docs").rglob("*") if p.is_file()]),
+              "tools":               len(list((root / "tools").glob("*.py"))),
+              "scaffold_files":      len([p for p in (root / "scaffold").rglob("*")
+                                          if p.is_file() and p.name != "README.md"]),
+          }
+
+          bad = [(k, declared(k), v) for k, v in actual.items() if declared(k) != v]
+          for key, says, is_ in bad:
+              print(f"FAIL: manifest.yaml says {key}: {says}, disk has {is_}")
+          if bad:
+              sys.exit(1)
+          for key, v in sorted(actual.items()):
+              print(f"OK: {key} = {v}")
+          PY
+
+      # 7. Attribution is not decoration. It is the license condition this repo
+      #    inherits, and a refactor must never quietly drop it.
+      - name: attribution intact
+        run: |
+          set -euo pipefail
+          test -f LICENSE   || { echo "FAIL: LICENSE is missing." >&2; exit 1; }
+          test -f CREDITS.md || { echo "FAIL: CREDITS.md is missing." >&2; exit 1; }
+          for needle in "Donchitos" "Kirill Ivanov"; do
+            grep -q "${needle}" LICENSE \
+              || { echo "FAIL: LICENSE no longer credits ${needle}." >&2; exit 1; }
+          done
+          for needle in "Donchitos" "obra/superpowers"; do
+            grep -q "${needle}" CREDITS.md \
+              || { echo "FAIL: CREDITS.md no longer credits ${needle}." >&2; exit 1; }
+            grep -q "${needle}" manifest.yaml \
+              || { echo "FAIL: manifest.yaml lineage no longer names ${needle}." >&2; exit 1; }
+          done
+          echo "OK: LICENSE, CREDITS.md and manifest.yaml lineage all intact."
