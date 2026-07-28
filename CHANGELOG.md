@@ -4,7 +4,10 @@ All notable changes to the ShiningPlague Game Studio framework are recorded here
 The format follows [Keep a Changelog](https://keepachangelog.com/); versions follow
 [Semantic Versioning](https://semver.org/).
 
-## [Unreleased]
+## [0.5.0] - 2026-07-28 — the install is now what the skills describe
+
+*Two passes, one release: the repair itself, then the same install re-walked as a
+stranger — everything below shipped together.*
 
 ### Fixed — the fresh-install journey, walked as a stranger
 
@@ -143,7 +146,7 @@ to discover.
   `{{LORE_DOC}}` defaults, `technical-preferences.md` — the row now says why, rather
   than leaving the omission to be rediscovered.
 
-## [0.5.0] - 2026-07-28 — the install is now what the skills describe
+### The repair, as originally written
 
 **What was wrong.** Every version up to 0.4.0 shipped a `.claude/` layer and
 nothing else. The skills inside it command paths *outside* `.claude/` — "open
@@ -178,7 +181,8 @@ not asserted.
 
 ### Added
 - **`scaffold/` — the project document stack the skills read.** Both installers now
-  seed **36 paths** (19 directories, 17 files): a valid, parseable and *empty*
+  seed **52 paths** (23 directories, 29 files — 36 at the time of writing, grown by the
+  two passes below): a valid, parseable and *empty*
   registry with its schema documented inline, a dev diary, the session handover
   file, `stage.txt` / `review-mode.txt` / `sprint-status.yaml` / `flow-ledger.yaml`,
   `devlog.md` / `implementation-status.md` / `open-flags.md`, the ADR and workstream
