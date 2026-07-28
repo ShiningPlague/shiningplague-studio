@@ -1,4 +1,14 @@
+<!-- scaffold-seed: unwritten — delete this line once you write real content -->
 # Interaction Pattern Library: [Game Title]
+
+> **What this is.** The one place a UI interaction is decided once and reused
+> everywhere: how a button reacts, what a confirm dialog does, which input a
+> gesture maps to. A per-screen UX spec cites a pattern from here instead of
+> re-inventing it.
+>
+> **Written by** `/team-ui` (the ux-designer pass). **Read by** every
+> `docs/ux/*.md` screen spec, the ui-programmer when implementing, and
+> `docs/accessibility-requirements.md`, which links this file by name.
 
 > **Status**: Draft | Stable | Under Revision
 > **Author**: [ux-designer]

@@ -25,9 +25,13 @@ counts:
                       # godot-extras, multiplayer, unity, unreal
   hooks: 13           # `find hooks -type f | wc -l` — all POSIX shell
   rules: 11           # `find rules -type f | wc -l`
-  templates: 41       # `find templates -type f | wc -l` — 38 top-level (incl.
+  templates: 40       # `find templates -type f | wc -l` — 37 top-level (incl.
                       # settings.template.json, hook wiring, new in 0.3.0) + 3 under
-                      # collaborative-protocols/
+                      # collaborative-protocols/. 41 before 0.5.0's final pass, which
+                      # DELETED architecture-traceability.md: every section of it mapped
+                      # one-to-one onto docs/architecture/tr-registry.yaml, so it was one
+                      # artifact under two names and two skills wrote the same fact into
+                      # two files that could disagree.
   docs: 12            # `find docs -type f | wc -l` — 11 top-level + engine-notes/
   tools: 5            # `ls tools/*.py | wc -l` — workflow_state_check.py (flow-state
                       # detection), doc_stack_check.py (doc-stack + slash-command
@@ -38,23 +42,26 @@ counts:
                       # routing table from SKILL.md frontmatter).
                       # `find tools -maxdepth 1 -type f | wc -l` = 6 — the sixth is
                       # doc_stack.manifest.json, a data file, not a runner.
-  scaffold_files: 30  # `find scaffold -type f | wc -l` = 31; scaffold/README.md documents
-                      # the folder for repo readers and is never installed, so 30 land.
-  scaffold_from_templates: 6  # seeds that are a copy of a shipped template, so no document
+  scaffold_files: 33  # `find scaffold -type f | wc -l` = 34; scaffold/README.md documents
+                      # the folder for repo readers and is never installed, so 33 land.
+  scaffold_from_templates: 8  # seeds that are a copy of a shipped template, so no document
                       # is authored twice: GDD.md, gdd/game-concept.md, gdd/game-pillars.md,
-                      # gdd/systems-index.md, art-bible.md, adr/TEMPLATE.md
-  scaffold_paths: 45  # 21 directories + 24 files — the paths the scaffold step guarantees
+                      # gdd/systems-index.md, art-bible.md, sound-bible.md,
+                      # ux/interaction-pattern-library.md, adr/TEMPLATE.md
+  scaffold_paths: 52  # 23 directories + 29 files — the paths the scaffold step guarantees
                       # exist in a fresh project; enumerated in the
                       # SCAFFOLD-BEGIN..SCAFFOLD-END region of BOTH installers and
                       # cross-checked by tools/doc_stack_check.py (INSTALLER SCAFFOLD
-                      # COVERAGE: covered 45 / uncovered 0).
-                      # 36 before 0.5.0's final pass, which seeded the last nine: the
-                      # three docs/architecture/ documents, accessibility-requirements.md,
-                      # docs/assets/{,asset-manifest.md}, session-state/active-goals.json
-                      # and tests/{,regression-suite.md}. Every fixed-name artifact the
-                      # doc stack promises now ships as a fillable skeleton.
-  install_files: 191  # what a default install lands outside the doc stack:
-                      # 184 under .claude/ (incl. settings.json) + 6 under tools/ +
+                      # COVERAGE: covered 52 / uncovered 0).
+                      # 36 -> 45 -> 52 across 0.5.0's three seeding passes. The final pass
+                      # dropped the last qualifier ("only if something gates on it") and
+                      # applied the rule as written: docs/sound-bible.md, docs/ux/{,
+                      # interaction-pattern-library.md}, architecture/requirements-
+                      # traceability.md, production/community/{,guidelines.md,crisis-log.md}.
+                      # Every fixed-name artifact the doc stack promises now ships as a
+                      # fillable skeleton, gate or no gate.
+  install_files: 190  # what a default install lands outside the doc stack:
+                      # 183 under .claude/ (incl. settings.json) + 6 under tools/ +
                       # CLAUDE.md. Matches the installer's own "new files" line. Build
                       # artefacts (__pycache__/, *.pyc) are excluded by both installers,
                       # so this number does not depend on whether the clone was ever run.
@@ -73,19 +80,22 @@ scaffold:
   purpose: >-
     Make every path the skills read exist on day one, so a fresh install is
     coherent before the first conversation instead of after the first repair.
-  source: "scaffold/ (30 installed files) + 6 copies of shipped templates/ documents"
-  creates: 45   # 21 directories, 24 files
+  source: "scaffold/ (33 installed files) + 8 copies of shipped templates/ documents"
+  creates: 52   # 23 directories, 29 files
   rule: >-
     Every FIXED-NAME artifact the doc stack promises is seeded as a fillable
     skeleton — headings, a one-line prompt under each, and a worked example where
-    it clarifies. Nothing is left "created on use" as a design choice. What stays
-    on use is only what has no knowable filename until it is written: dated specs
-    and plans, numbered ADRs, per-system GDDs, per-target asset specs.
+    it clarifies. The test is the FILENAME and nothing else: not "does a gate read
+    it", not "does a discipline get dispatched". If the name is knowable in advance
+    it is seeded, and guiding the user through filling it is the assistant's job.
+    What stays on use is only what has no knowable filename until it is written:
+    dated specs, plans and reports, numbered ADRs, per-system GDDs, per-screen UX
+    specs, per-target asset specs, per-bug reports, per-milestone files.
   overwrite_policy: >-
     NEVER. An existing file is left untouched and counted as skipped, so a live
     project's real registry, devlog and session state survive any number of
     re-runs. A second install is a byte-for-byte no-op on the doc stack
-    (`seeded 0 · skipped 36`).
+    (`seeded 0 · skipped 41`).
   opt_out: "--no-scaffold (bash) / -NoScaffold (PowerShell)"
   enforced_by: >-
     tools/doc_stack_check.py reads the SCAFFOLD-BEGIN..SCAFFOLD-END region of both
@@ -94,18 +104,20 @@ scaffold:
   seeds:
     docs: >-
       GDD.md, gdd/{systems-index,game-concept,game-pillars}.md, art-bible.md,
-      accessibility-requirements.md, adr/TEMPLATE.md,
+      sound-bible.md, accessibility-requirements.md, adr/TEMPLATE.md,
       architecture/{architecture,control-manifest}.md, architecture/tr-registry.yaml,
-      assets/asset-manifest.md, devlog.md, implementation-status.md, open-flags.md,
-      and the specs/ plans/ z-old/{specs,plans}/ directories
+      architecture/requirements-traceability.md, assets/asset-manifest.md,
+      ux/interaction-pattern-library.md, devlog.md, implementation-status.md,
+      open-flags.md, and the specs/ plans/ z-old/{specs,plans}/ directories
     data: >-
       _schemas/system_registry.json (valid, parseable and EMPTY — the correct
       day-one state, with its schema documented inline) and _schemas/dev_diary.json
     production: >-
       session-state/active.md, session-state/active-goals.json (structurally empty —
-      primary_goal null), workstreams/TEMPLATE.md, stage.txt, review-mode.txt,
-      sprint-status.yaml, flow-ledger.yaml, and the session-logs/ sprints/ epics/
-      qa/{bugs,evidence}/ directories
+      primary_goal null), workstreams/TEMPLATE.md, community/guidelines.md,
+      community/crisis-log.md, stage.txt, review-mode.txt, sprint-status.yaml,
+      flow-ledger.yaml, and the session-logs/ sprints/ epics/ qa/{bugs,evidence}/
+      directories
     tests: >-
       regression-suite.md — the coverage index /regression-suite maintains. The
       only file the template puts under tests/; no test CODE is ever shipped.
@@ -131,9 +143,11 @@ install_targets:
     read: system_registry.json, dev_diary.json, session-state/active.md,
     session-state/active-goals.json, stage.txt, review-mode.txt, sprint-status.yaml,
     flow-ledger.yaml, workstreams/TEMPLATE.md, adr/TEMPLATE.md, devlog.md,
-    implementation-status.md, open-flags.md, accessibility-requirements.md, the three
-    docs/architecture/ documents, assets/asset-manifest.md, tests/regression-suite.md,
-    plus the spec / plan / gdd / epic / sprint / qa directories. NEVER
+    implementation-status.md, open-flags.md, accessibility-requirements.md,
+    art-bible.md, sound-bible.md, the four docs/architecture/ documents,
+    assets/asset-manifest.md, ux/interaction-pattern-library.md,
+    community/guidelines.md, community/crisis-log.md, tests/regression-suite.md,
+    plus the spec / plan / gdd / epic / sprint / qa / ux / community directories. NEVER
     overwrites: an existing file is left untouched and counted as skipped, so a
     live project's real registry and devlog survive any re-run. Skip it with
     --no-scaffold (bash) / -NoScaffold (PowerShell).

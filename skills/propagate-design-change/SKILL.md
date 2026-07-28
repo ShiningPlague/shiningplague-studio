@@ -1,6 +1,6 @@
 ---
 name: propagate-design-change
-description: "When a GDD is revised, scans all ADRs and the traceability index to identify which architectural decisions are now potentially stale. Produces a change impact report and guides the user through resolution."
+description: "When a GDD is revised, scans all ADRs and the TR registry (docs/architecture/tr-registry.yaml) to identify which architectural decisions are now potentially stale. Produces a change impact report and guides the user through resolution."
 argument-hint: "[path/to/changed-gdd.md]"
 user-invocable: true
 allowed-tools: Read, Glob, Grep, Write, Bash, Task
@@ -80,7 +80,9 @@ Read all ADRs in `docs/architecture/`:
 - Extract the "GDD Requirements Addressed" table
 - Note which GDD documents and requirement IDs each ADR references
 
-Read `docs/architecture/architecture-traceability.md` if it exists.
+Read `docs/architecture/tr-registry.yaml` — the requirement-coverage registry. It is
+the ONE home for TR ids, their requirement text, and which ADRs cover them; there is
+no second traceability document to consult.
 
 Report: "Loaded [N] ADRs. [M] reference [gdd filename]."
 
@@ -190,19 +192,27 @@ For ADRs marked **Superseded**:
 
 ---
 
-## 8. Update Traceability Index
+## 8. Update the TR Registry
 
-If `docs/architecture/architecture-traceability.md` exists:
-- Add the changed GDD requirements to the "Superseded Requirements" table:
+Append the changed GDD requirements to the `superseded:` block of
+`docs/architecture/tr-registry.yaml` — that block exists for exactly this, and it is
+where `/gate-check` and `/dev-story` look. Do not open a second traceability document
+to record the same fact.
 
-```markdown
-## Superseded Requirements
-| Date | GDD | Requirement | Changed To | ADRs Affected | Resolution |
-|------|-----|-------------|------------|---------------|------------|
-| [date] | [gdd] | [old requirement text] | [new requirement text] | ADR-NNNN | [Superseded/Updated/Valid] |
+```yaml
+superseded:
+  - id: TR-[system]-NNN
+    gdd: docs/gdd/[system].md
+    changed: "[what the GDD used to say -> what it says now]"
+    affected_adrs: [ADR-NNNN]
+    status: adr-needs-update     # adr-needs-update | adr-confirmed
 ```
 
-Ask: "May I update the traceability index?"
+Also update the requirement's own entry: set `revised: [date]` and refresh its
+`requirement` text. **Never renumber the id** — that is what makes it an id. Bump
+`version` and `last_updated` at the top of the file.
+
+Ask: "May I update the TR registry?"
 
 ---
 

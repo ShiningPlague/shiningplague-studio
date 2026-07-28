@@ -168,7 +168,7 @@ For each story file found:
 | Sprint status | `production/sprint-status.yaml` | MEDIUM — `/sprint-plan status` falls back to markdown |
 | Stage file | `production/stage.txt` | MEDIUM — phase auto-detect unreliable |
 | Engine reference | `docs/engine-reference/[engine]/VERSION.md` | HIGH — ADR engine checks blind |
-| Architecture traceability | `docs/architecture/architecture-traceability.md` | MEDIUM — no persistent matrix |
+| RTM snapshot | `docs/architecture/requirements-traceability.md` | LOW — regenerate with `/architecture-review rtm`; the registry above is the source of truth |
 
 ### 2f: Technical Preferences Audit
 

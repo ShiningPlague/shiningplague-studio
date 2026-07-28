@@ -58,7 +58,7 @@ from `production/session-state/active.md`"*. The scaffold step is what makes tho
 paths exist on day one, so a first session that follows the reading map does not
 hit a missing file.
 
-It seeds **36 paths** — real starter files, never zero-byte placeholders, each
+It seeds **52 paths** — real starter files, never zero-byte placeholders, each
 carrying a header saying what it is, who writes it and which skill reads it, plus
 a `scaffold-seed: unwritten` marker line you delete when you write real content.
 That marker is what lets the tools tell a blank seed from your work: without it
@@ -70,15 +70,25 @@ a brand-new user to log three steps they had never taken (contract:
 |---|---|
 | Built state | `data/_schemas/system_registry.json` (valid, empty, documented schema), `data/_schemas/dev_diary.json` |
 | Session state | `production/session-state/active.md` (the handover file), `production/stage.txt` (`not-started` — not a phase name; no gate cleared yet), `production/review-mode.txt` (`lean`), `production/flow-ledger.yaml`, `production/sprint-status.yaml` |
-| Doc stack | `docs/devlog.md`, `docs/implementation-status.md`, `docs/open-flags.md` |
-| Templates in place | `docs/adr/TEMPLATE.md`, `production/workstreams/TEMPLATE.md`, `docs/GDD.md`, `docs/gdd/{game-concept,game-pillars,systems-index}.md`, `docs/art-bible.md` |
-| Working directories | `docs/{specs,plans,gdd,architecture,z-old/specs,z-old/plans}/`, `production/{session-logs,workstreams,sprints,epics,qa/bugs,qa/evidence}/` |
+| Doc stack | `docs/devlog.md`, `docs/implementation-status.md`, `docs/open-flags.md`, `docs/accessibility-requirements.md` |
+| Architecture | `docs/architecture/{architecture,control-manifest}.md`, `docs/architecture/tr-registry.yaml`, `docs/architecture/requirements-traceability.md` |
+| Discipline bibles | `docs/art-bible.md`, `docs/sound-bible.md`, `docs/ux/interaction-pattern-library.md`, `docs/assets/asset-manifest.md`, `tests/regression-suite.md` |
+| Community | `production/community/guidelines.md`, `production/community/crisis-log.md` |
+| Templates in place | `docs/adr/TEMPLATE.md`, `production/workstreams/TEMPLATE.md`, `docs/GDD.md`, `docs/gdd/{game-concept,game-pillars,systems-index}.md` |
+| Working directories | `docs/{specs,plans,gdd,architecture,assets,ux,z-old/specs,z-old/plans}/`, `production/{session-logs,workstreams,sprints,epics,qa/bugs,qa/evidence,community}/` |
 
-The last two rows in the "Templates in place" group are copies of the shipped
-`templates/` documents (`architecture-decision-record.md`, `game-design-document.md`,
-`game-concept.md`, `game-pillars.md`, `systems-index.md`, `art-bible.md`), so no
-document is authored twice in this repo: fix the template, and every future
-project's seed is fixed with it.
+Eight of those seeds are copies of shipped `templates/` documents
+(`architecture-decision-record.md`, `game-design-document.md`, `game-concept.md`,
+`game-pillars.md`, `systems-index.md`, `art-bible.md`, `sound-bible.md`,
+`interaction-pattern-library.md`), so no document is authored twice in this repo:
+fix the template, and every future project's seed is fixed with it.
+
+**The seeding rule is the filename, and nothing else.** If a doc names a fixed
+filename, the installer ships that file as a fillable skeleton — whether or not a
+gate globs it, and whether or not the discipline that fills it is ever dispatched.
+What stays created-on-use is only what has no knowable filename until it is written:
+dated specs, plans and reports, numbered ADRs, per-system GDDs, per-screen UX specs,
+per-target asset specs, per-bug reports, per-milestone files.
 
 **Never clobber.** A scaffolded file that already exists is left exactly as it is
 and counted as skipped — different discipline from the `.claude/` layer, which is
@@ -121,7 +131,7 @@ repeated (bash) or given a list (PowerShell).
   unchanged counts for the `.claude/` layer and seeded / skipped counts for the
   document stack.
 - **Running the installer twice is a no-op the second time.** Second run on an
-  unchanged project: `new 0 · updated 0 · unchanged 183 · seeded 0 · skipped 29`,
+  unchanged project: `new 0 · updated 0 · unchanged 188 · seeded 0 · skipped 41`,
   and the file tree is byte-for-byte identical.
 - **Local-modification warning.** Any existing file that differed from the
   bundle is counted and listed after the update — if you had local edits under

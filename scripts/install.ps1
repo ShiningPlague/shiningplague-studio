@@ -318,6 +318,7 @@ $ScaffoldPaths = @(
     'docs/gdd/game-concept.md',
     'docs/gdd/game-pillars.md',
     'docs/art-bible.md',
+    'docs/sound-bible.md',
     'docs/accessibility-requirements.md',
     'docs/adr/',
     'docs/adr/TEMPLATE.md',
@@ -325,8 +326,11 @@ $ScaffoldPaths = @(
     'docs/architecture/architecture.md',
     'docs/architecture/control-manifest.md',
     'docs/architecture/tr-registry.yaml',
+    'docs/architecture/requirements-traceability.md',
     'docs/assets/',
     'docs/assets/asset-manifest.md',
+    'docs/ux/',
+    'docs/ux/interaction-pattern-library.md',
     'docs/specs/',
     'docs/plans/',
     'docs/z-old/specs/',
@@ -350,6 +354,9 @@ $ScaffoldPaths = @(
     'production/qa/',
     'production/qa/bugs/',
     'production/qa/evidence/',
+    'production/community/',
+    'production/community/guidelines.md',
+    'production/community/crisis-log.md',
     'production/stage.txt',
     'production/review-mode.txt',
     'production/sprint-status.yaml',
@@ -366,6 +373,8 @@ $ScaffoldFromTemplate = [ordered]@{
     'game-pillars.md'                  = 'docs/gdd/game-pillars.md'
     'systems-index.md'                 = 'docs/gdd/systems-index.md'
     'art-bible.md'                     = 'docs/art-bible.md'
+    'sound-bible.md'                   = 'docs/sound-bible.md'
+    'interaction-pattern-library.md'   = 'docs/ux/interaction-pattern-library.md'
     'architecture-decision-record.md'  = 'docs/adr/TEMPLATE.md'
 }
 

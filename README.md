@@ -66,9 +66,9 @@ That's the whole interaction model. Every workflow in the studio works like this
 | **Agents** | 35 (+14 in engine packs) | Specialist subagents the skills dispatch — game designer, gameplay programmer, narrative director, QA lead, and more. Each runs in its own context and reports back. |
 | **Hooks** | 13 | Session-lifecycle automation — start-of-session briefings, keyword detection that suggests the right skill, validation checks. |
 | **Rules** | 11 | Path-scoped coding standards that apply automatically to the files they govern. |
-| **Templates** | 41 | Document scaffolds — GDDs, ADRs, specs, plans, sprint files, workstream state. |
+| **Templates** | 40 | Document scaffolds — GDDs, ADRs, specs, plans, sprint files, workstream state. |
 | **Tools** | 5 | Zero-LLM Python runners: two checkers you can run right now (`consistency_check.py`, `doc_stack_check.py`), the workflow-state detector ([docs/flow-ledger.md](docs/flow-ledger.md)), and two index generators. |
-| **Scaffold** | 45 paths | The document stack the skills read, seeded into your project on install — and never overwritten on re-run. Every fixed-name artifact the docs promise is seeded as a fillable skeleton, so nothing the reading map names is missing on day one. |
+| **Scaffold** | 52 paths | The document stack the skills read, seeded into your project on install — and never overwritten on re-run. Every fixed-name artifact the docs promise is seeded as a fillable skeleton, so nothing the reading map names is missing on day one. |
 
 Every count above is reproduced by a command recorded beside it in [manifest.yaml](manifest.yaml), and CI re-runs both checkers on every push.
 
@@ -93,12 +93,14 @@ your-game/
 ├── docs/                          # ── seeded, never overwritten ──
 │   ├── GDD.md                     # master game design document
 │   ├── gdd/                       # systems-index, game-concept, game-pillars (+ per-system GDDs ✎)
-│   ├── art-bible.md · accessibility-requirements.md
+│   ├── art-bible.md · sound-bible.md · accessibility-requirements.md
 │   ├── adr/                       # TEMPLATE.md — the NNN-<slug>.md records themselves are ✎
 │   ├── architecture/              # architecture.md · control-manifest.md · tr-registry.yaml
+│   │                              #   · requirements-traceability.md
 │   │                              #   (/create-architecture, /create-control-manifest,
 │   │                              #    /architecture-review fill them in)
 │   ├── assets/asset-manifest.md   # (+ assets/specs/*.md ✎, from /asset-spec)
+│   ├── ux/                        # interaction-pattern-library.md (+ per-screen specs ✎)
 │   ├── specs/ · plans/            # ✎ empty dirs; /brainstorming and /writing-plans fill them
 │   ├── z-old/{specs,plans}/       # where they retire to
 │   └── devlog.md · implementation-status.md · open-flags.md
@@ -111,10 +113,11 @@ your-game/
     ├── session-state/             # active.md (handover) · active-goals.json (this session's goal)
     ├── session-logs/ · workstreams/ · sprints/ · epics/
     ├── qa/{bugs,evidence}/
+    ├── community/                  # guidelines.md · crisis-log.md
     └── stage.txt · review-mode.txt · sprint-status.yaml · flow-ledger.yaml
 ```
 
-**✎ = created on use, not seeded** — and it is now a short list, because the rule is that a *fixed-name* artifact is always seeded. What stays on-use is what has no knowable filename until it is written: dated specs and plans, numbered ADRs, per-system GDDs, per-target asset specs. Everything else in the tree above is a real file the moment the installer finishes, so `CLAUDE.md`'s reading map can name it outright and no session ever hunts for a file that was never there.
+**✎ = created on use, not seeded** — and it is now a short list, because the rule is one line with no exceptions: **if the filename is knowable in advance, it is seeded.** Not "if something gates on it" — the filename is the whole test. What stays on-use is what has no knowable filename until it is written: dated specs, plans and reports, numbered ADRs (`NNN-<slug>.md`), per-system GDDs, per-screen UX specs, per-target asset specs, per-bug reports, per-milestone files. Everything else in the tree above is a real file the moment the installer finishes, so `CLAUDE.md`'s reading map can name it outright and no session ever hunts for a file that was never there.
 
 The seeded files are skeletons — section headings with a one-line prompt under each, ready to fill top-to-bottom with a session's help — and each carries a `scaffold-seed: unwritten` marker line that you delete when you write real content. That marker is what lets `tools/workflow_state_check.py` tell a blank seed from your work instead of reporting steps you never took ([docs/doc-stack.md](docs/doc-stack.md) § *Seeded is not written*). Seeding more documents therefore never inflates your progress: a virgin install still reports zero steps done.
 

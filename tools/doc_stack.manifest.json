@@ -220,6 +220,10 @@
       "why": "Visual identity spec that gates asset production (/art-bible)."
     },
     {
+      "path": "docs/sound-bible.md",
+      "why": "Audio identity spec -- the art bible's counterpart, seeded from the shipped templates/sound-bible.md and filled by /team-audio's audio-direction pass (skills/team-audio/SKILL.md). templates/interaction-pattern-library.md sends the reader here by name for the audio behind every feedback pattern, so the name has to resolve to a file."
+    },
+    {
       "path": "docs/accessibility-requirements.md",
       "why": "Project-wide accessibility tier + feature matrix, filled by the ux-designer/producer pass. The technical-setup phase gate globs this literal filename (docs/workflow-catalog.yaml) and templates/ux-spec.md, hud-design.md and interaction-pattern-library.md all send the reader here, so the gate needs a template to judge, not a hole."
     },
@@ -248,8 +252,20 @@
       "why": "Requirement-coverage registry: /architecture-review appends TR ids, /architecture-decision marks them covered, /dev-story STOPs without it, /gate-check reads coverage from it. Seeded as .yaml and named exactly -- a 'docs/architecture/*' blanket once absolved a fork between the .md and .yaml spellings, so /architecture-decision wrote coverage into a file /gate-check never read."
     },
     {
+      "path": "docs/architecture/requirements-traceability.md",
+      "why": "The full RTM (GDD -> ADR -> Story -> Test) /architecture-review rtm writes and rewrites under this exact name (skills/architecture-review/SKILL.md, 'RTM Output'). NOT a second traceability registry: the seed states in its own text that tr-registry.yaml owns TR ids, coverage and requirement text, and that this file is a regenerated snapshot adding only the Story and Test columns the registry has no fields for."
+    },
+    {
       "path": "docs/assets/",
       "why": "Asset production layer -- the master manifest plus the per-target spec files /asset-spec writes into specs/."
+    },
+    {
+      "path": "docs/ux/",
+      "why": "UX layer -- the interaction pattern library plus the per-screen specs the ux-designer agent writes. The pre-production phase gate globs this folder (docs/workflow-catalog.yaml), so it must exist before the first screen spec does."
+    },
+    {
+      "path": "docs/ux/interaction-pattern-library.md",
+      "why": "Cross-screen interaction rules, seeded from the shipped templates/interaction-pattern-library.md and filled by /team-ui's ux-designer pass (skills/team-ui/SKILL.md). Both templates/accessibility-requirements.md and its seeded copy scaffold/docs/accessibility-requirements.md link this exact path as a Linked Document."
     },
     {
       "path": "docs/assets/asset-manifest.md",
@@ -348,6 +364,18 @@
       "why": "Test evidence attached to stories before /story-done."
     },
     {
+      "path": "production/community/",
+      "why": "Community layer root -- the guidelines, the crisis log, and the dev-blog / feedback-digest folders the community-manager agent fills (agents/community-manager.md, 'Output Documents')."
+    },
+    {
+      "path": "production/community/guidelines.md",
+      "why": "Published community rules + the private enforcement ladder, authored by the community-manager agent (agents/community-manager.md names it under Output Documents and 'Define and publish community guidelines'). Fixed name, so it is seeded: the moderation ladder is written in calm or it is improvised during the first incident."
+    },
+    {
+      "path": "production/community/crisis-log.md",
+      "why": "Append-only history of what was said publicly during every incident, kept by the community-manager agent (agents/community-manager.md, Output Documents). Distinct from production/releases/incident-*.md, which is the per-incident TECHNICAL record from templates/incident-response.md -- one log of communications across all incidents vs one record per incident, and the seed states the split."
+    },
+    {
       "path": "production/stage.txt",
       "why": "Current project phase; /project-stage-detect and the session-start hook read it."
     },
@@ -394,15 +422,7 @@
       "why": "/design-system writes one GDD per system in the systems index."
     },
     {
-      "_why_block": "The three architecture documents that used to sit here -- architecture.md, control-manifest.md and tr-registry.yaml -- moved to the scaffold block above: a fixed-name artifact a doc promises is seeded as a fillable template, never left for the reader to discover missing. Their siblings below stay here because each is a DATED or per-run output. They are still enumerated one by one rather than covered by a 'docs/architecture/*' blanket -- that blanket once absolved a fork between the .md and .yaml spellings of the TR registry, so /architecture-decision wrote requirement coverage into a file /gate-check never read.",
-      "pattern": "docs/architecture/architecture-traceability.md",
-      "why": "The filled-in copy of the shipped templates/architecture-traceability.md; /propagate-design-change reads it (skills/propagate-design-change/SKILL.md)."
-    },
-    {
-      "pattern": "docs/architecture/requirements-traceability.md",
-      "why": "/architecture-review offers to write the full RTM here (skills/architecture-review/SKILL.md)."
-    },
-    {
+      "_why_block": "Every FIXED-NAME architecture document that used to sit here has moved to the scaffold block above -- architecture.md, control-manifest.md, tr-registry.yaml, and now requirements-traceability.md. The rule is the filename, not the gate: if the name is knowable in advance it is seeded as a fillable skeleton, whether or not anything reads it as a gate. A FIFTH name, docs/architecture/architecture-traceability.md, was DELETED rather than seeded in 0.5.0: every section of it -- coverage summary, TR matrix, layer gaps, cross-ADR conflicts, superseded requirements -- maps one-to-one onto tr-registry.yaml, so it was one artifact under two names, and two names for one artifact is the drift this file exists to stop. /propagate-design-change and /adopt now name the registry; templates/architecture-traceability.md is gone. What stays below is DATED or per-run output only.",
       "pattern": "docs/architecture/architecture-review-*.md",
       "why": "/architecture-review writes one dated review report per run (skills/architecture-review/SKILL.md); the architecture phase gate globs it (docs/workflow-catalog.yaml)."
     },
@@ -423,10 +443,6 @@
       "why": "/content-audit offers to write docs/content-audit-<YYYY-MM-DD>.md as its report (skills/content-audit/SKILL.md)."
     },
     {
-      "pattern": "docs/sound-bible.md",
-      "why": "The filled-in copy of the shipped templates/sound-bible.md, produced by /team-audio's audio-direction pass."
-    },
-    {
       "pattern": "docs/world-lore.md",
       "why": "Default value of the {{LORE_DOC}} placeholder (skills/team-narrative/SKILL.md); the world-builder agent authors the project's lore home."
     },
@@ -443,16 +459,8 @@
       "why": "/asset-spec writes one <target>-assets.md per specced system/level/character (skills/asset-spec/SKILL.md)."
     },
     {
-      "pattern": "docs/ux",
-      "why": "Root of the UX spec folder, created when the ux-designer agent writes the first screen spec. Bare-root entry ONLY -- no trailing slash, so it does not absolve the files below; each is enumerated."
-    },
-    {
       "pattern": "docs/ux/*.md",
-      "why": "UX specs -- one per key screen, filled-in copies of the shipped templates/ux-spec.md, authored by the ux-designer agent (the pre-production UX step dispatches it). The pre-production phase gate globs this folder (docs/workflow-catalog.yaml)."
-    },
-    {
-      "pattern": "docs/ux/interaction-pattern-library.md",
-      "why": "The filled-in copy of the shipped templates/interaction-pattern-library.md; the accessibility template links the project's copy."
+      "why": "UX specs -- one per key screen, PER-SCREEN filenames (ux-spec-<screen>.md), so unknowable in advance and correctly on-use; filled-in copies of the shipped templates/ux-spec.md, authored by the ux-designer agent. The folder itself and the one fixed-name document in it (interaction-pattern-library.md) are scaffolded above."
     },
     {
       "pattern": "docs/levels/",
@@ -551,16 +559,8 @@
       "why": "Incident records filed from the shipped templates/incident-response.md, kept beside the patch record for the fix version."
     },
     {
-      "pattern": "production/community/guidelines.md",
-      "why": "Community guidelines authored by the community-manager agent (agents/community-manager.md)."
-    },
-    {
-      "pattern": "production/community/crisis-log.md",
-      "why": "Incident communication history kept by the community-manager agent (agents/community-manager.md)."
-    },
-    {
       "pattern": "production/community/dev-blogs/",
-      "why": "Dev blog posts written by the community-manager agent; one file per post, so a folder entry (agents/community-manager.md)."
+      "why": "Dev blog posts written by the community-manager agent; one file per post with a per-post filename, so a folder entry (agents/community-manager.md). The two FIXED-NAME community documents beside it -- guidelines.md and crisis-log.md -- are scaffolded above."
     },
     {
       "pattern": "production/community/feedback-digests/",

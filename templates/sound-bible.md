@@ -1,4 +1,13 @@
+<!-- scaffold-seed: unwritten — delete this line once you write real content -->
 # Sound Bible: [Project Name]
+
+> **What this is.** The audio counterpart of the art bible: the one document that
+> fixes what the game sounds like, so every cue anyone writes later is judged
+> against something. Fill it top-to-bottom.
+>
+> **Written by** `/team-audio` (audio-direction pass, audio-director + sound-designer).
+> **Read by** the sound-designer when speccing individual cues, the interaction
+> pattern library (which points feedback rows here), and the audio mix review.
 
 ## Audio Vision
 

@@ -99,6 +99,49 @@ to discover.
   existing `scaffold-seed: unwritten` marker, the JSON one is recognised by value
   (`primary_goal: null`), and `tools/workflow_state_check.py` still reports **0
   unrecorded, 0 conflict** on a virgin install. No detector changed.
+- **The rule had grown a qualifier, and the qualifier is gone.** The previous pass
+  seeded nine paths and held six back, reasoning that *"nothing reads them as a gate
+  — they are outputs a discipline agent writes only if that discipline is
+  dispatched."* That is a judgement call wearing a rule's clothes, and it is exactly
+  what the rule was written to replace. The rule has one test and it is the
+  **filename**: knowable in advance → seeded. Not "does a gate glob it", not "will
+  the discipline be dispatched" — a designer who never dispatches the audio pass
+  still deserves to find `docs/sound-bible.md` waiting with headings in it. Five of
+  the six are now seeded: `docs/sound-bible.md` and
+  `docs/ux/interaction-pattern-library.md` (from the shipped templates, so no
+  document is authored twice), `docs/architecture/requirements-traceability.md`,
+  `production/community/guidelines.md` and `production/community/crisis-log.md`.
+  Scaffold goes **45 → 52 paths** (23 directories, 29 files).
+- **The sixth was not a missing file — it was the same file under a second name, and
+  it is deleted.** `docs/architecture/architecture-traceability.md` had a coverage
+  summary, a TR matrix, layer gaps, a cross-ADR conflict table and a superseded-
+  requirements table. `docs/architecture/tr-registry.yaml` — seeded last pass — has
+  `coverage:`, `requirements:` (with `layer:` and `status:`), `conflicts:` and
+  `superseded:`. One artifact, two spellings, and `/propagate-design-change` was
+  told to write the superseded fact into the markdown one while `/gate-check` and
+  `/dev-story` read the YAML one. Seeding both would have shipped two skeletons
+  guaranteed to disagree, which is the disease, not the cure. `templates/
+  architecture-traceability.md` is removed, `/propagate-design-change` now updates
+  the registry's own `superseded:` block, and `/adopt`'s infrastructure audit names
+  the registry. `docs/architecture/requirements-traceability.md` survives beside it
+  because it is genuinely a different artifact — the RTM adds the **Story** and
+  **Test** columns the registry has no fields for — and its seed says in its own
+  first section that the registry is the source of truth and this file is a
+  regenerated snapshot.
+- **`doc-stack.md` is now the complete contract it claims to be.** It advertises
+  itself as the one page that answers "where does X live?" and was missing a row for
+  **19** artifacts the manifest declares: the five new seeds, plus
+  `docs/consistency-failures.md`, `docs/world-lore.md`, `docs/story-outline.md`,
+  `docs/live-ops/`, the four `production/releases/` artifacts, both
+  `production/community/` folders, `prototypes/<name>/REPORT.md`,
+  `.claude/settings.local.json`, `.claude/agents-optional/` and
+  `.claude/docs/engine-notes/`. Combined rows that named four paths in one cell are
+  split, so every path is individually answerable. Cross-checked mechanically against
+  the manifest's `scaffold` + `created_on_use` lists in both directions: **0 manifest
+  entries without a row, 0 rows the manifest cannot classify.** Where a fixed name is
+  deliberately *not* seeded — the append-only `consistency-failures.md`, the
+  `{{LORE_DOC}}` defaults, `technical-preferences.md` — the row now says why, rather
+  than leaving the omission to be rediscovered.
 
 ## [0.5.0] - 2026-07-28 — the install is now what the skills describe
 
