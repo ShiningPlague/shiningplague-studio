@@ -68,7 +68,7 @@ That's the whole interaction model. Every workflow in the studio works like this
 | **Rules** | 11 | Path-scoped coding standards that apply automatically to the files they govern. |
 | **Templates** | 41 | Document scaffolds — GDDs, ADRs, specs, plans, sprint files, workstream state. |
 | **Tools** | 5 | Zero-LLM Python runners: two checkers you can run right now (`consistency_check.py`, `doc_stack_check.py`), the workflow-state detector ([docs/flow-ledger.md](docs/flow-ledger.md)), and two index generators. |
-| **Scaffold** | 36 paths | The document stack the skills read, seeded into your project on install — and never overwritten on re-run. |
+| **Scaffold** | 45 paths | The document stack the skills read, seeded into your project on install — and never overwritten on re-run. Every fixed-name artifact the docs promise is seeded as a fillable skeleton, so nothing the reading map names is missing on day one. |
 
 Every count above is reproduced by a command recorded beside it in [manifest.yaml](manifest.yaml), and CI re-runs both checkers on every push.
 
@@ -93,10 +93,12 @@ your-game/
 ├── docs/                          # ── seeded, never overwritten ──
 │   ├── GDD.md                     # master game design document
 │   ├── gdd/                       # systems-index, game-concept, game-pillars (+ per-system GDDs ✎)
-│   ├── art-bible.md
+│   ├── art-bible.md · accessibility-requirements.md
 │   ├── adr/                       # TEMPLATE.md — the NNN-<slug>.md records themselves are ✎
-│   ├── architecture/              # ✎ empty dir; /create-architecture, /create-control-manifest
-│   │                              #   and /architecture-review write into it
+│   ├── architecture/              # architecture.md · control-manifest.md · tr-registry.yaml
+│   │                              #   (/create-architecture, /create-control-manifest,
+│   │                              #    /architecture-review fill them in)
+│   ├── assets/asset-manifest.md   # (+ assets/specs/*.md ✎, from /asset-spec)
 │   ├── specs/ · plans/            # ✎ empty dirs; /brainstorming and /writing-plans fill them
 │   ├── z-old/{specs,plans}/       # where they retire to
 │   └── devlog.md · implementation-status.md · open-flags.md
@@ -104,16 +106,17 @@ your-game/
 │   └── _schemas/
 │       ├── system_registry.json   # THE built-state source of truth (seeded valid + empty)
 │       └── dev_diary.json
+├── tests/regression-suite.md      # coverage index — your test CODE stays yours
 └── production/
-    ├── session-state/active.md    # session handover — how the next chat resumes
+    ├── session-state/             # active.md (handover) · active-goals.json (this session's goal)
     ├── session-logs/ · workstreams/ · sprints/ · epics/
     ├── qa/{bugs,evidence}/
     └── stage.txt · review-mode.txt · sprint-status.yaml · flow-ledger.yaml
 ```
 
-**✎ = created on use, not seeded.** A fresh install has the *directory*, not the file: `docs/architecture/architecture.md` does not exist until you run `/create-architecture`, and that is the correct day-one state. Everything else in the tree above is a real file the moment the installer finishes. `CLAUDE.md`'s reading map holds the same line — rows for on-use artifacts point at the directory and name the skill that fills it, so no session ever hunts for a file that was never written.
+**✎ = created on use, not seeded** — and it is now a short list, because the rule is that a *fixed-name* artifact is always seeded. What stays on-use is what has no knowable filename until it is written: dated specs and plans, numbered ADRs, per-system GDDs, per-target asset specs. Everything else in the tree above is a real file the moment the installer finishes, so `CLAUDE.md`'s reading map can name it outright and no session ever hunts for a file that was never there.
 
-The seeded files are skeletons, and each one carries a `scaffold-seed: unwritten` marker line that you delete when you write real content. That is what lets `tools/workflow_state_check.py` tell a blank seed from your work instead of reporting steps you never took ([docs/doc-stack.md](docs/doc-stack.md) § *Seeded is not written*).
+The seeded files are skeletons — section headings with a one-line prompt under each, ready to fill top-to-bottom with a session's help — and each carries a `scaffold-seed: unwritten` marker line that you delete when you write real content. That marker is what lets `tools/workflow_state_check.py` tell a blank seed from your work instead of reporting steps you never took ([docs/doc-stack.md](docs/doc-stack.md) § *Seeded is not written*). Seeding more documents therefore never inflates your progress: a virgin install still reports zero steps done.
 
 Already have your own document stack? `--no-scaffold` (bash) / `-NoScaffold` (PowerShell) installs the `.claude/` layer alone.
 

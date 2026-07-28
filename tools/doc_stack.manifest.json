@@ -220,6 +220,10 @@
       "why": "Visual identity spec that gates asset production (/art-bible)."
     },
     {
+      "path": "docs/accessibility-requirements.md",
+      "why": "Project-wide accessibility tier + feature matrix, filled by the ux-designer/producer pass. The technical-setup phase gate globs this literal filename (docs/workflow-catalog.yaml) and templates/ux-spec.md, hud-design.md and interaction-pattern-library.md all send the reader here, so the gate needs a template to judge, not a hole."
+    },
+    {
       "path": "docs/adr/",
       "why": "Architecture decision records; CLAUDE.md names this the permanent decision home."
     },
@@ -230,6 +234,26 @@
     {
       "path": "docs/architecture/",
       "why": "Architecture layer -- the blueprint, control manifest and traceability registry."
+    },
+    {
+      "path": "docs/architecture/architecture.md",
+      "why": "Master technical blueprint. /create-architecture fills it section by section (its Phase 7 write template is the seeded heading order); /dev-story, /code-review and /architecture-review read it."
+    },
+    {
+      "path": "docs/architecture/control-manifest.md",
+      "why": "Flat programmer rules sheet /create-control-manifest fills from the Accepted ADRs; /dev-story and /code-review read the layer rules, /story-readiness compares a story's embedded date to its Manifest Version. The technical-setup phase gate globs this literal filename (docs/workflow-catalog.yaml)."
+    },
+    {
+      "path": "docs/architecture/tr-registry.yaml",
+      "why": "Requirement-coverage registry: /architecture-review appends TR ids, /architecture-decision marks them covered, /dev-story STOPs without it, /gate-check reads coverage from it. Seeded as .yaml and named exactly -- a 'docs/architecture/*' blanket once absolved a fork between the .md and .yaml spellings, so /architecture-decision wrote coverage into a file /gate-check never read."
+    },
+    {
+      "path": "docs/assets/",
+      "why": "Asset production layer -- the master manifest plus the per-target spec files /asset-spec writes into specs/."
+    },
+    {
+      "path": "docs/assets/asset-manifest.md",
+      "why": "Master asset index /asset-spec appends a context block to on every run, and reads with no argument to pick the next unspecced target; the production phase gate globs this literal filename (docs/workflow-catalog.yaml)."
     },
     {
       "path": "docs/specs/",
@@ -288,6 +312,10 @@
       "why": "Last session / next steps; CLAUDE.md's session-open ritual reads it first."
     },
     {
+      "path": "production/session-state/active-goals.json",
+      "why": "This session's declared goal, written by /goal-set and appended to by /goal-add-minor. /goal-check READS it as step 0 of /session-close and can pause the close on the result, so it is seeded structurally empty (primary_goal null, every list empty) rather than left absent. JSON carries no comment, so the seed is recognised by value -- same convention as system_registry.json and dev_diary.json."
+    },
+    {
       "path": "production/session-logs/",
       "why": "Per-session logs written by /session-close and the session-end hook."
     },
@@ -334,6 +362,14 @@
     {
       "path": "production/flow-ledger.yaml",
       "why": "Mechanical workflow-state ledger read by tools/workflow_state_check.py and the session-start hook."
+    },
+    {
+      "path": "tests/",
+      "why": "Created solely to hold the one document the template seeds under the user's test tree -- the regression index below. No test CODE is ever shipped into a game project."
+    },
+    {
+      "path": "tests/regression-suite.md",
+      "why": "Regression coverage index /regression-suite reads first ('if it exists') and then maintains, and which docs/skills-index.md advertises to the user by name. The only file the template seeds under tests/; the tests/** ignore entry covers everything else there."
     }
   ],
   "created_on_use": [
@@ -358,18 +394,7 @@
       "why": "/design-system writes one GDD per system in the systems index."
     },
     {
-      "pattern": "docs/architecture/architecture.md",
-      "why": "/create-architecture writes the master architecture blueprint here."
-    },
-    {
-      "pattern": "docs/architecture/control-manifest.md",
-      "why": "/create-control-manifest writes the flat programmer rules sheet here."
-    },
-    {
-      "pattern": "docs/architecture/tr-registry.yaml",
-      "why": "/architecture-review creates + appends the requirement-coverage registry (skills/architecture-review/SKILL.md); /gate-check and /architecture-decision read it. Named, NOT a wildcard: a 'docs/architecture/*' blanket once sat here and silently absolved a fork between the .md and .yaml spellings of this file, so /architecture-decision wrote requirement coverage into a file /gate-check never read. Every sibling below is enumerated for the same reason."
-    },
-    {
+      "_why_block": "The three architecture documents that used to sit here -- architecture.md, control-manifest.md and tr-registry.yaml -- moved to the scaffold block above: a fixed-name artifact a doc promises is seeded as a fillable template, never left for the reader to discover missing. Their siblings below stay here because each is a DATED or per-run output. They are still enumerated one by one rather than covered by a 'docs/architecture/*' blanket -- that blanket once absolved a fork between the .md and .yaml spellings of the TR registry, so /architecture-decision wrote requirement coverage into a file /gate-check never read.",
       "pattern": "docs/architecture/architecture-traceability.md",
       "why": "The filled-in copy of the shipped templates/architecture-traceability.md; /propagate-design-change reads it (skills/propagate-design-change/SKILL.md)."
     },
@@ -402,10 +427,6 @@
       "why": "The filled-in copy of the shipped templates/sound-bible.md, produced by /team-audio's audio-direction pass."
     },
     {
-      "pattern": "docs/accessibility-requirements.md",
-      "why": "The filled-in copy of the shipped templates/accessibility-requirements.md; the UX templates consult the project's copy."
-    },
-    {
       "pattern": "docs/world-lore.md",
       "why": "Default value of the {{LORE_DOC}} placeholder (skills/team-narrative/SKILL.md); the world-builder agent authors the project's lore home."
     },
@@ -416,10 +437,6 @@
     {
       "pattern": "docs/GDD*.md",
       "why": "The master-GDD family: docs/GDD.md is scaffolded, and /design-system may split GDD-<area>.md beside it (skills/red-flag-scan/SKILL.md watches the set)."
-    },
-    {
-      "pattern": "docs/assets/asset-manifest.md",
-      "why": "/asset-spec creates the master asset manifest on its first run and appends a row per specced asset (skills/asset-spec/SKILL.md)."
     },
     {
       "pattern": "docs/assets/specs/*.md",
@@ -620,7 +637,7 @@
     },
     {
       "pattern": "tests/**",
-      "why": "The user's test tree; the template ships no tests into a game project."
+      "why": "The user's test tree; the template ships no test CODE into a game project. Exactly one document under tests/ is seeded -- tests/regression-suite.md, the coverage index /regression-suite maintains -- and it is enumerated in the scaffold block rather than left to this blanket, because a blanket absolving a literal filename is how a promised path goes missing unnoticed."
     },
     {
       "pattern": "server/**",

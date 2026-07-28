@@ -6,11 +6,11 @@ user-invocable: true
 allowed-tools: Read, Glob, Grep, Write, Edit, Task, AskUserQuestion
 ---
 
-If no argument is provided, check whether `docs/assets/asset-manifest.md` exists:
-- If it exists: read it, find the first context (system/level/character) with any asset at status "Needed" but no spec file written yet, and use `AskUserQuestion`:
+If no argument is provided, check whether `docs/assets/asset-manifest.md` has been *written*. The installer seeds it, so existence proves nothing: a copy still carrying the `scaffold-seed: unwritten` marker near the top is the blank skeleton, and counts as no manifest.
+- If it is written: read it, find the first context (system/level/character) with any asset at status "Needed" but no spec file written yet, and use `AskUserQuestion`:
   - Prompt: "The next unspecced context is **[target]**. Generate asset specs for it?"
   - Options: `[A] Yes — spec [target]` / `[B] Pick a different target` / `[C] Stop here`
-- If no manifest: fail with:
+- If it is still the blank seed (or genuinely absent): fail with:
   > "Usage: `/asset-spec system:<name>` — e.g., `/asset-spec system:tower-defense`
   > Or: `/asset-spec level:iron-gate-fortress` / `/asset-spec character:frost-warden`
   > Run after your art bible and GDDs are approved."
@@ -54,7 +54,7 @@ Read all source material **before** asking the user anything.
 - **character**: Read `docs/narrative/characters/[target-name].md` or search `docs/narrative/` for the character profile. Extract visual description, role, and any specified distinguishing features.
 
 ### Optional reads:
-- **Existing manifest**: Read `docs/assets/asset-manifest.md` if it exists — extract already-specced assets for this target to avoid duplicates.
+- **Existing manifest**: Read `docs/assets/asset-manifest.md` if it has been written (a copy still carrying the `scaffold-seed` marker is the blank seed) — extract already-specced assets for this target to avoid duplicates.
 - **Related specs**: Glob `docs/assets/specs/*.md` — scan for assets that could be shared (e.g., a common UI element specced for one system might apply here too).
 
 ### Present context summary:

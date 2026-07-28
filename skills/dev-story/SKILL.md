@@ -76,6 +76,8 @@ This skill bridges planning and code. It reads a story file in full, assembles a
 | Governing ADR | path from story's ADR field | **STOP** — "ADR file [path] not found. Run `/architecture-decision` to create it, or correct the filename in the story's ADR field." |
 | Control manifest | `docs/architecture/control-manifest.md` | **WARN and continue** — "Control manifest not found — layer rules cannot be checked. Run `/create-control-manifest`." |
 
+**"Missing" includes "seeded but unwritten."** The installer seeds the TR registry and the control manifest, so existence proves nothing — a copy still carrying the `scaffold-seed: unwritten` marker (or a `tr-registry.yaml` whose `requirements:` list is still empty) is the blank skeleton. Treat it as missing and take the row's action.
+
 If TR registry or governing ADR is missing, set story status to **BLOCKED** in session state and do not spawn any programmer agent.
 
 Read all of the following simultaneously:

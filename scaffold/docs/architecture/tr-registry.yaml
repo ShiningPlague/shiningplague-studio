@@ -1,0 +1,91 @@
+# scaffold-seed: unwritten — delete this line once you write real content
+# docs/architecture/tr-registry.yaml — the requirement-coverage registry.
+#
+# WHAT THIS IS
+#   One stable id per technical requirement, and the ADR(s) that cover it. It is
+#   the only place a TR id is minted, which is the whole point: a story, a GDD
+#   acceptance criterion and an ADR can all say "TR-inventory-003" and mean the
+#   same requirement six months apart.
+#
+# WRITTEN BY
+#   /architecture-review  — extracts requirements from every GDD, appends new ids
+#   /architecture-decision — marks a requirement covered when an ADR is accepted
+#
+# READ BY
+#   /dev-story             — looks up the story's TR id; `requirement` here is the
+#                            source of truth, not the copy pasted into the story
+#   /create-stories        — stamps each story with the TR id it implements
+#   /create-epics          — traces requirements to ADR coverage per epic
+#   /gate-check            — a Foundation-layer GAP blocks the pre-production gate
+#   /propagate-design-change, /design-system, /map-systems
+#
+# THE FOUR RULES THAT KEEP IDS STABLE
+#   1. APPEND new ids; never renumber, never delete.
+#   2. If a GDD rewords a requirement, update `requirement` and set `revised`.
+#      The id does not change — that is what makes it an id.
+#   3. If a requirement disappears from the design, set `status: deprecated`.
+#      Leave the entry. A deprecated entry is history; a deleted one is a broken
+#      reference in every story that cited it.
+#   4. Bump `version` and `last_updated` on every write.
+#
+# HOW TO FILL IT
+#   Run /architecture-review. It reads this file first so it can reuse ids, then
+#   appends the ones it did not find. Delete this comment block when the registry
+#   has real content in it.
+
+version: 0
+last_updated: ""            # YYYY-MM-DD
+engine: ""                  # engine + version this coverage was judged against
+gdds_indexed: 0
+adrs_indexed: 0
+last_review: ""             # docs/architecture/architecture-review-<date>.md
+
+# Rolled up from `requirements` below on each write. Kept explicit so /gate-check
+# does not have to recount.
+coverage:
+  covered: 0
+  partial: 0
+  gap: 0
+  total: 0
+
+# One entry per technical requirement: any design statement that forces an
+# architectural choice — a data structure, a performance constraint, an engine
+# capability, cross-system communication, persisted state, threading or timing.
+#
+# Worked example of one entry (generic — delete or replace):
+#
+#   - id: TR-save-001
+#     requirement: "Player progress survives a quit at any point in a session."
+#     gdd: docs/gdd/save-system.md
+#     system: save-system
+#     layer: foundation            # foundation | core | feature | presentation
+#     domain: persistence          # the engine domain it leans on
+#     adrs: [ADR-NNNN]             # [] while uncovered
+#     status: covered              # covered | partial | gap | deprecated
+#     added: 2026-01-15
+#     revised: ""                  # set when the GDD rewords it; id stays
+#     notes: ""
+requirements: []
+
+# Two Accepted ADRs that make contradictory claims. Unresolved conflicts are a
+# gate failure, not a note — resolve one way or the other and record which.
+#
+#   - id: CONFLICT-001
+#     adr_a: ADR-NNNN
+#     adr_b: ADR-MMMM
+#     type: data-ownership         # data-ownership | lifecycle | performance | api
+#     summary: "Both claim ownership of the session save buffer."
+#     status: unresolved           # unresolved | resolved
+#     resolution: ""
+conflicts: []
+
+# A requirement whose GDD changed after an ADR was written against it. The ADR is
+# not wrong yet — it is unverified, which is worse, because nothing says so.
+# /propagate-design-change fills this in.
+#
+#   - id: TR-save-001
+#     gdd: docs/gdd/save-system.md
+#     changed: "Autosave cadence moved from per-room to per-checkpoint."
+#     affected_adrs: [ADR-NNNN]
+#     status: adr-needs-update     # adr-needs-update | adr-confirmed
+superseded: []

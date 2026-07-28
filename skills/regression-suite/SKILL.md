@@ -105,7 +105,7 @@ A full test-framework adoption (e.g. GUT for Godot) may be a deferred decision p
 For `audit` mode:
 
 ### Step A — Load existing manifest
-Read `tests/regression-suite.md` if it exists. Extract total registered tests, last updated date, any flagged as STALE/QUARANTINED. If missing: note "No regression suite found — will create one."
+Read `tests/regression-suite.md` if it has been written. Extract total registered tests, last updated date, any flagged as STALE/QUARANTINED. The installer seeds this file, so existence proves nothing — a copy still carrying the `scaffold-seed: unwritten` marker near the top is the blank skeleton. If it is blank or absent: note "No regression suite registered yet — filling the seeded skeleton." Fill the seeded file in place and delete its marker line; never write a second copy beside it.
 
 ### Step B — Load test inventory
 Glob all test files (`tools/*_check.gd`, `tools/*.py`, `tests/`). For each file, note system + filename.

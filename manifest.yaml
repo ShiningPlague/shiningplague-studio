@@ -38,16 +38,21 @@ counts:
                       # routing table from SKILL.md frontmatter).
                       # `find tools -maxdepth 1 -type f | wc -l` = 6 — the sixth is
                       # doc_stack.manifest.json, a data file, not a runner.
-  scaffold_files: 23  # `find scaffold -type f | wc -l` = 24; scaffold/README.md documents
-                      # the folder for repo readers and is never installed, so 23 land.
+  scaffold_files: 30  # `find scaffold -type f | wc -l` = 31; scaffold/README.md documents
+                      # the folder for repo readers and is never installed, so 30 land.
   scaffold_from_templates: 6  # seeds that are a copy of a shipped template, so no document
                       # is authored twice: GDD.md, gdd/game-concept.md, gdd/game-pillars.md,
                       # gdd/systems-index.md, art-bible.md, adr/TEMPLATE.md
-  scaffold_paths: 36  # 19 directories + 17 files — the paths the scaffold step guarantees
+  scaffold_paths: 45  # 21 directories + 24 files — the paths the scaffold step guarantees
                       # exist in a fresh project; enumerated in the
                       # SCAFFOLD-BEGIN..SCAFFOLD-END region of BOTH installers and
                       # cross-checked by tools/doc_stack_check.py (INSTALLER SCAFFOLD
-                      # COVERAGE: covered 36 / uncovered 0).
+                      # COVERAGE: covered 45 / uncovered 0).
+                      # 36 before 0.5.0's final pass, which seeded the last nine: the
+                      # three docs/architecture/ documents, accessibility-requirements.md,
+                      # docs/assets/{,asset-manifest.md}, session-state/active-goals.json
+                      # and tests/{,regression-suite.md}. Every fixed-name artifact the
+                      # doc stack promises now ships as a fillable skeleton.
   install_files: 191  # what a default install lands outside the doc stack:
                       # 184 under .claude/ (incl. settings.json) + 6 under tools/ +
                       # CLAUDE.md. Matches the installer's own "new files" line. Build
@@ -68,13 +73,19 @@ scaffold:
   purpose: >-
     Make every path the skills read exist on day one, so a fresh install is
     coherent before the first conversation instead of after the first repair.
-  source: "scaffold/ (23 installed files) + 6 copies of shipped templates/ documents"
-  creates: 36   # 19 directories, 17 files
+  source: "scaffold/ (30 installed files) + 6 copies of shipped templates/ documents"
+  creates: 45   # 21 directories, 24 files
+  rule: >-
+    Every FIXED-NAME artifact the doc stack promises is seeded as a fillable
+    skeleton — headings, a one-line prompt under each, and a worked example where
+    it clarifies. Nothing is left "created on use" as a design choice. What stays
+    on use is only what has no knowable filename until it is written: dated specs
+    and plans, numbered ADRs, per-system GDDs, per-target asset specs.
   overwrite_policy: >-
     NEVER. An existing file is left untouched and counted as skipped, so a live
     project's real registry, devlog and session state survive any number of
     re-runs. A second install is a byte-for-byte no-op on the doc stack
-    (`seeded 0 · skipped 29`).
+    (`seeded 0 · skipped 36`).
   opt_out: "--no-scaffold (bash) / -NoScaffold (PowerShell)"
   enforced_by: >-
     tools/doc_stack_check.py reads the SCAFFOLD-BEGIN..SCAFFOLD-END region of both
@@ -83,15 +94,21 @@ scaffold:
   seeds:
     docs: >-
       GDD.md, gdd/{systems-index,game-concept,game-pillars}.md, art-bible.md,
-      adr/TEMPLATE.md, devlog.md, implementation-status.md, open-flags.md, and the
-      architecture/ specs/ plans/ z-old/{specs,plans}/ directories
+      accessibility-requirements.md, adr/TEMPLATE.md,
+      architecture/{architecture,control-manifest}.md, architecture/tr-registry.yaml,
+      assets/asset-manifest.md, devlog.md, implementation-status.md, open-flags.md,
+      and the specs/ plans/ z-old/{specs,plans}/ directories
     data: >-
       _schemas/system_registry.json (valid, parseable and EMPTY — the correct
       day-one state, with its schema documented inline) and _schemas/dev_diary.json
     production: >-
-      session-state/active.md, workstreams/TEMPLATE.md, stage.txt, review-mode.txt,
+      session-state/active.md, session-state/active-goals.json (structurally empty —
+      primary_goal null), workstreams/TEMPLATE.md, stage.txt, review-mode.txt,
       sprint-status.yaml, flow-ledger.yaml, and the session-logs/ sprints/ epics/
       qa/{bugs,evidence}/ directories
+    tests: >-
+      regression-suite.md — the coverage index /regression-suite maintains. The
+      only file the template puts under tests/; no test CODE is ever shipped.
   verify: >-
     From the installed project: `python tools/consistency_check.py` — a fresh
     install exits 0 with 4 PASS, 0 FAIL and 8 checks that have nothing to look at
@@ -110,11 +127,13 @@ install_targets:
   templates: "project (.claude/docs/templates/)"
   tools: "project (tools/)"
   scaffold: >-
-    project root (docs/, data/, production/) — the document stack the skills read:
-    system_registry.json, dev_diary.json, session-state/active.md, stage.txt,
-    review-mode.txt, sprint-status.yaml, flow-ledger.yaml, workstreams/TEMPLATE.md,
-    adr/TEMPLATE.md, devlog.md, implementation-status.md, open-flags.md, plus the
-    spec / plan / gdd / architecture / epic / sprint / qa directories. NEVER
+    project root (docs/, data/, production/, tests/) — the document stack the skills
+    read: system_registry.json, dev_diary.json, session-state/active.md,
+    session-state/active-goals.json, stage.txt, review-mode.txt, sprint-status.yaml,
+    flow-ledger.yaml, workstreams/TEMPLATE.md, adr/TEMPLATE.md, devlog.md,
+    implementation-status.md, open-flags.md, accessibility-requirements.md, the three
+    docs/architecture/ documents, assets/asset-manifest.md, tests/regression-suite.md,
+    plus the spec / plan / gdd / epic / sprint / qa directories. NEVER
     overwrites: an existing file is left untouched and counted as skipped, so a
     live project's real registry and devlog survive any re-run. Skip it with
     --no-scaffold (bash) / -NoScaffold (PowerShell).

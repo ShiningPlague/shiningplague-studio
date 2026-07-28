@@ -8,20 +8,28 @@ The format follows [Keep a Changelog](https://keepachangelog.com/); versions fol
 
 ### Fixed — the fresh-install journey, walked as a stranger
 
-Four defects found by re-walking the install as somebody who had never seen the
-repo. Each one is something the *first* command a new user runs gets wrong.
+Defects found by re-walking the install as somebody who had never seen the repo.
+Each one is something the *first* command a new user runs gets wrong. The last
+three are one rule applied three times: **if a doc names a fixed filename, the
+installer ships that file as a fillable template** — guiding the reader through
+filling it is the assistant's job, and a missing file is never the reader's problem
+to discover.
 
-- **The reading map named three files a fresh install does not have.** `CLAUDE.md`'s
-  architecture row named `docs/architecture/architecture.md`, `control-manifest.md`
-  and `tr-registry.yaml` in the present tense, and README's "What you get" tree
-  listed them under the *seeded, never overwritten* banner. All three are written on
-  first use; the installer seeds the empty directory and nothing else. Since
-  `CLAUDE.md` is the one file every session reads cold, a promise there sends the
-  session hunting for a file that was never written. The row now points at
-  `docs/architecture/` and names the skill that writes each file — the pattern
-  `docs/adr/` and `docs/specs/` already used — and the README tree marks on-use
-  artifacts explicitly. Every backticked path in the reading map now resolves in a
-  virgin install; a rule in the template's guidance block says it must stay that way.
+- **The reading map named three files a fresh install does not have — so the install
+  now has them.** `CLAUDE.md`'s architecture row named
+  `docs/architecture/architecture.md`, `control-manifest.md` and `tr-registry.yaml`
+  in the present tense, and README's "What you get" tree listed them under the
+  *seeded, never overwritten* banner, while the installer seeded the empty directory
+  and nothing else. Since `CLAUDE.md` is the one file every session reads cold, a
+  promise there sends the session hunting for a file that was never written.
+  The first attempt at this fix reworded the docs — the row pointed at the directory
+  and the three filenames went unmentioned. **That is reversed.** The rule is now the
+  other direction: *the template must be there.* All three ship as fillable
+  skeletons, the reading map names them outright again, and guiding the reader
+  through filling one is the assistant's job, not the reader's homework. A row may
+  point at a directory only when the filename genuinely cannot be known in advance —
+  a dated spec, a numbered ADR — and the template's guidance block now says exactly
+  that. Every backticked path in the reading map still resolves in a virgin install.
 - **The scaffold fooled the tools that read it.** On a virgin install
   `tools/workflow_state_check.py` reported `game-concept`, `art-bible` and
   `map-systems` as `UNRECORDED — evidence present but NOT in ledger`, telling a
@@ -66,6 +74,31 @@ repo. Each one is something the *first* command a new user runs gets wrong.
   were checked against disk on every push and this one was not, because no `find`
   reproduces it — it is what the *installer* lands. CI now tees the install log and
   asserts the printed "new files" equals the manifest number.
+- **Nine more scaffold paths: every fixed-name artifact the docs promise is now
+  seeded.** Fixing the three architecture files by hand would have fixed three
+  symptoms of one rule, so the same question was asked of every path named in
+  `doc-stack.md`, `CLAUDE.md.template`, `skills-index.md` and the phase-gate globs in
+  `workflow-catalog.yaml`: *does a doc name this exact filename, and does the
+  installer create it?* Four more said no, and each was a live dead end.
+  `docs/accessibility-requirements.md` and `docs/assets/asset-manifest.md` are
+  **phase-gate globs** — a gate that globs a literal filename can never pass on a
+  fresh install. `production/session-state/active-goals.json` is read by `/goal-check`
+  as step 0 of `/session-close`, and was invisible to `doc_stack_check.py` because
+  `skills-index.md` names it without a directory component. `tests/regression-suite.md`
+  was absolved by a `tests/**` ignore blanket — precisely the laundering the
+  manifest's own rules forbid. All are seeded now, with real fillable structure:
+  headings, a one-line *what goes here* under each, and a worked generic example
+  where it clarifies. Scaffold goes **36 → 45 paths** (21 directories, 24 files); the
+  four skills that branched on one of these files *existing* now check whether it was
+  **written**. What is still created on use is only what has no knowable filename
+  until it is written — dated specs and plans, numbered ADRs, per-system GDDs,
+  per-target asset specs. `manifest.yaml` records the rule, not just the count.
+- **Seeding nine more documents does not inflate a virgin project's progress.** The
+  regression this could have caused is exactly the one 0.5.0 already fixed once: a
+  blank skeleton read as authored work. Every new markdown and YAML seed carries the
+  existing `scaffold-seed: unwritten` marker, the JSON one is recognised by value
+  (`primary_goal: null`), and `tools/workflow_state_check.py` still reports **0
+  unrecorded, 0 conflict** on a virgin install. No detector changed.
 
 ## [0.5.0] - 2026-07-28 — the install is now what the skills describe
 

@@ -59,12 +59,12 @@ paths (so `status: done` pointing at an untouched skeleton is a `CONFLICT`, whic
 is). A directory counts as evidence only if it holds a real file: `.gitkeep` and marked
 skeletons do not make `docs/adr/` an architecture decision.
 
-**Three seeds cannot carry a comment line, and are handled by value instead:**
+**Some seeds cannot carry a comment line, and are handled by value instead:**
 
 | Seed | Why no marker | The seeded-default signal |
 |---|---|---|
 | `production/stage.txt` | Read with `cat`; a comment line would corrupt every reader. | Seeded **`not-started`** — deliberately not a phase name. `/gate-check` writes a real phase on the first PASS. |
-| `data/_schemas/system_registry.json`, `dev_diary.json` | JSON has no comments. | Seeded structurally empty — `"systems": []`, `"entries": {}`. Emptiness is already machine-visible, which is exactly what a marker would have added. |
+| `data/_schemas/system_registry.json`, `dev_diary.json`, `production/session-state/active-goals.json` | JSON has no comments. | Seeded structurally empty — `"systems": []`, `"entries": {}`, `"primary_goal": null`. Emptiness is already machine-visible, which is exactly what a marker would have added. |
 | `production/review-mode.txt` | Must hold a value the gates can act on. | Seeded `lean`. `/start` confirms it out loud on a fresh project rather than assuming the designer chose it. |
 
 **When you add a new seed**, put the marker in it. A seed without one re-opens this defect
@@ -82,6 +82,8 @@ for whichever tool reads it next.
 | `docs/gdd/game-concept.md` | The concept doc — pitch, loop, audience. | `/brainstorming`, you | `/map-systems`, `/design-review` | scaffold |
 | `docs/gdd/game-pillars.md` | The design pillars every review checks against. | you | `/design-review`, `/gate-check` | scaffold |
 | `docs/art-bible.md` | Visual identity spec that gates asset production. | `/art-bible` | `/asset-spec`, `/team-art` | scaffold |
+| `docs/accessibility-requirements.md` | Project-wide accessibility tier + the feature matrix across every system. Per-screen notes stay in the UX specs; this is what they point at. | the ux-designer + producer | the UX / HUD / interaction templates in `.claude/docs/templates/`, the technical-setup gate | scaffold |
+| `docs/assets/asset-manifest.md` | Master index of every asset the game needs, and its state. | `/asset-spec` | `/asset-spec` (picks the next unspecced target), `/content-audit`, the production gate | scaffold |
 | `docs/adr/NNN-<slug>.md` | Architecture decision records. Permanent. | `/architecture-decision` | `/code-review`, `/dev-story`, `/architecture-review`, `/gate-check` | on use |
 | `docs/adr/TEMPLATE.md` | The ADR skeleton each new record copies. | — (shipped template) | `/architecture-decision` | scaffold |
 | `docs/specs/YYYY-MM-DD-<topic>-design.md` | Live feature specs. | `/brainstorming` | `/writing-plans`, `/design-review`, `/scope-check` | on use |
@@ -119,9 +121,9 @@ for whichever tool reads it next.
 
 | Path | What it is | Written by | Read by | Source |
 |---|---|---|---|---|
-| `docs/architecture/architecture.md` | The master technical blueprint. | `/create-architecture` | `/dev-story`, `/code-review`, `/architecture-review` | on use |
-| `docs/architecture/control-manifest.md` | Flat "must / must never" rules sheet for programmers. | `/create-control-manifest` | `/dev-story`, `/code-review` | on use |
-| `docs/architecture/tr-registry.yaml` | Requirement-coverage registry (TR ids → ADRs). | `/architecture-review`, `/architecture-decision` | `/gate-check`, `/propagate-design-change` | on use |
+| `docs/architecture/architecture.md` | The master technical blueprint. | `/create-architecture` | `/dev-story`, `/code-review`, `/architecture-review` | scaffold |
+| `docs/architecture/control-manifest.md` | Flat "must / must never" rules sheet for programmers. | `/create-control-manifest` | `/dev-story`, `/code-review`, `/story-readiness` | scaffold |
+| `docs/architecture/tr-registry.yaml` | Requirement-coverage registry (TR ids → ADRs). | `/architecture-review`, `/architecture-decision` | `/dev-story`, `/gate-check`, `/propagate-design-change` | scaffold |
 | `docs/architecture/architecture-review-*.md` | One dated review report per run. | `/architecture-review` | the architecture phase gate | on use, optional |
 | `docs/architecture/change-impact-*.md` | Which ADRs a GDD revision just made stale. | `/propagate-design-change` | you | on use, optional |
 
@@ -141,6 +143,7 @@ for whichever tool reads it next.
 | Path | What it is | Written by | Read by | Source |
 |---|---|---|---|---|
 | `production/session-state/active.md` | Last session, next steps, carry-forward. | `/session-close`, `/update` | every session open, `/help` | scaffold |
+| `production/session-state/active-goals.json` | This session's declared goal + the outcomes that prove it shipped. | `/goal-set`, `/goal-add-minor`, `/goal-check` | `/goal-check` — step 0 of `/session-close`, and it can pause the close | scaffold |
 | `production/session-logs/` | One log per closed session; playtest notes land here too. | `/session-close`, `/qa-plan` | `/retrospective`, `/gate-check` | scaffold |
 | `production/stage.txt` | The current project phase. Authoritative. Seeded `not-started`, which is **not** a phase — it means no gate has been cleared. | `/gate-check` | `/help`, `/project-stage-detect` | scaffold |
 | `production/review-mode.txt` | `full` \| `lean` \| `solo` — how strict reviews are right now. Seeded `lean`, a default nobody chose. | `/start`, you | `/gate-check`, the director gates | scaffold |
@@ -167,6 +170,16 @@ for whichever tool reads it next.
 | `tools/doc_stack_check.py` + `tools/doc_stack.manifest.json` | Proves no doc commands a path that nothing creates, and no doc names a slash-command that no skill ships. | shipped |
 | `tools/<step>_<feature>_check.gd` | Your per-step headless harnesses. A naming convention, not a shipped file. | on use |
 | `tools/generate_session_context.sh` | Optional project-owned session context script. The hook runs it only if you wrote one. | project-owned, optional |
+
+## Test layer — `tests/`
+
+`tests/` is **yours** — the template ships no test code into a game project, and
+your tests may live wherever your engine puts them. Exactly one document is seeded
+there, because a skill reads it by that exact name:
+
+| Path | What it is | Written by | Read by | Source |
+|---|---|---|---|---|
+| `tests/regression-suite.md` | Curated index of the tests that must stay green: critical-path coverage, per-bug regressions, known gaps, quarantined tests. Holds no test code. | `/regression-suite` | `/regression-suite` on the next run, the release gate | scaffold |
 
 ## The installed framework — `.claude/`
 

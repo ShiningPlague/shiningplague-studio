@@ -340,9 +340,15 @@ docs/gdd/systems-index.md
 docs/gdd/game-concept.md
 docs/gdd/game-pillars.md
 docs/art-bible.md
+docs/accessibility-requirements.md
 docs/adr/
 docs/adr/TEMPLATE.md
 docs/architecture/
+docs/architecture/architecture.md
+docs/architecture/control-manifest.md
+docs/architecture/tr-registry.yaml
+docs/assets/
+docs/assets/asset-manifest.md
 docs/specs/
 docs/plans/
 docs/z-old/specs/
@@ -357,6 +363,7 @@ data/_schemas/dev_diary.json
 production/
 production/session-state/
 production/session-state/active.md
+production/session-state/active-goals.json
 production/session-logs/
 production/workstreams/
 production/workstreams/TEMPLATE.md
@@ -369,6 +376,8 @@ production/stage.txt
 production/review-mode.txt
 production/sprint-status.yaml
 production/flow-ledger.yaml
+tests/
+tests/regression-suite.md
 "
 
 # Seeds that are just a copy of a shipped template, so no document in this repo
