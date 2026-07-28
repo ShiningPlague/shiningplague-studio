@@ -104,9 +104,17 @@ ARCHIVE_DIR_WORDS = ("z-old", "old", "archive", "archives", "archived",
 # `_status_meanings` block when present, so a project can extend the
 # vocabulary without editing this file.
 DEFAULT_STATUSES = [
-    "planned", "stub", "wip", "partial", "active",
-    "phasing_out", "deprecated", "dormant", "for_review",
+    "planned", "stub", "wip", "partial", "built", "active",
+    "phasing_out", "deprecated", "dormant", "for_review", "removed",
 ]
+# Two of these earn their place from a real project rather than padding the list.
+# `built`: CLAUDE.md calls the registry "the single source of truth for 'is it
+# built?'" — a project answering that question with the word the question uses was
+# being told its data was invalid. `removed`: a system that shipped and was later
+# DELETED is an ordinary event in game development (a prototype superseded by its
+# replacement), and it is not `deprecated` (still there, discouraged) or
+# `phasing_out` (on the way). Without the word, the registry cannot record it.
+# A project can still extend this list via the registry's own `_status_meanings`.
 
 # Top-level registry keys the skills read. A missing key is a WARN: the skill
 # that looks for it finds nothing and has to guess.
@@ -368,10 +376,39 @@ class Project(object):
         return (self.root / rel).exists()
 
     def category(self, name):
+        """Registry entries for a category, as a list, from EITHER shape.
+
+        A list of entries and a dict keyed by id are both in the wild: the scaffold
+        seeds lists, real projects key by id. Normalising here rather than at every
+        call site is what makes accepting both shapes real — an earlier pass widened
+        only the TYPE CHECK and left this reader list-only, so a dict-shaped registry
+        passed validation while every registry-driven check below silently saw zero
+        entries. Measured on a live project: 22 systems read as 0. A check that
+        quietly inspects nothing is worse than one that fails loudly.
+
+        A dict entry keeps its key as `id` (without clobbering an explicit `id`),
+        which is exactly what the list shape carries.
+        """
         if not self.registry:
             return []
         value = self.registry.get(name)
-        return value if isinstance(value, list) else []
+        if isinstance(value, list):
+            return value
+        if isinstance(value, dict):
+            out = []
+            for key, entry in value.items():
+                if isinstance(entry, dict):
+                    item = dict(entry)
+                    # The key IS the identity in this shape — it answers both `id`
+                    # and `name`, so demanding a separate `name` field would fail a
+                    # registry that is not missing anything.
+                    item.setdefault("id", key)
+                    item.setdefault("name", key)
+                    out.append(item)
+                else:
+                    out.append({"id": key, "value": entry})
+            return out
+        return []
 
     def doc_stack(self):
         if not self.registry:
