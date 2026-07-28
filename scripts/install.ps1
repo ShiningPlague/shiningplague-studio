@@ -298,6 +298,27 @@ foreach ($pack in $Engine) {
     }
 }
 
+# --- stale-agent advisory (upgrade path) -------------------------------------
+# Parity with install.sh: an agent that MOVED into an engine pack between releases
+# stops being refreshed by an upgrade, so an older copy sits in .claude\agents\
+# still carrying that release's conventions. REPORT, never delete — the file may be
+# the user's own agent. Found upgrading a real 0.4.0 project to 0.5.0.
+$script:StaleAgents = [System.Collections.Generic.List[string]]::new()
+$agentsDir = Join-Path $DestClaude 'agents'
+if (Test-Path -LiteralPath $agentsDir) {
+    $topLevel = @{}
+    Get-ChildItem -LiteralPath (Join-Path $RepoDir 'agents') -Filter '*.md' -File -ErrorAction SilentlyContinue |
+        ForEach-Object { $topLevel[$_.Name] = $true }
+    $inPacks = @{}
+    Get-ChildItem -LiteralPath (Join-Path $RepoDir 'agents') -Filter '*.md' -File -Recurse -ErrorAction SilentlyContinue |
+        Where-Object { -not $topLevel.ContainsKey($_.Name) } | ForEach-Object { $inPacks[$_.Name] = $true }
+    Get-ChildItem -LiteralPath $agentsDir -Filter '*.md' -File -ErrorAction SilentlyContinue | ForEach-Object {
+        if ((-not $topLevel.ContainsKey($_.Name)) -and $inPacks.ContainsKey($_.Name)) {
+            $script:StaleAgents.Add("  $($_.Name) -- now ships in an engine pack; re-run with -Engine to refresh")
+        }
+    }
+}
+
 # --- project document stack (never overwrite) --------------------------------
 # The .claude\ layer is instructions; those instructions command paths OUTSIDE
 # .claude\ ("open data/_schemas/system_registry.json first", "check
@@ -472,6 +493,13 @@ if (-not $NoScaffold) {
     Write-Info "doc stack     -- skipped (exists): $($script:SeedSkipped)"
 } else {
     Write-Info "doc stack     -- not seeded (-NoScaffold)"
+}
+if ($script:StaleAgents.Count -gt 0) {
+    Write-Host ""
+    Write-Warn "agent file(s) in .claude\agents\ that this run did NOT refresh:"
+    $script:StaleAgents | ForEach-Object { Write-Host $_ }
+    Write-Info "They ship in an engine pack now, so an upgrade leaves your older copy in place --"
+    Write-Info "it can still carry the previous release's conventions. Nothing was deleted."
 }
 if ($script:CountUpdated -gt 0) {
     Write-Host ""

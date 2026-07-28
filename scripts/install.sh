@@ -320,6 +320,28 @@ for pack in ${ENGINE_PACKS[@]+"${ENGINE_PACKS[@]}"}; do
   done
 done
 
+# --- stale-agent advisory (upgrade path) -------------------------------------
+# An agent that MOVES into an engine pack between releases stops being refreshed
+# by an upgrade: the installer copies agents/*.md (top level) plus whatever packs
+# you ask for, so the copy already sitting in .claude/agents/ from an older
+# release is never touched again and quietly keeps that release's conventions.
+# Found the hard way upgrading a real 0.4.0 project to 0.5.0 — a stale
+# live-ops-designer.md was still pointing at the retired design/ layout while the
+# pack's own copy was clean. We REPORT and never delete: those files may be the
+# user's own agents, and deleting somebody's work to tidy a directory is not the
+# installer's call. Re-run with --engine <pack> to refresh one deliberately.
+STALE_AGENTS=""
+if [ -d "${DEST_CLAUDE}/agents" ]; then
+  for f in "${DEST_CLAUDE}/agents"/*.md; do
+    [ -f "${f}" ] || continue
+    b="$(basename "${f}")"
+    [ -f "${REPO_DIR}/agents/${b}" ] && continue          # refreshed this run
+    if find "${REPO_DIR}/agents" -mindepth 2 -name "${b}" -print -quit 2>/dev/null | grep -q .; then
+      STALE_AGENTS="${STALE_AGENTS}  ${b} — now ships in an engine pack; re-run with --engine to refresh"$'\n'
+    fi
+  done
+fi
+
 # --- project document stack (never overwrite) --------------------------------
 # The .claude/ layer is instructions; those instructions command paths OUTSIDE
 # .claude/ ("open data/_schemas/system_registry.json first", "check
@@ -497,6 +519,13 @@ if [ "${DO_SCAFFOLD}" -eq 1 ]; then
   info "doc stack     — skipped (exists): ${SEED_SKIPPED}"
 else
   info "doc stack     — not seeded (--no-scaffold)"
+fi
+if [ -n "${STALE_AGENTS}" ]; then
+  echo ""
+  warn "agent file(s) in .claude/agents/ that this run did NOT refresh:"
+  printf '%s' "${STALE_AGENTS}"
+  info "They ship in an engine pack now, so an upgrade leaves your older copy in place —"
+  info "it can still carry the previous release's conventions. Nothing was deleted."
 fi
 if [ "${COUNT_UPDATED}" -gt 0 ]; then
   echo ""

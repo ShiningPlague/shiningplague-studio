@@ -110,12 +110,18 @@ DEFAULT_STATUSES = [
 
 # Top-level registry keys the skills read. A missing key is a WARN: the skill
 # that looks for it finds nothing and has to guess.
+# The category keys accept EITHER shape, and this is deliberate. The scaffold seeds
+# them as lists, but real projects in the wild key them by id -- `"systems": {"sim.foo":
+# {...}}` -- which is just as readable and is what `pj.category()` already normalises.
+# Failing a project for choosing the other shape would be the framework telling a
+# working project it is wrong, which is precisely the class of defect 0.5.0 exists to
+# end. Iterating a dict yields its keys and `len()` is the entry count either way.
 REGISTRY_KEYS = {
     "phase": str,
     "documentation_stack": dict,
-    "systems": list,
-    "tools": list,
-    "data": list,
+    "systems": (list, dict),
+    "tools": (list, dict),
+    "data": (list, dict),
     "next_session_priorities": list,
     "flagged_for_designer_review": list,
 }
@@ -459,8 +465,10 @@ def check_registry_parse(pj, res, opts):
             res.warn("registry has no `%s` key -- a skill that reads it finds "
                      "nothing and has to guess" % key)
         elif pj.registry[key] is not None and not isinstance(pj.registry[key], want_type):
+            wanted = want_type if isinstance(want_type, tuple) else (want_type,)
             res.fail("registry key `%s` is %s, the skills read it as %s"
-                     % (key, type(pj.registry[key]).__name__, want_type.__name__))
+                     % (key, type(pj.registry[key]).__name__,
+                        " or ".join(t.__name__ for t in wanted)))
     counts = "%d systems, %d tools, %d data, %d specs, %d ADRs" % (
         len(pj.category("systems")), len(pj.category("tools")),
         len(pj.category("data")), len(pj.specs()), len(pj.adrs()))
